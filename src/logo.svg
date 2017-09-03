@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 841.9 595.3">
+    <!--奇数填充颜色 --> 
+    <!--倒数第四个数1表示大角度画，倒数第三个数0表示逆时针-->
+    <path d="M200 200,A100 100,0 1 1 200 201z M350 200,A50 50,0 1 0 350 201z"   
+    style="fill-rule: evenodd; fill:red; stroke:white"/> 
+    <!--不等于零填充颜色 --> 
+    <path d="M100 100,A50 50,0 1 1 100 101z M175 100,A25 25,0 1 0 175 101z" 
+    style="fill-rule:nonzero; fill:black; stroke:none"/> 
+</svg>
