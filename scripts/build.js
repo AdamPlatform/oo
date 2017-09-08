@@ -44,7 +44,7 @@ const useYarn = fs.existsSync(paths.yarnLockFile);
 // These sizes are pretty large. We'll warn for bundles exceeding them.
 const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
 const WARN_AFTER_CHUNK_GZIP_SIZE = 1024 * 1024;
-
+const NOMES_VERNO = process.env.NOMES_VERNO == null ? '' : process.env.NOMES_VERNO;
 // Warn and crash if required files are missing
 if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
   process.exit(1);
@@ -54,10 +54,7 @@ if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
 // This lets us display how much they changed later.
 measureFileSizesBeforeBuild(paths.appBuild)
   .then(previousFileSizes => {
-    // Remove all content but keep the directory so that
-    // if you're in it, you don't end up in Trash
-    fs.emptyDirSync(paths.appBuild);
-    // Merge with the public folder
+    
     copyPublicFolder();
     // Start the webpack build
     return build(previousFileSizes);
@@ -102,6 +99,7 @@ measureFileSizesBeforeBuild(paths.appBuild)
         buildFolder,
         useYarn
       );
+      arterBuild();
     },
     err => {
       console.log(chalk.red('Failed to compile.\n'));
@@ -152,9 +150,15 @@ function build(previousFileSizes) {
   });
 }
 
-function copyPublicFolder() {
-  fs.copySync(paths.appPublic, paths.appBuild, {
-    dereference: true,
-    filter: file => file !== paths.appHtml,
-  });
+async function copyPublicFolder() {
+  // Remove all content but keep the directory so that
+  // if you're in it, you don't end up in Trash
+  await fs.emptyDir(paths.appBuild);
+  // Merge with the public folder
+  await fs.copy(paths.appPublic, paths.appBuild);
+  await fs.rename(paths.appBuild + '/index.html', paths.appBuild + '/index' + NOMES_VERNO + '.html');
+  await fs.remove(paths.appBuild + '/index.html');
+}
+async function arterBuild() { 
+  await fs.rename(paths.appBuild + '/index.html', paths.appBuild + '/index' + NOMES_VERNO + '.html');
 }

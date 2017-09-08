@@ -1,21 +1,61 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {Component} from 'react';
 
-class App extends Component {
+export default class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      page: <div/>,
+      login: false,
+    }
+  }
+  componentWillMount() {
+    if (typeof require.ensure !== `function`) {
+      require.ensure = (d, c) => c(require);
+    } 
+    const matchPath = (urlPath, pageName) => {
+      let pathname = window.location.pathname;
+      if (pathname.indexOf(urlPath) !== -1) {
+          const Page = require('./pages/' + pageName + '.js').default;
+          this.setState({page: <Page/>});
+        return true;
+      }
+      return false;
+    }
+    const {getCookie} = require('./utils/cookie');
+    let token = getCookie('token');
+    let id = getCookie('id');
+    let entid = getCookie('entid');
+    if (!(token && token !== 'null' && id && id !== 'null' && entid && entid !== 'null')) {
+      /**
+       * 如果未登录，跳转到登录页面
+       */
+      this.setState({login: true});
+    } else {
+      const Route = require('./Route');
+      let foundPage = false;
+      for (let key in Route) {
+        let pageName = Route[key]; 
+        if (matchPath(key, pageName)) {
+          foundPage = true;
+          break;
+        }
+      }
+      if (!foundPage) {
+        /**
+         * 未定义路径
+         */
+        require.ensure([], (require) => {
+          const Notfound = require('./components/notfound').default;
+          this.setState({page: <Notfound/>});
+        }, 'notfound');
+      }
+    }
+  }
   render() {
-    return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to oo</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
+    const Login = require('./components/Login').default;
+    return <div>
+      {this.state.page}
+      {this.state.login && <Login/>}
+    </div>
   }
 }
-
-export default App;

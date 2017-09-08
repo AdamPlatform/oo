@@ -27,7 +27,7 @@ require('../config/env');
 const fs = require('fs');
 const chalk = require('chalk');
 const webpack = require('webpack');
-const WebpackDevServer = require('webpack-dev-server');
+//const WebpackDevServer = require('webpack-dev-server');
 const clearConsole = require('react-dev-utils/clearConsole');
 const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
 const {
@@ -40,27 +40,28 @@ const openBrowser = require('react-dev-utils/openBrowser');
 const paths = require('../config/paths');
 const config = require('../config/webpack.config.dev');
 const createDevServerConfig = require('../config/webpackDevServer.config');
-
+const express = require('express');
+const bodyParser = require('body-parser');
 const useYarn = fs.existsSync(paths.yarnLockFile);
 const isInteractive = process.stdout.isTTY;
-
+const publicPath = '/';
 // Warn and crash if required files are missing
 if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
   process.exit(1);
 }
 
 // Tools like Cloud9 rely on this.
-const DEFAULT_PORT = parseInt(process.env.PORT, 10) || 3000;
+const port = parseInt(process.env.PORT, 10) || 52491;
 const HOST = process.env.HOST || '0.0.0.0';
 
 // We attempt to use the default port but if it is busy, we offer the user to
 // run on a different port. `detect()` Promise resolves to the next free port.
-choosePort(HOST, DEFAULT_PORT)
+/* choosePort(HOST, DEFAULT_PORT)
   .then(port => {
     if (port == null) {
       // We have not found a port.
       return;
-    }
+    } */
     const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
     const appName = require(paths.appPackageJson).name;
     const urls = prepareUrls(protocol, HOST, port);
@@ -74,7 +75,7 @@ choosePort(HOST, DEFAULT_PORT)
       proxyConfig,
       urls.lanUrlForConfig
     );
-    const devServer = new WebpackDevServer(compiler, serverConfig);
+    /* const devServer = new WebpackDevServer(compiler, serverConfig);
     // Launch WebpackDevServer.
     devServer.listen(port, HOST, err => {
       if (err) {
@@ -92,11 +93,36 @@ choosePort(HOST, DEFAULT_PORT)
         devServer.close();
         process.exit();
       });
-    });
-  })
+    }); */
+
+    const isDeveloping = process.env.NODE_ENV === 'development' || process.env.NODE_ENV == null;
+    const app = express();
+    
+    // Webpack developer
+    if (isDeveloping) {
+      app.use(require('webpack-dev-middleware')(compiler, {
+        publicPath: publicPath,
+        noInfo: true
+      }));
+      app.use(require('webpack-hot-middleware')(compiler));
+    }
+    
+    //  RESTful API
+    app.use(bodyParser.json({ type: 'application/json' }))
+    app.use(express.static(publicPath));
+    const main = require('../server/main');
+    main(app);
+    app.listen(port, function (err, result) {
+      if (err) {
+        console.log(err);
+      }
+      console.log(chalk.cyan('Server running on port ' + port));
+      //openBrowser(urls.localUrlForBrowser);
+    });    
+/*   })
   .catch(err => {
     if (err && err.message) {
       console.log(err.message);
     }
     process.exit(1);
-  });
+  }); */
