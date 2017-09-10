@@ -30,29 +30,30 @@ export default class App extends Component {
        * 如果未登录，跳转到登录页面
        */
       this.setState({login: true});
-    } else {
-      const Route = require('./Route');
-      let foundPage = false;
-      for (let key in Route) {
-        let pageName = Route[key]; 
-        if (matchPath(key, pageName)) {
-          foundPage = true;
-          break;
-        }
+    } 
+    const Route = require('./Route');
+    let foundPage = false;
+    for (let key in Route) {
+      let pageName = Route[key]; 
+      if (matchPath(key, pageName)) {
+        foundPage = true;
+        break;
       }
-      if (!foundPage) {
-        /**
-         * 未定义路径
-         */
-        require.ensure([], (require) => {
-          const Notfound = require('./components/notfound').default;
-          this.setState({page: <Notfound/>});
-        }, 'notfound');
-      }
+    }
+    if (!foundPage) {
+      /**
+       * 未定义路径
+       */
+      require.ensure([], (require) => {
+        const Notfound = require('./components/notfound').default;
+        this.setState({page: <Notfound/>});
+      }, 'notfound');
     }
   }
   render() {
     const Login = require('./components/Login').default;
+    let pathname = window.location.pathname;
+    console.log(pathname, 'pathname');
     return <div>
       {this.state.page}
       {this.state.login && <Login/>}

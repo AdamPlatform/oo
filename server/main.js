@@ -77,17 +77,12 @@ module.exports = function (app) {
         }
          next();
     });
-    app.get('/', function (req, res) {
-      console.log('root,req, res, next');
-      //logger.info(JSON.stringify(req), 'req, res, next');
-      //logger.info(JSON.stringify(res));
-      res.sendFile(path.resolve(paths.appPublic, '', 'index.html'))
-    })
+
     app.get(/\/oo\/.*/, function (req, res) {
         //logger.info(JSON.stringify(req), '* req, res, next');
         //logger.info(JSON.stringify(res));
-        console.log('oo--------------');
-        res.sendFile(path.resolve(paths.appPublic, '', 'index.html'))
+        console.log('oo------ ------ --');
+        res.sendFile(path.resolve(paths.appPublic, '', 'main.html'))
     })    
 }
 

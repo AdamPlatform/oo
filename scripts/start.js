@@ -109,15 +109,16 @@ const HOST = process.env.HOST || '0.0.0.0';
     
     //  RESTful API
     app.use(bodyParser.json({ type: 'application/json' }))
-    app.use(express.static(publicPath));
+    app.use(express.static(paths.appPublic));
     const main = require('../server/main');
+    require('../hot-reload')
     main(app);
     app.listen(port, function (err, result) {
       if (err) {
         console.log(err);
       }
       console.log(chalk.cyan('Server running on port ' + port));
-      //openBrowser(urls.localUrlForBrowser);
+      openBrowser(urls.localUrlForBrowser);
     });    
 /*   })
   .catch(err => {
