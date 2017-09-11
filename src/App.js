@@ -52,8 +52,8 @@ export default class App extends Component {
   }
   render() {
     const Login = require('./components/Login').default;
-    let pathname = window.location.pathname;
-    console.log(pathname, 'pathname');
+    var uri = "mongodb://adam:123456gqh@cluster0-shard-00-00-qeluk.mongodb.net:27017,cluster0-shard-00-01-qeluk.mongodb.net:27017,cluster0-shard-00-02-qeluk.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin";
+    console.log(escape(uri));
     return <div>
       {this.state.page}
       {this.state.login && <Login/>}
