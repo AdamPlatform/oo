@@ -118,7 +118,7 @@ const HOST = process.env.HOST || '0.0.0.0';
         console.log(err);
       }
       console.log(chalk.cyan('Server running on port ' + port));
-      openBrowser(urls.localUrlForBrowser);
+      //openBrowser(urls.localUrlForBrowser);
     });    
 /*   })
   .catch(err => {

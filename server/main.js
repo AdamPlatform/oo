@@ -84,5 +84,6 @@ module.exports = function (app) {
         console.log('oo------ ------ --');
         res.sendFile(path.resolve(paths.appPublic, '', 'main.html'))
     })    
+    require('./platform_config/api')(app);
 }
 
