@@ -8,7 +8,7 @@ const chokidar = require('chokidar');
 
 const watcher = chokidar.watch(path.join(__dirname, '/server'));
 
-let appIns = cp.fork(path.join(__dirname, '/server/main.js'));
+let appIns = cp.fork(path.join(__dirname, '/server/pack.js'));
 
 watcher.on('ready', () => {
 
@@ -48,6 +48,6 @@ function reload(appIns) {
 
         appIns.kill('SIGINT');
 
-        return cp.fork(require('path').join(__dirname, '/server/main.js'));
+        return cp.fork(require('path').join(__dirname, '/server/pack.js'));
 
 }

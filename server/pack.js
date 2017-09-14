@@ -110,8 +110,7 @@ const HOST = process.env.HOST || '0.0.0.0';
     //  RESTful API
     app.use(bodyParser.json({ type: 'application/json' }))
     app.use(express.static(paths.appPublic));
-    const main = require('../server/main');
-    require('../hot-reload')
+    const main = require('./main');
     main(app);
     app.listen(port, function (err, result) {
       if (err) {

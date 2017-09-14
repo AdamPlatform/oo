@@ -24,10 +24,14 @@ switch (script) {
   case 'eject':
   case 'start':
   case 'test': {
+    let scriptPath = '../scripts/' + script;
+    if (script === 'start') {
+      scriptPath = '../hot-reload';
+    }
     const result = spawn.sync(
       'node',
       nodeArgs
-        .concat(require.resolve('../scripts/' + script))
+        .concat(require.resolve(scriptPath))
         .concat(args.slice(scriptIndex + 1)),
       { stdio: 'inherit' }
     );
