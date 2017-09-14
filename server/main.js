@@ -80,7 +80,7 @@ module.exports = function (app) {
 
     app.get(/\/oo\/.*/, function (req, res) {
         //logger.info(JSON.stringify(req), '* req, res, next');
-        //logger.info(JSON.stringify(res));
+        //logger.info(JSON.stringify(res)); 
         console.log('oo------ ------ --');
         res.sendFile(path.resolve(paths.appPublic, '', 'main.html'))
     })    
