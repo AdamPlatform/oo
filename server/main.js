@@ -1,4 +1,3 @@
-
 const publicPath = '/';
 const paths = require('../config/paths');
 // this is necessary to handle URL correctly since client uses Browser History
@@ -16,48 +15,42 @@ console.log('main run');
  * @param filePath
  * @returns {*}
  */
-const getContentType = function(filePath){
-    
+const getContentType = function (filePath) {
+
     var contentType = config.mime;
     var ext = path.extname(filePath).substr(1);
-    if (contentType.hasOwnProperty(ext)){
+    if (contentType.hasOwnProperty(ext)) {
         return contentType[ext];
-    }else {
+    } else {
         return contentType.default;
     }
 }
 
 ///配置信息
-const config ={
-    port:8888,
-    ip:'127.0.0.1',
-    mime:{
-        html:"text/html",
-        js:"text/javascript",
-        css:"text/css",
-        gif:"image/gif",
-        jpg:"image/jpeg",
-        png:"image/png",
-        ico:"image/icon",
-        txt:"text/plain",
-        json:"application/json",
-        default:"application/octet-stream"
+const config = {
+    port: 52491,
+    ip: '127.0.0.1',
+    mime: {
+        html: "text/html",
+        js: "text/javascript",
+        css: "text/css",
+        gif: "image/gif",
+        jpg: "image/jpeg",
+        png: "image/png",
+        ico: "image/icon",
+        txt: "text/plain",
+        json: "application/json",
+        default: "application/octet-stream"
     }
 }
 module.exports = function (app) {
     const log4js = require('log4js');
     log4js.configure({
-      appenders: { cheese: { type: 'file', filename: 'cheese.log' } },
-      categories: { default: { appenders: ['cheese'], level: 'trace' } }
+        appenders: { cheese: { type: 'file', filename: 'cheese.log' } },
+        categories: { default: { appenders: ['cheese'], level: 'trace' } }
     });
     const logger = log4js.getLogger('cheese');
-/*     logger.trace('Entering cheese testing');
-    logger.debug('Got cheese.');
-    logger.info('Cheese is Gouda.');
-    logger.warn('Cheese is quite smelly.');
-    logger.error('Cheese is too ripe!');
-    logger.fatal('Cheese was breeding ground for listeria.'); */
-    app.all('*', function(req, res, next) {
+    app.all('*', function (req, res, next) {
         //logger.info(JSON.stringify(req));
         //logger.info(JSON.stringify(res));
         res.header("Cache-Control", "no-cache");
@@ -68,22 +61,42 @@ module.exports = function (app) {
         // 在这个例子里,因为Access-Control-Allow-Origin的值是http://foo.example这个指定的请求域名,
         // 所以服务器端把带有凭证信息的内容返回给了客户端. 另外注意第22行,更多的cookie信息也被创建了.
         res.header("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, Accept,X-Requested-With");
-         res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
-         res.header("Access-Control-Allow-Credentials", "true");
-         res.header("X-Powered-By",' 3.2.1');
-         if(req.method=="OPTIONS") {
+        res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
+        res.header("Access-Control-Allow-Credentials", "true");
+        res.header("X-Powered-By", ' 3.2.1');
+        if (req.method == "OPTIONS") {
             /*让options请求快速返回*/
-            res.send(200); 
+            res.send(200);
         }
-         next();
+        next();
     });
 
-    app.get(/\/oo\/.*/, function (req, res) {
+    app.get(/\/oo.*/, function (req, res) {
         //logger.info(JSON.stringify(req), '* req, res, next');
         //logger.info(JSON.stringify(res)); 
-        console.log('oo------ ------ --');
+        console.log(req.path + ' get oo');
+        logger.info(JSON.stringify({
+            baseUrl: req.baseUrl,
+            body: req.body,
+            cookies: req.cookies,
+            fresh: req.fresh,
+            hostname: req.hostname,
+            ip: req.ip,
+            ips: req.ips,
+            originalUrl: req.originalUrl,
+            params: req.params,
+            path: req.path,
+            protocol: req.protocol,
+            query: req.query,
+            route: req.route,
+            secure: req.secure,
+            signedCookies: req.signedCookies,
+            stale: req.stale,
+            subdomains: req.subdomains,
+            xhr: req.xhr
+        }));
         res.sendFile(path.resolve(paths.appPublic, '', 'main.html'))
-    })    
+    })
     require('./platform_config/api')(app);
 }
 

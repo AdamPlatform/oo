@@ -83,7 +83,12 @@ if (isDeveloping) {
 app.use(bodyParser.json({ type: 'application/json' }))
 app.use(express.static(paths.appPublic));
 const main = require('./main');
-main(app);
+try {
+    main(app);
+} catch (err) {
+    console.log(err);
+    main(app);
+}
 app.listen(port, function (err, result) {
     if (err) {
         console.log(err);
