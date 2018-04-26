@@ -21,16 +21,16 @@ export default class App extends Component {
       }
       return false;
     }
-    const {getCookie} = require('./utils/cookie');
-    let token = getCookie('token');
-    let id = getCookie('id');
-    let entid = getCookie('entid');
-    if (!(token && token !== 'null' && id && id !== 'null' && entid && entid !== 'null')) {
+    //const {getCookie} = require('./utils/cookie');
+    //let token = getCookie('token');
+    //let id = getCookie('id');
+    //let entid = getCookie('entid');
+    //if (!(token && token !== 'null' && id && id !== 'null' && entid && entid !== 'null')) {
       /**
        * 如果未登录，跳转到登录页面
        */
-      this.setState({login: true});
-    } 
+      //this.setState({login: true});
+    //} 
     const Route = require('./Route');
     let foundPage = false;
     for (let key in Route) {
