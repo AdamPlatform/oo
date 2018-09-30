@@ -39,15 +39,12 @@ npm run build | yarn build
 npm run serve | yarn serve
 ```
 
-## 开发者
-### 1. 所有页面组件都统一放在目录 ./src/pages 下
-### 2. 在./src/Route.js 中添加url 和页面名对应关系
-### 3. 使用antd组件请参考 ./antd.md 
-### 4. 使用静态资源时请使用相对路径
+### node
+mongodb+srv://root:root:123456gqh@cluster0-bq95b.mongodb.net/test?retryWrites=true
 
+mongodb://root:root:123456gqh@cluster0-shard-00-00-bq95b.mongodb.net:27017,cluster0-shard-00-01-bq95b.mongodb.net:27017,cluster0-shard-00-02-bq95b.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true
 
-## 注意 
-### 1. 所有使用JSX语法的文件都要 import React from 'react';
-### 2. 尽量少使用全局变量
-### 3. 请不要忽略警告，严格修改警告的问题
+### shell
+mongo "mongodb+srv://cluster0-bq95b.mongodb.net/test" --username root
 
+mongo "mongodb://cluster0-shard-00-00-bq95b.mongodb.net:27017,cluster0-shard-00-01-bq95b.mongodb.net:27017,cluster0-shard-00-02-bq95b.mongodb.net:27017/test?replicaSet=Cluster0-shard-0" --ssl --authenticationDatabase admin --username root --password <PASSWORD>
