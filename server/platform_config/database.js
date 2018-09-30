@@ -9,13 +9,13 @@ function mongoException(err, obj, db, func) {
     }
     func && func(obj)
 }
-MongoClient.connect(uri, function(err, db) {
+MongoClient.connect(uri, (err, db) => {
     mongoException(err, db, db, (db) => {
         let oo = db.db('oo');
         oo.collection('user', null, (err, collection) => {
             mongoException(err, collection, db, (collection) => {
                 let res = collection.find();
-                res.toArray(function(err, result) {
+                res.toArray((err, result) => {
                     mongoException(err, result, db, (result) => {
                         console.log(result);
                         db.close();
@@ -29,7 +29,6 @@ MongoClient.connect(uri, function(err, db) {
 module.exports = {
     query: (dbOper) => {  
         MongoClient.connect(uri, function(err, db) {
-
             dbOper(db);
             db.close();
         });

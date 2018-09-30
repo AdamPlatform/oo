@@ -99,5 +99,6 @@ module.exports = function (app) {
         res.sendFile(path.resolve(paths.appPublic, '', 'main.html'))
     })
     require('./platform_config/api')(app);
+    require('./db_config/api')(app);
 }
 
