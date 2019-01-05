@@ -29,6 +29,7 @@ module.exports = (app) => {
         });
     });
     app.get('/table', (req, res) => {
+        console.log('get table -----------------');
         query.getTables().then(data => {
             res.send(data);
         }, error => {

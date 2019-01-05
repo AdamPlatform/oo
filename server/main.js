@@ -65,12 +65,12 @@ module.exports = function (app) {
         res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
         res.header("Access-Control-Allow-Credentials", "true");
         res.header("X-Powered-By", ' 3.2.1');
-        if (req.method == "OPTIONS") {
-            /*让options请求快速返回*/
-            res.send(200);
-        }
+        //if (req.method == "OPTIONS") {
+            //让options请求快速返回
+            //res.sendStatus(200);
+        //}
         next();
-    });
+    }); 
 
     app.get(/\/oo.*/, function (req, res) {
         //logger.info(JSON.stringify(req), '* req, res, next');

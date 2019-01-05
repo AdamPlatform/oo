@@ -17,7 +17,7 @@ MongoClient.connect(uri, (err, db) => {
                 let res = collection.find();
                 res.toArray((err, result) => {
                     mongoException(err, result, db, (result) => {
-                        console.log(result);
+                        console.log(result, 'user------------');
                         db.close();
                     });
                 });

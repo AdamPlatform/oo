@@ -101,15 +101,14 @@ module.exports = {
     },
 
     getTables: () => {
-        let oo = db.db('oo');
-        oo.collection("tables_config", null, (error, collection) => {
-            console.log(error, collection, 'updateTalbe collection');
-            if (error && error.message) {
-                defer.reject(error);
-                return;
-            }
-            let result = collection.find();
-            defer.resolve({status: 200, body: result});            
+        let defer = Q.defer();
+        conn.query(db => {
+            let oo = db.db('oo');
+            let collection = oo.collection("tables_config");
+            collection.find().toArray().then(docs => {
+                console.log(docs, 'getTalbe collection');
+                defer.resolve({status: 200, body: docs});         
+            });
         });
         return defer.promise;
     }
