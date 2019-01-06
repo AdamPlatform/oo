@@ -25,7 +25,7 @@
     "serve": "node ./node_modules/serve/bin/serve.js -s build"
   },
   "dependencies": {
-    "antd": "^2.12.7",
+    "antd": "^3.11.6",
     "body-parser": "^1.17.2",
     "bundle-loader": "^0.5.5",
     "child_process": "^1.0.2",
@@ -41,9 +41,11 @@
     "moment": "^2.18.1",
     "mongodb": "^2.2.31",
     "path": "^0.12.7",
+    "prop-types": "^15.6.2",
     "q": "^1.5.0",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "react-oo": "^1.0.2",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "superagent": "^3.6.0",

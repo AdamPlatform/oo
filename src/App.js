@@ -1,62 +1,80 @@
-import React, {Component} from 'react';
-
-export default class App extends Component {
+import React, { Component } from 'react'
+import Menu from 'antd/lib/menu'
+import Row from 'antd/lib/row'
+import Col from 'antd/lib/col'
+import Icon from 'antd/lib/icon'
+class App extends Component {
   constructor() {
     super();
     this.state = {
-      page: <div/>,
-      login: false,
-    }
+      update: false,
+      folded: false,
+      page: null,
+    };
+    global.cols = this.getCols();
   }
+
   componentWillMount() {
-    if (typeof require.ensure !== `function`) {
-      require.ensure = (d, c) => c(require);
-    } 
-    const matchPath = (urlPath, pageName) => {
-      let pathname = window.location.pathname;
-      if (pathname.indexOf(urlPath) !== -1) {
-          const Page = require('./pages/' + pageName + '.js').default;
-          this.setState({page: <Page/>});
-        return true;
-      }
-      return false;
-    }
-    //const {getCookie} = require('./utils/cookie');
-    //let token = getCookie('token');
-    //let id = getCookie('id');
-    //let entid = getCookie('entid');
-    //if (!(token && token !== 'null' && id && id !== 'null' && entid && entid !== 'null')) {
-      /**
-       * 如果未登录，跳转到登录页面
-       */
-      //this.setState({login: true});
-    //} 
-    const Route = require('./Route');
-    let foundPage = false;
-    for (let key in Route) {
-      let pageName = Route[key]; 
-      if (matchPath(key, pageName)) {
-        foundPage = true;
-        break;
-      }
-    }
-    if (!foundPage) {
-      /**
-       * 未定义路径
-       */
-      require.ensure([], (require) => {
-        const Notfound = require('./components/notfound').default;
-        this.setState({page: <Notfound/>});
-      }, 'notfound');
-    }
+    window.addEventListener('resize', this.onWindowResize.bind(this))
   }
+  
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.onWindowResize.bind(this))
+  }
+
+  getCols() {
+    let cols = 1;
+    let cw = document.documentElement.clientWidth || document.body.clientWidth;
+		if (cw >= 1280) {
+		  cols = 4
+		} else if (cw >= 960 && cw < 1280) {
+		  cols = 3
+		} else if (cw >= 640 && cw < 960) {
+		  cols = 2
+		} else {
+      cols = 1
+    }
+    return cols;
+  }
+
+  onWindowResize() {
+    global.cols = this.getCols();
+    this.setState({ update: !this.state.update });
+  }
+
   render() {
-    const Login = require('./components/Login').default;
-    var uri = "mongodb://adam:123456gqh@cluster0-shard-00-00-qeluk.mongodb.net:27017,cluster0-shard-00-01-qeluk.mongodb.net:27017,cluster0-shard-00-02-qeluk.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin";
-    console.log(escape(uri));
-    return <div>
-      {this.state.page}
-      {this.state.login && <Login/>}
-    </div>
+    const foldedstyle = {
+      width: '72px',
+    };
+    const toggermenustyle = this.state.folded ? 'menu-unfold' : 'menu-fold';
+    const mode = this.state.folded ? 'vertical' : 'inline';
+    return (
+      <div>
+        <aside className="ant-layout-sider" style={this.state.folded ? foldedstyle : {}}>
+          <Menu mode={mode} selectedKeys={[]}>
+            <Menu.Item key="sysconfig">
+              <a onClick={() => { }}>系统设置</a>
+            </Menu.Item>
+          </Menu>
+        </aside>
+        <div className="ant-layout-main" style={this.state.folded ? { marginLeft: '72px' } : {}}>
+          <Row className='ant-layout-header'>
+            <Col span={2} style={{paddingTop: 16, paddingLeft: 8, width: '64px', height: '64px' }}>
+              <a onClick={() => {this.setState({folded: !this.state.folded})}}>
+                <Icon type={toggermenustyle} style={{ fontSize: '20px' }} />
+              </a>
+            </Col>
+            <Col></Col>
+          </Row>
+          <div className="ant-layout-container">
+            <div>
+              {this.state.page}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 }
+
+export default App;
