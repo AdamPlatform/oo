@@ -69,13 +69,6 @@ module.exports = function (app) {
             //让options请求快速返回
             //res.sendStatus(200);
         //}
-        next();
-    }); 
-
-    app.get(/\/oo.*/, function (req, res) {
-        //logger.info(JSON.stringify(req), '* req, res, next');
-        //logger.info(JSON.stringify(res)); 
-        console.log(req.path + ' get oo');
         logger.info(JSON.stringify({
             baseUrl: req.baseUrl,
             body: req.body,
@@ -96,9 +89,8 @@ module.exports = function (app) {
             subdomains: req.subdomains,
             xhr: req.xhr
         }));
-        res.sendFile(path.resolve(paths.appPublic, '', 'main.html'))
-    })
-    require('./platform_config/api')(app);
+        next();
+    }); 
     require('./db_config/api')(app);
 }
 
