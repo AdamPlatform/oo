@@ -3,6 +3,7 @@ import Menu from 'antd/lib/menu'
 import Row from 'antd/lib/row'
 import Col from 'antd/lib/col'
 import Icon from 'antd/lib/icon'
+import MoudleConfig from './pages/MoudleConfig/list'
 class App extends Component {
   constructor() {
     super();
@@ -53,7 +54,7 @@ class App extends Component {
         <aside className="ant-layout-sider" style={this.state.folded ? foldedstyle : {}}>
           <Menu mode={mode} selectedKeys={[]}>
             <Menu.Item key="sysconfig">
-              <a onClick={() => { }}>系统设置</a>
+              <a onClick={() => {this.setState({page: <MoudleConfig/>})}}>系统设置</a>
             </Menu.Item>
           </Menu>
         </aside>

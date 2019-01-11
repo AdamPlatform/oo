@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Modal from 'antd/lib/modal'
 import Button from 'antd/lib/button'
-import {TableEx} from 'react-oo';
+import TableEx from '../components/TableEx';
 import {getConfig, setConfig} from '../defautConfig'
 
 const {

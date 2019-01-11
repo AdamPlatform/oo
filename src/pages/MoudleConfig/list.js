@@ -1,15 +1,22 @@
 import React, { Component } from 'react'
 import Popconfirm from 'antd/lib/popconfirm'
-import Table from 'antd/lib/table'
-import Search from '../components/Search';
+import TableEx from '../../components/TableEx'
+import Search from '../../components/Search'
 import Modify from './modify'
 import New from './new'
-import Detail from './detail'
-import {getConfig} from '../defautConfig'
-import * as Action from '../action'
-import {configToColumn, configToItemProps} from '../components/PageCreator';
+import * as Action from '../../action/moudleConfig'
+import {configToColumn, configToItemProps} from '../../components/PageCreator'
 let mainSearchFeilds = [];
 let moreSearchFeilds = [];
+const getConfig = () => {
+    return [
+        {"name":"模块名称","showName":"模块名称","dataIndex":"moduleName","isRequire": "1","isShow":"1","width":120,"dataType":"STRING","propValues":"","defaultValue":"","isQuery":"1","isSort":"1"},
+        {"name":"生成菜单","showName":"生成菜单","dataIndex":"isMenu","isShow":"1","width":120,"dataType":"SELECT","propValues":"否/是","defaultValue":"否","isQuery":"1","isSort":"1"},
+        {"name":"数据模型","showName":"数据模型","dataIndex":"dataMoudle","isRequire": "1","isShow":"1","width":80,"dataType":"SELECT","propValues":"线型/树形","defaultValue":"线形","isQuery":"1","isSort":"1"},
+        {"name":"流程","showName":"流程","dataIndex":"hasProcess","isRequire": "1","isShow":"1","width":120,"dataType":"SELECT","propValues":"否/是","defaultValue":"否","isQuery":"1","isSort":"1"},
+        {"name":"附件","showName":"附件","dataIndex":"hasFile","isShow":"0","width":120,"dataType":"SELECT","propValues":"否/是","defaultValue":"否","isQuery":"1","isSort":"1"},
+    ];
+}
 class List extends Component {
     constructor() {
         super();
@@ -32,8 +39,9 @@ class List extends Component {
     }
 
     getList(searchFields) {
-        let list = Action.getList(searchFields, mainSearchFeilds, moreSearchFeilds);
-        this.setState({list, totalElements: list.length})
+        Action.getList(searchFields, mainSearchFeilds, moreSearchFeilds, (list) => {
+            this.setState({list, totalElements: list.length})
+        });
     }
 
     resetSearch() {
@@ -61,16 +69,19 @@ class List extends Component {
         }
         this.setState({page: page, pageSize:pageSize});
     }
-    del(id) {
-        Action.del(id);
-        this.refresh();
+    del(_id) {
+        Action.del(_id, () => {
+            this.refresh();
+        });
     }
 
     refresh() {
         const {searchFields} = this.state;
         this.getList(searchFields);
     }
-    
+    onConfigField(record) {
+        
+    }
     render () {
         let tableConfig = getConfig();
         let {searchFields, showMore, list, totalElements, page, pageSize} = this.state;
@@ -103,25 +114,25 @@ class List extends Component {
         });
         columns.push({
             title: '操作',
-            dataIndex: 'id',
+            dataIndex: '_id',
             key: 'operation',
             width: 220,
             fixed: 'right',
             render: (text, record) => {
                 let split = <span className="ant-divider"/>
-                let detial = <Detail data={record} tableConfig={tableConfig} refresh={this.refresh.bind(this)}/>;
-                let edit = <Modify data={record} tableConfig={tableConfig} refresh={this.refresh.bind(this)}/>;
                 let del = <Popconfirm title="确定要删除这条数据吗？" onConfirm={this.del.bind(this, text)}>
                     <a>删除</a>
                 </Popconfirm>
-                return <span>{edit}{split}{del}{split}{detial}</span>;
+                let edit = <Modify data={record} tableConfig={tableConfig} refresh={this.refresh.bind(this)}/>;
+                let configField = <a onClick={this.onConfigField.bind(this, record)}>配置字段</a>
+                return <span>{edit}{split}{configField}{split}{del}</span>;
             }
         })
         scrollx += 280;
         mainSearchFeilds = [];
         moreSearchFeilds = [];
         searchFormFields.forEach(field => {
-            if (['c1', 'c2'].indexOf(field.id) !== -1) {
+            if (['moduleName'].indexOf(field.id) !== -1) {
                 mainSearchFeilds.push(field);
             } else {
                 moreSearchFeilds.push(field);
@@ -143,7 +154,7 @@ class List extends Component {
                 handleMore={this.handleMore.bind(this)}
                 onSearch={this.onSearch.bind(this)}
                 resetSearch={this.resetSearch.bind(this)}
-                placeholder='请输入订单名称或客户名称'
+                placeholder='请输入模块名称'
                 searchFields={searchFields}
                 showMore={showMore}
                 btnName='搜索'
@@ -151,12 +162,12 @@ class List extends Component {
                 moreText='更多搜索条件'
             />
             <New tableConfig={tableConfig} refresh={this.refresh.bind(this)}/>
-            <Table
+            <TableEx
                 scroll={{ x: scrollx }}
                 columns={columns}
                 dataSource={list}
                 onChange={this.handleTableChange.bind(this)}
-                rowKey={record => record.id}
+                rowKey={record => record._id}
                 pagination={pagination}
             />
         </div>
