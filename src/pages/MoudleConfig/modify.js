@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Spin from 'antd/lib/spin'
 import Modal from 'antd/lib/modal'
 import Fields from './fields'
 import * as Action from '../../action/moudleConfig'
@@ -8,7 +9,8 @@ class Modify extends Component {
         super();
         this.state = {
             visible: false,
-            classConfig: []
+            classConfig: [],
+            loading: false,
         }
     }
     onCancel() {
@@ -27,9 +29,10 @@ class Modify extends Component {
             return;
         }
         let record = this.formRef.props.form.getFieldsValue();
+        this.setState({loading: true});
         Action.modify(this.props.data._id, record, () => {
             this.props.refresh && this.props.refresh();
-            this.setState({visible: false});
+            this.setState({visible: false, loading: false,});
         });
     }
     
@@ -46,11 +49,13 @@ class Modify extends Component {
                 width={cw - 100}
                 onOk={this.onOk.bind(this)}
             >
-                <Fields
-                    {...this.props}
-                    wrappedComponentRef={(inst) => this.formRef = inst} 
-                    action='modify'
-                />
+                <Spin spinning={this.state.loading}>
+                    <Fields
+                        {...this.props}
+                        wrappedComponentRef={(inst) => this.formRef = inst} 
+                        action='modify'
+                    />
+                </Spin>
             </Modal>
             }
         </span>

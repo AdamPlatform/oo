@@ -15,12 +15,12 @@ class App extends Component {
     global.cols = this.getCols();
   }
 
-  componentWillMount() {
+  componentDidMount() {
     window.addEventListener('resize', this.onWindowResize.bind(this))
   }
   
   componentWillUnmount() {
-    window.removeEventListener('resize', this.onWindowResize.bind(this))
+    window.removeEventListener('resize', this.onWindowResize.bind(this));
   }
 
   getCols() {
@@ -40,7 +40,7 @@ class App extends Component {
 
   onWindowResize() {
     global.cols = this.getCols();
-    this.setState({ update: !this.state.update });
+    //this.setState({ update: !this.state.update });
   }
 
   render() {
@@ -68,9 +68,7 @@ class App extends Component {
             <Col></Col>
           </Row>
           <div className="ant-layout-container">
-            <div>
-              {this.state.page}
-            </div>
+            {this.state.page || <MoudleConfig/>}
           </div>
         </div>
       </div>

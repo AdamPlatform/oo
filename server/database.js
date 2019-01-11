@@ -4,8 +4,13 @@ var uri = "mongodb://adam:123456gqh@cluster0-shard-00-00-qeluk.mongodb.net:27017
 module.exports = {
     query: (dbOper) => {  
         MongoClient.connect(uri, (err, db) => {
-            dbOper(db);
-            db.close();
+            if (err) {
+                console.log(err, 'mongo error!');
+            }
+            if (db) {
+                dbOper(db);
+                db.close();
+            }
         });
     }
 };  

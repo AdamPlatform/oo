@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Popconfirm from 'antd/lib/popconfirm'
+import Spin from 'antd/lib/spin'
 import TableEx from '../../components/TableEx'
 import Search from '../../components/Search'
 import Modify from './modify'
@@ -29,18 +30,19 @@ class List extends Component {
             totalElements: 0,
             tableConfig: [],
             sorter: {},
-            update: false,
+            loading: false,
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         const {searchFields} = this.state;
         this.getList(searchFields);
     }
 
     getList(searchFields) {
+        this.setState({loading: true})
         Action.getList(searchFields, mainSearchFeilds, moreSearchFeilds, (list) => {
-            this.setState({list, totalElements: list.length})
+            this.setState({list, totalElements: list.length, loading: false})
         });
     }
 
@@ -70,6 +72,7 @@ class List extends Component {
         this.setState({page: page, pageSize:pageSize});
     }
     del(_id) {
+        this.setState({loading: true});
         Action.del(_id, () => {
             this.refresh();
         });
@@ -146,7 +149,7 @@ class List extends Component {
         pagination.pageSize = pageSize;
         pagination.pageSizeOptions = ['10', '20', '50', '100'];
         pagination.total = totalElements;
-        return <div style={{margin: 8}}>
+        return <Spin style={{margin: 8}} spinning={this.state.loading}>
             <Search
                 mainSearchFeilds={mainSearchFeilds}
                 cols={global.cols}
@@ -170,7 +173,7 @@ class List extends Component {
                 rowKey={record => record._id}
                 pagination={pagination}
             />
-        </div>
+        </Spin>
     }
 }
 export default List

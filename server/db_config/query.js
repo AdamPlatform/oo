@@ -1,6 +1,7 @@
 let Q = require('q');
 let conn = require('../database');
 let uuid = require('uuid/v1');
+let ObjectId = require('mongodb').ObjectId ;
 const moment = require('moment');
 module.exports = {
     addTable: (record) => {
@@ -46,8 +47,8 @@ module.exports = {
         conn.query(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.deleteOne({_id: _id}, null, (error, result) => {
-                console.log(error, result, 'deleteTalbe deleteOne');
+            collection.deleteMany({_id: ObjectId(_id)}, null, (error, result) => {
+                //console.log(error, result, 'deleteTalbe deleteOne');
                 if (error && error.message) {
                     defer.reject(error);
                     return;
@@ -63,13 +64,12 @@ module.exports = {
         conn.query(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.updateOne({_id: _id}, data, null, (error, result) => {
-                console.log(error, result, 'updateTalbe updateOne');
+            collection.updateOne({_id: ObjectId(_id)}, data, null, (error, result) => {
                 if (error && error.message) {
                     defer.reject(error);
                     return;
                 }
-                defer.resolve(data);
+                defer.resolve({});
             });        
         });
         return defer.promise;
@@ -81,7 +81,6 @@ module.exports = {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
             collection.find().toArray().then(docs => {
-                console.log(docs, 'getTalbe collection');
                 defer.resolve(docs);         
             });
         });

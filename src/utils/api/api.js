@@ -1,4 +1,5 @@
 import superagent from 'superagent';
+import { Modal } from 'antd';
 const {getCookie} = require('../cookie');
 const methods = [
   'get',
@@ -21,13 +22,7 @@ class _Api {
 
     methods.forEach(method =>
       this[method] = (path, { params, data } = {}) => new Promise((resolve, reject) => {
-        let pathArray = path.split('/')
-        
-        let entid = global.entid && global.entid != null &&  global.entid !== 'null'? '/' + global.entid : ''
-        if (pathArray[1] === 'personal' || pathArray[1] === 'enterprise') {
-          entid = ''
-        }
-        let url = this.opts.baseURI + entid + path;
+        let url = this.opts.baseURI + path;
 
         const request = superagent[method](url);
 
@@ -43,9 +38,17 @@ class _Api {
           request.send(data);
         }
         request.end((err, res) => {
-          err ? reject({ body: res&&res.body, status: res&&res.status, error: err }) 
-          : resolve({ body: res.body, status: res.status })}
-        );
+          if (err) {
+            reject(res);
+            console.log(err, res,'err, res');
+            Modal.warning({
+              title: '访问后端接口失败',
+              content: res && res.body && res.body.message,
+            });
+          } else {
+            resolve({ body: res.body, status: res.status })
+          }
+        });
       })
     );
   }

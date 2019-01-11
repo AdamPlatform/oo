@@ -7,10 +7,9 @@ import api from '../utils/api';
  */
 export function getList(searchFields, mainSearchFeilds, moreSearchFeilds, cb) {
     api.get('/table').then(payload => {
-        console.log(payload, 'payload--------');
         cb && cb(payload.body || []);
-    }, error => {
-
+    }, () => {
+        cb && cb();
     })
 }
 
@@ -25,8 +24,8 @@ export function del(_id, cb) {
         }
     }).then(payload => {
         cb && cb();
-    }, error => {
-
+    }, () => {
+        cb && cb();
     })
 }
 
@@ -38,8 +37,8 @@ export function add(record, cb) {
         data: record
     }).then(payload => {
         cb && cb();
-    }, error => {
-
+    }, () => {
+        cb && cb();
     })
 }
 
@@ -54,7 +53,7 @@ export function modify(_id, record, cb) {
         data: record
     }).then(payload => {
         cb && cb();
-    }, error => {
-
+    }, () => {
+        cb && cb();
     })
 }

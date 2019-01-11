@@ -2,13 +2,15 @@ import React, { Component } from 'react'
 import Button from 'antd/lib/button'
 import Modal from 'antd/lib/modal'
 import Fields from './fields'
+import Spin from 'antd/lib/spin'
 import * as Action from '../../action/moudleConfig'
 
 class New extends Component {
     constructor() {
         super();
         this.state = {
-            visible: false
+            visible: false,
+            loading: false,
         }
     }
     onCancel() {
@@ -27,10 +29,11 @@ class New extends Component {
             return;
         }
         let record = this.formRef.props.form.getFieldsValue();
+        this.setState({loading: true});
         Action.add(record, () => {
             setTimeout(() => {
                 this.props.refresh && this.props.refresh();
-                this.setState({visible: false});
+                this.setState({visible: false, loading: false});
             }, 200)
         });
     }
@@ -48,11 +51,13 @@ class New extends Component {
                 width={cw - 100}
                 onOk={this.onOk.bind(this)}
             >
-                <Fields 
-                    {...this.props}
-                    wrappedComponentRef={(inst) => this.formRef = inst} 
-                    action='new'
-                />
+                <Spin spinning={this.state.loading}>
+                    <Fields 
+                        {...this.props}
+                        wrappedComponentRef={(inst) => this.formRef = inst} 
+                        action='new'
+                    />
+                </Spin>
             </Modal>
             }
         </span>
