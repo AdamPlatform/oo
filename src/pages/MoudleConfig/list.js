@@ -12,10 +12,13 @@ let moreSearchFeilds = [];
 const getConfig = () => {
     return [
         {"name":"模块名称","showName":"模块名称","dataIndex":"moduleName","isRequire": "1","isShow":"1","width":120,"dataType":"STRING","propValues":"","defaultValue":"","isQuery":"1","isSort":"1"},
-        {"name":"生成菜单","showName":"生成菜单","dataIndex":"isMenu","isShow":"1","width":120,"dataType":"SELECT","propValues":"否/是","defaultValue":"否","isQuery":"1","isSort":"1"},
+        {"name":"生成菜单","showName":"生成菜单","dataIndex":"isMenu","isShow":"1","width":120,"dataType":"SELECT","propValues":"否/是","defaultValue":"是","isQuery":"1","isSort":"1"},
         {"name":"数据模型","showName":"数据模型","dataIndex":"dataMoudle","isRequire": "1","isShow":"1","width":80,"dataType":"SELECT","propValues":"线型/树形","defaultValue":"线形","isQuery":"1","isSort":"1"},
         {"name":"流程","showName":"流程","dataIndex":"hasProcess","isRequire": "1","isShow":"1","width":120,"dataType":"SELECT","propValues":"否/是","defaultValue":"否","isQuery":"1","isSort":"1"},
-        {"name":"附件","showName":"附件","dataIndex":"hasFile","isShow":"0","width":120,"dataType":"SELECT","propValues":"否/是","defaultValue":"否","isQuery":"1","isSort":"1"},
+        {"name":"附件","showName":"附件","dataIndex":"hasFile","isRequire": "0","isShow":"0","width":120,"dataType":"SELECT","propValues":"否/是","defaultValue":"否","isQuery":"1","isSort":"1"},
+        {"name":"描述","showName":"描述","dataIndex":"descripe","isRequire": "0","isShow":"1","width":120,"dataType":"STRING","propValues":"","defaultValue":"","isQuery":"1","isSort":"1"},
+        {"name":"创建时间","showName":"创建时间","dataIndex":"createdAt","isRequire": "0","isShow":"1","width":120,"dataType":"TIME","propValues":"","defaultValue":"","isQuery":"1","isSort":"1"},
+        {"name":"修改时间","showName":"修改时间","dataIndex":"modifiedAt","isRequire": "0","isShow":"1","width":120,"dataType":"TIME","propValues":"","defaultValue":"","isQuery":"1","isSort":"1"},
     ];
 }
 class List extends Component {
@@ -94,7 +97,7 @@ class List extends Component {
         tableConfig.forEach(config => {
             if (config.isShow === '1') {
                 if (config.isQuery === '1') {
-                    searchFormFields.push(configToItemProps(config, null, searchFields[config.dataIndex], null, true, true));
+                    searchFormFields.push(configToItemProps(config, null, searchFields[config.dataIndex], null, true));
                 }
                 scrollx += config.width;
                 columns.push(configToColumn(config, col => {
@@ -120,7 +123,6 @@ class List extends Component {
             dataIndex: '_id',
             key: 'operation',
             width: 220,
-            fixed: 'right',
             render: (text, record) => {
                 let split = <span className="ant-divider"/>
                 let del = <Popconfirm title="确定要删除这条数据吗？" onConfirm={this.del.bind(this, text)}>

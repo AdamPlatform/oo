@@ -31,14 +31,16 @@ class New extends Component {
         let record = this.formRef.props.form.getFieldsValue();
         this.setState({loading: true});
         Action.add(record, () => {
-            setTimeout(() => {
-                this.props.refresh && this.props.refresh();
-                this.setState({visible: false, loading: false});
-            }, 200)
+            this.props.refresh && this.props.refresh();
+            this.setState({visible: false, loading: false});
         });
     }
     
     render() {
+        let data = {};
+        this.props.tableConfig.forEach(config => {
+            data[config.dataIndex] = config.defaultValue;
+        })
         let cw = document.documentElement.clientWidth || document.body.clientWidth;
         return <span>
             <Button type='primary' onClick={() => { this.setState({visible: true})}}>新增</Button>
@@ -54,6 +56,7 @@ class New extends Component {
                 <Spin spinning={this.state.loading}>
                     <Fields 
                         {...this.props}
+                        data={data}
                         wrappedComponentRef={(inst) => this.formRef = inst} 
                         action='new'
                     />

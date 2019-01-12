@@ -91,6 +91,6 @@ module.exports = function (app) {
         }));
         next();
     }); 
-    require('./db_config/api')(app);
+    require('./db_config/app')(app);
 }
 
