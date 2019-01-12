@@ -31,7 +31,7 @@ class New extends Component {
         let record = this.formRef.props.form.getFieldsValue();
         this.setState({loading: true});
         Action.add(record, () => {
-            this.props.refresh && this.props.refresh();
+            this.props.refresh && this.props.refresh({page: 1});
             this.setState({visible: false, loading: false});
         });
     }

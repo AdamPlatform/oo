@@ -90,9 +90,9 @@ class List extends Component {
         });
     }
 
-    refresh() {
+    refresh(body) {
         const {page, pageSize, query, sorter} = this.state;
-        this.getList(page, pageSize, query, sorter);
+        this.getList((body && body.page) || page, pageSize, query, sorter);
     }
     onConfigField(record) {
         
@@ -126,7 +126,7 @@ class List extends Component {
             title: '操作',
             dataIndex: '_id',
             key: 'operation',
-            width: 220,
+            width: 160,
             render: (text, record) => {
                 let split = <span className="ant-divider"/>
                 let del = <Popconfirm title="确定要删除这条数据吗？" onConfirm={this.del.bind(this, text)}>
@@ -137,7 +137,7 @@ class List extends Component {
                 return <span>{edit}{split}{configField}{split}{del}</span>;
             }
         })
-        scrollx += 280;
+
         mainSearchFeilds = [];
         moreSearchFeilds = [];
         searchFormFields.forEach(field => {

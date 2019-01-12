@@ -30,7 +30,7 @@ module.exports = {
                     return;
                 }
 
-                collection.insertOne(record, {}, (error, result) => {
+                collection.insertOne(record, null, (error, result) => {
                     if (error && error.message) {
                         defer.reject(error);
                         db.close();
@@ -68,7 +68,7 @@ module.exports = {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
             record.modifiedAt = new Date();
-            collection.updateOne({_id: ObjectId(_id)}, record, null, (error, result) => {
+            collection.updateOne({_id: ObjectId(_id)}, {$set: record}, null, (error, result) => {
                 if (error && error.message) {
                     defer.reject(error);
                     db.close();
