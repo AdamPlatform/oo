@@ -24,42 +24,51 @@ const getConfig = () => {
 class List extends Component {
     constructor() {
         super();
+        global.MoudleConfig = global.MoudleConfig || {};
         this.state = {
-            searchFields: {},
-            showMore: false,
-            page: 1,
-            pageSize: 10,
-            list: [],
-            totalElements: 0,
-            tableConfig: [],
-            sorter: {},
-            loading: false,
+            searchFields: global.MoudleConfig.searchFields || {},
+            showMore: global.MoudleConfig.showMore || false,
+            page: global.MoudleConfig.page || 1,
+            pageSize: global.MoudleConfig.pageSize || 10,
+            list: global.MoudleConfig.list || [],
+            totalElements: global.MoudleConfig.totalElements || 0,
+            tableConfig: global.MoudleConfig.tableConfig || [],
+            sorter: global.MoudleConfig.sorter || {},
+            loading: global.MoudleConfig.loading || false,
+            query: global.MoudleConfig.query || {},
         };
     }
 
     componentDidMount() {
-        const {searchFields} = this.state;
-        this.getList(searchFields);
+        const {page, pageSize, query, sorter} = this.state;
+        this.getList(page, pageSize, query, sorter);
     }
 
-    getList(searchFields) {
-        this.setState({loading: true})
-        Action.getList(searchFields, mainSearchFeilds, moreSearchFeilds, (list) => {
-            this.setState({list, totalElements: list.length, loading: false})
+    getList(page, pageSize, query, sorter) {
+        global.storeData(this, 'MoudleConfig', {loading: true})
+        Action.getList(page, pageSize, query, sorter, (body) => {
+            if (body === {}) {
+                return;
+            }
+            const {list, totalElements} = body;
+            global.storeData(this, 'MoudleConfig', {
+                page, pageSize, query, sorter, list, totalElements, loading: false
+            });
         });
     }
 
     resetSearch() {
-        this.setState({ searchFields: {} });
+        global.storeData(this, 'MoudleConfig', { searchFields: {}, query: {}});
     }
 
     handleMore() {
-        this.setState({showMore: !this.state.showMore});
+        global.storeData(this, 'MoudleConfig', {showMore: !this.state.showMore});
     }
 
-    onSearch(sql, searchFields) {
-        this.setState({ page: 1, searchFields: searchFields });
-        this.getList(searchFields);
+    onSearch(query, searchFields) {
+        global.storeData(this, 'MoudleConfig', {searchFields: searchFields });
+        const {pageSize, sorter} = this.state;
+        this.getList(1, pageSize, query, sorter);
     }
 
     handleTableChange(pagination, filters, sorter) {
@@ -69,21 +78,21 @@ class List extends Component {
 			page = 1;
 		}
         if (sorter.field !== this.state.sorter.field || sorter.order !== this.state.sorter.order) {
-            this.setState({sorter: sorter});
 			page = 1;		
         }
-        this.setState({page: page, pageSize:pageSize});
+        const {query} = this.state;
+        this.getList(page, pageSize, query, sorter);
     }
     del(_id) {
-        this.setState({loading: true});
+        global.storeData(this, 'MoudleConfig', {loading: true});
         Action.del(_id, () => {
             this.refresh();
         });
     }
 
     refresh() {
-        const {searchFields} = this.state;
-        this.getList(searchFields);
+        const {page, pageSize, query, sorter} = this.state;
+        this.getList(page, pageSize, query, sorter);
     }
     onConfigField(record) {
         
@@ -100,12 +109,7 @@ class List extends Component {
                     searchFormFields.push(configToItemProps(config, null, searchFields[config.dataIndex], null, true));
                 }
                 scrollx += config.width;
-                columns.push(configToColumn(config, col => {
-                    if (col.sorter) {
-                        col.sorter = global.sortByKeyAndType(col.dataIndex, col.dataType);
-                    }
-                    return col;
-                }));
+                columns.push(configToColumn(config));
             }
         });
         columns.unshift({

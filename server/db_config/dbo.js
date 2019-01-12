@@ -9,6 +9,7 @@ module.exports = {
         connect(db => {
             const collection = db.db("oo").collection("tables_config");
             record.createdAt = new Date();
+            record.modifiedAt = new Date();
             let id = ObjectId();
             record.tableName = `t${id}`;
             let moduleName = record.moduleName;
@@ -66,6 +67,7 @@ module.exports = {
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
+            record.modifiedAt = new Date();
             collection.updateOne({_id: ObjectId(_id)}, record, null, (error, result) => {
                 if (error && error.message) {
                     defer.reject(error);
@@ -79,15 +81,34 @@ module.exports = {
         return defer.promise;
     },
 
-    getTables: () => {
+    getTables: (data) => {
+        let {page, pageSize, query, sorter} = data;
+        let sortField = {createdAt: -1};
+        if (sorter.field) {
+            let order = sorter.order === 'ascend' ? 1 : -1
+            sortField = {
+                [sorter.field]: order
+            }
+        }
         let defer = Q.defer();
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.find().toArray().then(docs => {
-                defer.resolve(docs);  
-                db.close();       
+            let cursor = collection.find(query).collation({locale: "zh"});
+            let totalElements = 0;
+            cursor.count((err, result) => {
+                totalElements = result;
+                cursor.sort(sortField)
+                    .skip(page > 0 ? ( ( page - 1 ) * pageSize ) : 0)
+                    .limit(pageSize)
+                    .toArray().then(list => {
+                    defer.resolve({
+                        page, pageSize, totalElements, list
+                    });  
+                    db.close();       
+                });
             });
+            
         });
         return defer.promise;
     }

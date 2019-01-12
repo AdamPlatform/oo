@@ -175,3 +175,9 @@ global.sortByKeyAndType = (key, type, order) => (a, b) => {
         }
     }
 };
+
+global.storeData = (obj, key, data) => {
+    global[key] = global[key] || {};
+    global[key] = Object.assign(global[key], data);
+    obj.setState(data);
+}

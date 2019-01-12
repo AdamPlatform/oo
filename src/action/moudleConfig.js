@@ -5,11 +5,14 @@ import api from '../utils/api';
  * @param {*} mainSearchFeilds 
  * @param {*} moreSearchFeilds 
  */
-export function getList(searchFields, mainSearchFeilds, moreSearchFeilds, cb) {
-    api.get('/table').then(payload => {
-        cb && cb(payload.body || []);
+export function getList(page, pageSize, query, sorter, cb) {
+    let cond = { page, pageSize, query, sorter }
+    api.put('/table_list', {
+        data : cond
+    }).then(payload => {
+        cb && cb(payload.body || {});
     }, () => {
-        cb && cb();
+        cb && cb({});
     })
 }
 

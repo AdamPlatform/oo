@@ -11,6 +11,11 @@ class Search extends Component {
     onSearch() {
         const {mainSearchFeilds, moreSearchFeilds} = this.props;
         let searchFields = this.props.form.getFieldsValue();
+        for (let key in searchFields) {
+            if (typeof searchFields[key] === 'string') {
+                searchFields[key] = searchFields[key].trim();
+            }
+        }
         let sql;
         
         if (this.props.showMore) {

@@ -286,44 +286,34 @@ export function configToItemProps(field, index, initialValue, specialItemProps, 
 }
 
 /**
- * 生成sql
+ * 生成Mongodb查询条件
+ * fieldsValue {Object} 查询条件值对象
  * mainSearchFeilds {Array<Object>} 精简查询条件
  * moreSearchFeilds {Array<Object>} 更多查询条件
  */
 export function generateSql(fieldsValue, mainSearchFeilds, moreSearchFeilds) {
-    let sql = '1=1'
-    let mainsql = ' and (1=2';
-    let mainSqlNotNull = false;
-    // 生成精简查询sql, 用or连接
-    for (let field of mainSearchFeilds || []) {
-        let dataType = field.dataType;
-        let value = fieldsValue.mainKey;
-        let key = field.id;
-        if (value == null) {
-            continue;
-        }
-        if (typeof value === 'string') {
-            value = value.trim();
-            if (value === '') {
-                continue;
+    let andQuery = {$and: []}
+    let orArr = [];
+    // 生成精简查询, 用or连接
+    if (fieldsValue.mainKey && fieldsValue.mainKey !== '') {
+        for (let field of mainSearchFeilds || []) {
+            let dataType = field.dataType;
+            if (['STRING', 'TEXT'].indexOf(dataType) !== -1) {
+                orArr.push({[field.id]: {'$regex': fieldsValue.mainKey}});
             }
         }
-        mainSqlNotNull = true;
-        if (['STRING', 'TEXT'].indexOf(dataType) !== -1) {
-            mainsql += ` or ${key} like '%${value}%'`;
-        }
     }
-
-    if (mainSqlNotNull) {
-        sql += mainsql + ')';
+    if (orArr.length > 0) {
+        andQuery.$and.push({$or: orArr});
     }
-
+    
+    let query = {};
     // 生成更多查询条件sql 用and连接
     for (let field of moreSearchFeilds || []) {
         let dataType = field.dataType;
         let value = fieldsValue[field.id];
         let key = field.id;
-        if (value == null) {
+        if (value === undefined || value === null) {
             continue;
         }
         if (typeof value === 'string') {
@@ -332,33 +322,73 @@ export function generateSql(fieldsValue, mainSearchFeilds, moreSearchFeilds) {
                 continue;
             }
         }
-
         if (dataType === 'NUMBER') {
-            if (value.length === 2) {
-                if (value[0]) {
-                    // +0在数据库中将类型转为数字
-                    sql += ` and ${key} >= ${value[0]}`;
-                }
-                if (value[1]) {
-                    sql += ` and ${key} <= ${value[1]}`;
-                }
+            if (value.length !== 2) {
+                continue;
             }
-        } else if (dataType === 'DATE' || dataType === 'TIME') {
             let start = value[0];
             let end = value[1];
+            let obj = {}
+            if (start !== null || start !== undefined || start !== '') {
+                obj['$gte'] = start;
+            }
+            if (end !== null || end !== undefined || end !== '') {
+                obj['$lte'] = end;
+            }
+            query[key] = obj;
+        } else if (dataType === 'DATE') {
+            if (value.length !== 2) {
+                continue;
+            }
+            let start = value[0];
+            let end = value[1];
+            let obj = {}
             if (start) {
-                let str = moment(start).format('YYYY-MM-DD 00:00:00');
-                sql += ` and ${key} >= '${str}'`;
+                let date = new Date(start);
+                date.setHours(0);
+                date.setMinutes(0);
+                date.setSeconds(0);
+                obj['$gte'] = {'$date': date};
             }
             if (end) {
-                let str = moment(end).format('YYYY-MM-DD 23:59:59');
-                sql += ` and ${key} <= '${str}'`;
-            }          
-        } else if (['STRING', 'TEXT', 'SELECT'].indexOf(dataType) !== -1) {
-            sql += ` and ${key} like '%${value}%'`;
+                let date = new Date(end);
+                date.setHours(23);
+                date.setMinutes(59);
+                date.setSeconds(59);
+                obj['$lte'] = {'$date': date};
+            }
+            if (start || end) {
+                query[key] = obj;
+            }
+        } else if (dataType === 'TIME') {
+            if (value.length !== 2) {
+                continue;
+            }
+            let start = value[0];
+            let end = value[1];
+            let obj = {}
+            if (start) {
+                let date = new Date(start);
+                obj['$gte'] = {'$date': date};
+            }
+            if (end) {
+                let date = new Date(end);
+                obj['$lte'] = {'$date': date};
+            }
+            if (start || end) {
+                query[key] = obj;
+            }
+        } else {
+            query[key] = {'$regex': value}
         }
     }
-    return sql;
+    if (query !== {}) {
+        andQuery.$and.push(query);
+    }
+    if (andQuery.$and.length === 0) {
+        andQuery = {};
+    }
+    return andQuery;
 }
 
 /**
