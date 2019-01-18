@@ -1,5 +1,5 @@
 import moment from 'moment'
-global.toFixedEx = function (source, precision) {
+global.toFixedEx = function (source, precision = 6) {
     let num = parseFloat(source);
     if (isNaN(num)) {
         return '';
@@ -7,7 +7,7 @@ global.toFixedEx = function (source, precision) {
     return (parseInt(num * Math.pow(10, precision) + 0.5, 10) / Math.pow(10, precision)).toString();
 };
 
-global.toFixed = function (source, precision) {
+global.toFixed = function (source, precision = 2) {
     let num = parseFloat(source);
     if (isNaN(num)) {
         return '';

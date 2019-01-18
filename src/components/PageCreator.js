@@ -20,13 +20,6 @@ import NumberArea from './NumberArea.js';
 const Option = Select.Option;
 const FormItem = Form.Item;
 const RangePicker = DatePicker.RangePicker;
-const toFixedEx = function (source, precision) {
-    let num = parseFloat(source);
-    if (isNaN(num)) {
-        return '';
-    }
-    return (parseInt(num * Math.pow(10, precision) + 0.5, 10) / Math.pow(10, precision)).toString();
-};
 const antdNameObj = {
     Input,
     InputNumber,
@@ -228,15 +221,12 @@ export function configToItemProps(field, index, initialValue, specialItemProps, 
         formField.param.props.placeholder = '请选择' + (field.showName || field.name);
     } else if (dataType === 'NUMBER') {
         formField.param.props.min = 0;
-        formField.param.props.step = 0.0001;
-        if (initialValue) {
-            initialValue = parseFloat(initialValue);
-            if (isNaN(initialValue)) {
-                initialValue = 0;
-            } else {
-                initialValue = toFixedEx(initialValue, 4);
-            }
-        }
+        formField.param.props.step = 1;
+        initialValue = (initialValue && global.toFixedEx(initialValue)) || 0;
+    } else if (dataType === 'MONEY') {
+        formField.param.props.min = 0;
+        formField.param.props.step = 1;
+        initialValue = (initialValue && global.toFixed(initialValue)) || 0;
     } else if (dataType === 'SELECT') {
         let propValues = field.propValues.split('/');
         let children = propValues.map((prop, index) => {
@@ -413,7 +403,9 @@ export function configToColumn(config, specialColumn) {
     } else if (dataType === 'DATE') {
         item.render = text => text && moment(text).format('YYYY-MM-DD')
     } else if (dataType === 'NUMBER') {
-        item.render = text => text && toFixedEx(text, 4);
+        item.render = text => text && global.toFixedEx(text);
+    } else if (dataType === 'MONEY') {
+        item.render = text => text && global.toFixed(text);
     }
 
     if (specialColumn) {

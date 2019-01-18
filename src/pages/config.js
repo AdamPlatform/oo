@@ -123,6 +123,7 @@ class Config extends Component {
 		const dataTypeArray = [{value: 'STRING', label: '文本'}, 
 			{value: 'TEXT', label: '文本域'}, 
 			{value: 'NUMBER', label: '数字'}, 
+			{value: 'MONEY', label: '金额'}, 
             {value: 'DATE', label: '日期'}, 
             {value: 'TIME', label: '时间'},
 		];
