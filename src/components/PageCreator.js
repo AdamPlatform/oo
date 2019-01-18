@@ -40,7 +40,7 @@ const antdNameObj = {
  * 根据数据类型生成FormItem
  * @param  {any} getFieldDecorator
  * @param  {String} dataType 数据类型 根据数据类型创建不同组件
- * 'STRING' => Input, 'NUMBER' => InputNumber, 'DATE'=> DatePicker, 然后匹配antd组件, 其他类型根据名字在当前文件所在目录寻找同名组件
+ * 'STRING' => Input, 'NUMBER MONEY' => InputNumber, 'DATE'=> DatePicker, 然后匹配antd组件, 其他类型根据名字在当前文件所在目录寻找同名组件
  * @param  {String} id 组件id
  * @param  {Object} param 组件参数 param {props: props(FormItem中组件的参数), formProps: formProps(FormItem参数)}
  * @param  {Bool} disabled 值为true时直接显示文本， 值为false时使用组件
@@ -60,13 +60,13 @@ export function createItem(getFieldDecorator, dataType, id, param, disabled, gut
         } else {
             objProps[key] = prop;
         }
-        if (dataType === 'NUMBER') {
+        if (-1 !== ['NUMBER', 'MONEY'].indexOf(dataType)) {
             objProps.min = 0;
         }
     }
     let component;
     let name;
-    if (['STRING', 'NUMBER', 'DATE', 'TIME', 'TEXT'].indexOf(dataType) === -1) {
+    if (['STRING', 'NUMBER', 'MONEY', 'DATE', 'TIME', 'TEXT'].indexOf(dataType) === -1) {
         if (antdNameObj[dataType]) {
             name = antdNameObj[dataType]
         }
@@ -93,14 +93,11 @@ export function createItem(getFieldDecorator, dataType, id, param, disabled, gut
             component = getFieldDecorator(id, funcProps)(React.createElement(Input, Object.assign({}, objProps)));
         } else if (dataType === 'TEXT') {
             component = getFieldDecorator(id, funcProps)(React.createElement(Input.TextArea, Object.assign({}, objProps)));
-        } else if (dataType === 'NUMBER') {
+        } else if (-1 !== ['NUMBER', 'MONEY'].indexOf(dataType)) {
             if (isForSearch) {
                 name = NumberArea;
             } else {
-                name = Input;
-                objProps.type = 'NUMBER';
-                objProps.min = 0;
-                objProps.step = 0.0001;
+                name = InputNumber;
             }
             component = getFieldDecorator(id, funcProps)(React.createElement(name, Object.assign({}, objProps)));
         } else if (dataType === 'DATE' || dataType === 'TIME') {
@@ -221,11 +218,9 @@ export function configToItemProps(field, index, initialValue, specialItemProps, 
         formField.param.props.placeholder = '请选择' + (field.showName || field.name);
     } else if (dataType === 'NUMBER') {
         formField.param.props.min = 0;
-        formField.param.props.step = 1;
         initialValue = (initialValue && global.toFixedEx(initialValue)) || 0;
     } else if (dataType === 'MONEY') {
         formField.param.props.min = 0;
-        formField.param.props.step = 1;
         initialValue = (initialValue && global.toFixed(initialValue)) || 0;
     } else if (dataType === 'SELECT') {
         let propValues = field.propValues.split('/');
@@ -312,7 +307,7 @@ export function generateSql(fieldsValue, mainSearchFeilds, moreSearchFeilds) {
                 continue;
             }
         }
-        if (dataType === 'NUMBER') {
+        if (-1 !== ['NUMBER', 'MONEY'].indexOf(dataType)) {
             if (value.length !== 2) {
                 continue;
             }

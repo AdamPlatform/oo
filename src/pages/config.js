@@ -110,15 +110,15 @@ class Config extends Component {
 				return <Option key={index} value={item.value}>{item.label}</Option>;
 			});
         }
-        const disabledArray = [{value: '1', label: '不可修改'}, {value: '0', label: '可修改'}, {value: '/', label: '/'}]
+        const disabledArray = [{value: '1', label: '不可修改'}, {value: '0', label: '可修改'}]
         let disabledOption = generateOption(disabledArray);
-		const optionArray = [{value: '1', label: '显示'}, {value: '0', label: '不显示'}, {value: '/', label: '/'}]
+		const optionArray = [{value: '1', label: '显示'}, {value: '0', label: '不显示'}]
 		let children = generateOption(optionArray);
-		const isQueryArray = [{value: '1', label: '查询'}, {value: '0', label: '不查询'}, {value: '/', label: '/'}]
+		const isQueryArray = [{value: '1', label: '查询'}, {value: '0', label: '不查询'}]
 		let isQuery = generateOption(isQueryArray);
-		const isSortArray = [{value: '1', label: '排序'}, {value: '0', label: '不排序'}, {value: '/', label: '/'}]
+		const isSortArray = [{value: '1', label: '排序'}, {value: '0', label: '不排序'}]
 		let isSort = generateOption(isSortArray);
-		const InputWayArray = [{value: '0', label: '手工输入'}, {value: '1', label: '选择输入'}, {value: '/', label: '/'}]
+		const InputWayArray = [{value: '0', label: '手工输入'}, {value: '1', label: '选择输入'}]
 		let inputWay = generateOption(InputWayArray);
 		const dataTypeArray = [{value: 'STRING', label: '文本'}, 
 			{value: 'TEXT', label: '文本域'}, 
@@ -128,7 +128,7 @@ class Config extends Component {
             {value: 'TIME', label: '时间'},
 		];
         let dataType = generateOption(dataTypeArray);
-        const isRequireArray = [{value: '1', label: '必填'}, {value: '0', label: '选填'}, {value: '/', label: '/'}]
+        const isRequireArray = [{value: '1', label: '必填'}, {value: '0', label: '选填'}]
 		let isRequireOption = generateOption(isRequireArray);
 		let selectValueToLable = (value, children) => {
 			for (let obj of children) {
@@ -149,15 +149,11 @@ class Config extends Component {
 			{title: '是否显示', dataIndex: 'isShow', key: 'isShow', width: 200, 
 				render: text => selectValueToLable(text, children),
 				component: (text, record, index) => {
-					let disabled = record.isShow !== '/'?false:true;
-					if (['partCode', 'partName', 'checkRecordCode'].indexOf(record.dataIndex) !== -1) {
-						disabled = true;
-					}
 					return {
 						name: Select,
 						props: {
 							children: children,
-							disabled: disabled || record.isShowDisabled === '1',
+							disabled: record.isShowDisabled === '1',
 						}
 					}
 				},
@@ -166,16 +162,6 @@ class Config extends Component {
 			{title: '是否必填', dataIndex: 'isRequire', key: 'isRequire', width: 200, 
 				render: text => selectValueToLable(text, isRequireOption),
                 component: (text, record, index) => {
-                    if (['partName', 'partCode'].indexOf(record.dataIndex) !== -1) {
-                        return {
-                            name: Select,
-                            props: {
-                                children: isRequireOption,
-                                initialValue: '1',
-                                disabled: true
-                            }
-                        } 
-                    }
                     return {
                         name: Select,
                         props: {
@@ -289,9 +275,9 @@ class Config extends Component {
 		];
 		let cw = document.documentElement.clientWidth || document.body.clientWidth;
 		return (<div style={{margin: 8}}>
-            <Button onClick={() => { this.setState({visible: true}); }}>配置表头</Button>
+            <Button onClick={() => { this.setState({visible: true}); }}>配置字段</Button>
             {this.state.visible && <Modal
-                title='配置表头'
+                title='配置字段'
                 visible={this.state.visible}
                 onCancel={this.onCancel.bind(this)}
                 onClose={this.onCancel.bind(this)}
