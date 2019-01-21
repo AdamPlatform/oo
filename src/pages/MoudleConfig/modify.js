@@ -1,3 +1,6 @@
+/**
+ * 修改页面
+ */
 import React, { Component } from 'react'
 import Spin from 'antd/lib/spin'
 import Modal from 'antd/lib/modal'
@@ -5,6 +8,9 @@ import Fields from './fields'
 import * as Action from '../../action/moudleConfig'
 
 class Modify extends Component {
+    /**
+     * 构造函数 初始化
+     */
     constructor() {
         super();
         this.state = {
@@ -13,9 +19,17 @@ class Modify extends Component {
             loading: false,
         }
     }
+
+    /**
+     * 取消
+     */
     onCancel() {
         this.setState({visible: false});
     }
+
+    /**
+     * 确定
+     */
     onOk() {
         let hasError = false;
         // 校验数据
@@ -36,6 +50,9 @@ class Modify extends Component {
         });
     }
     
+    /**
+     * 渲染函数
+     */
     render() {
         let cw = document.documentElement.clientWidth || document.body.clientWidth;
         return <span>

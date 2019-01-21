@@ -1,3 +1,6 @@
+/**
+ * 新增页面
+ */
 import React, { Component } from 'react'
 import Button from 'antd/lib/button'
 import Modal from 'antd/lib/modal'
@@ -6,6 +9,9 @@ import Spin from 'antd/lib/spin'
 import * as Action from '../../action/moudleConfig'
 
 class New extends Component {
+    /**
+     * 构造函数 初始化
+     */
     constructor() {
         super();
         this.state = {
@@ -13,9 +19,17 @@ class New extends Component {
             loading: false,
         }
     }
+
+    /**
+     * 取消
+     */
     onCancel() {
         this.setState({visible: false});
     }
+
+    /**
+     * 确定
+     */
     onOk() {
         let hasError = false;
         // 校验数据
@@ -36,6 +50,9 @@ class New extends Component {
         });
     }
     
+    /**
+     * 渲染函数
+     */
     render() {
         let data = {};
         this.props.tableConfig.forEach(config => {

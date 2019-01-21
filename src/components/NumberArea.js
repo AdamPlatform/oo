@@ -1,7 +1,13 @@
+/**
+ * 数字范围组件
+ */
 import React, { Component } from 'react'
 import Input from 'antd/lib/input'
 const InputGroup = Input.Group;
 export default class NumberArea extends Component {
+    /**
+     * 构造函数 初始化
+     */
     constructor() {
         super();
         this.state = {
@@ -9,16 +15,31 @@ export default class NumberArea extends Component {
             rightValue: null,
         }
     }
+
+    /**
+     * 左边输入框发生变化
+     * @param {*} e 
+     */
     LonChange(e) {
         let value = e.target.value;
         this.setState({leftValue: value});
         this.props.onChange([value, this.state.rightValue]);
     }
+
+    /**
+     * 右边输入框发生变化
+     * @param {*} e 
+     */
     RonChange(e) {
         let value = e.target.value;
         this.setState({rightValue: value});
         this.props.onChange([this.state.leftValue, value]);
     }
+
+    /**
+     * 值转换成state
+     * @param {*} value 
+     */
     propsValue2State(value) {
         let leftValue;
         let rightValue;
@@ -31,14 +52,27 @@ export default class NumberArea extends Component {
         }
         this.setState({leftValue: leftValue, rightValue: rightValue});
     }
+
+    /**
+     * 组件加载时
+     */
     componentWillMount() {
         const {value} = this.props;
         this.propsValue2State(value);
     }
+
+    /**
+     * props发生变化时
+     * @param {*} nextProps 
+     */
     componentWillReceiveProps(nextProps) {
         const {value} = nextProps;
         this.propsValue2State(value);
     }
+
+    /**
+     * 渲染函数
+     */
     render () {  
         return React.createElement(InputGroup, {
             compact: true,

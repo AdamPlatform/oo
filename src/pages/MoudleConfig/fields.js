@@ -1,8 +1,14 @@
+/**
+ * 字段排布，新增、修改、详情公用部分
+ */
 import React, { Component } from 'react'
 import Form from 'antd/lib/form'
 import {createItems, configToItemProps} from '../../components/PageCreator'
 
 class Fields extends Component {
+    /**
+     * 页面渲染
+     */
     render() {
         let data = this.props.data || {}
         const {getFieldDecorator} = this.props.form;

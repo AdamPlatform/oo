@@ -1,3 +1,6 @@
+/**
+ * 生成页面相关函数
+ */
 import React from 'react'
 import moment from 'moment';
 import Row from 'antd/lib/row'

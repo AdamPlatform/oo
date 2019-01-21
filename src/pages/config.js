@@ -3,7 +3,7 @@ import Modal from 'antd/lib/modal'
 import Button from 'antd/lib/button'
 import TableEx from '../components/TableEx';
 import {getConfig, setConfig} from '../defautConfig'
-
+import * as Action from '../action/moudleConfig'
 const {
 	Input,
 	InputNumber,
@@ -23,7 +23,7 @@ class Config extends Component {
 		}
 	}
 	componentWillMount() {
-		let config = getConfig();
+		let config = this.props.tables_config.fields_config || [];
 		this.setState({config: config, configJSON: JSON.stringify(config)});
 	}
     
@@ -74,9 +74,10 @@ class Config extends Component {
 		}
 	}
     modifyDirect() {
-        let config = global.parseArray(this.state.configJSON);
-		setConfig(config);
-		this.setState({config});
+		let config = global.parseArray(this.state.configJSON);
+		let record = {};
+		record.fields_config = config;
+		Action.modify(this.props.data._id, record);
     }
 
     onTableChange(pagination, filters, sorter) {
@@ -274,8 +275,8 @@ class Config extends Component {
 			},
 		];
 		let cw = document.documentElement.clientWidth || document.body.clientWidth;
-		return (<div style={{margin: 8}}>
-            <Button onClick={() => { this.setState({visible: true}); }}>配置字段</Button>
+		return (<span>
+            <a onClick={() => { this.setState({visible: true}); }}>配置字段</a>
             {this.state.visible && <Modal
                 title='配置字段'
                 visible={this.state.visible}
@@ -297,7 +298,7 @@ class Config extends Component {
 				<div><Button style={{marginBottom: 8}} onClick={this.modifyDirect.bind(this)}>直接修改</Button>&nbsp;&nbsp;&nbsp;&nbsp;</div>
 				<Input.TextArea style={{width: '100%', height: 300}} value={this.state.configJSON} onChange={e => {this.setState({configJSON: e.target.value})}}/>
 			</Modal>}
-		</div>);
+		</span>);
 	}
 }
 

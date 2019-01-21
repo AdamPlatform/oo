@@ -1,3 +1,6 @@
+/**
+ * 后端入口文件
+ */
 const publicPath = '/';
 const paths = require('../config/paths');
 // this is necessary to handle URL correctly since client uses Browser History

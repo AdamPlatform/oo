@@ -1,9 +1,15 @@
+/**
+ * 模块管理数据库操作
+ */
 let Q = require('q');
 let {connect} = require('../database');
 let uuid = require('uuid/v1');
 let ObjectId = require('mongodb').ObjectId ;
 const moment = require('moment');
 module.exports = {
+    /**
+     * 新增
+     */
     addTable: (record) => {
         let defer = Q.defer();
         connect(db => {
@@ -44,6 +50,9 @@ module.exports = {
         return defer.promise;
     },
 
+    /**
+     * 删除
+     */
     deleteTalbe: (_id) => {
         let defer = Q.defer();
         connect(db => {
@@ -62,6 +71,9 @@ module.exports = {
         return defer.promise;
     },
 
+    /**
+     * 更新
+     */
     updateTalbe: (_id, record) => {
         let defer = Q.defer();
         connect(db => {
@@ -81,6 +93,9 @@ module.exports = {
         return defer.promise;
     },
 
+    /**
+     * 查询列表
+     */
     getTables: (data) => {
         let {page, pageSize, query, sorter} = data;
         let sortField = {createdAt: -1};

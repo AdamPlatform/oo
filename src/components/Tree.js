@@ -1,3 +1,6 @@
+/**
+ * 树形组件
+ */
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
 import Icon from 'antd/lib/icon'
@@ -6,6 +9,10 @@ import Button from 'antd/lib/button'
 import MyUtils from './MyUtils'
 
 class Tree extends Component {
+    /**
+     * 构造函数 初始化
+     * @param {*} props 
+     */
     constructor(props) {
         super(props);
         this.state = {
@@ -19,6 +26,9 @@ class Tree extends Component {
         }
     }
 
+    /**
+     * 页面开始加载时
+     */
     componentWillMount() {
         let {checkable, checkStrictly, expandedKeys, selectedKeys, defaultSelectedKeys, defaultExpandedKeys,
              defaultExpandAll, defaultExpandRoot, treeData} = this.props;

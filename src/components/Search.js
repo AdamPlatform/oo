@@ -1,3 +1,6 @@
+/**
+ * 搜索通用组件
+ */
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
 import {createItems, generateSql} from './PageCreator';
@@ -8,6 +11,9 @@ import Col from 'antd/lib/col'
 import Input from 'antd/lib/input'
 import Form from 'antd/lib/form'
 class Search extends Component {
+    /**
+     * 搜索按钮回调函数
+     */
     onSearch() {
         const {mainSearchFeilds, moreSearchFeilds} = this.props;
         let searchFields = this.props.form.getFieldsValue();
@@ -26,12 +32,19 @@ class Search extends Component {
         this.props.onSearch && this.props.onSearch(sql, searchFields);
     }
 
-    //键盘事件
+    /**
+     * 回车键响应函数
+     * @param {*} e 
+     */
     keyPress(e) {
         if (e.keyCode === 13) {
             this.onSearch();
         }
     }
+
+    /**
+     * 重置搜索条件
+     */
     resetSearch() {
         this.props.form.resetFields();
         let dateFields = {};
@@ -43,9 +56,17 @@ class Search extends Component {
         this.props.form.setFieldsValue(dateFields);
         this.props.resetSearch && this.props.resetSearch();
     }
+
+    /**
+     * 更多查询条件
+     */
     handleMore() {
         this.props.handleMore && this.props.handleMore();
     }
+
+    /**
+     * 页面渲染
+     */
     render() {
         const {getFieldDecorator} = this.props.form;
         // 从更多查询条件中剔除精简查询条件及Tabs

@@ -1,15 +1,28 @@
+/**
+ * 可编辑表格
+ */
 import React, {Component} from 'react'
 import Form from 'antd/lib/form'
 import Table from 'antd/lib/table'
 import Modal from 'antd/lib/modal'
 import Popconfirm from 'antd/lib/popconfirm'
 class TableEx extends Component {
+    /**
+     * 初始化
+     * @param {*} props 
+     */
     constructor(props) {
         super(props);
         this.state = {
             disabled: {}
         }
     }
+
+    /**
+     * 获取rowKey
+     * @param {*} rowKey 
+     * @param {*} record 
+     */
     getRowKey(rowKey, record) {
         if (rowKey) {
             if (typeof rowKey === 'function') {
@@ -24,7 +37,11 @@ class TableEx extends Component {
             return record.id;
         }
     }
-    // 将传入参数分配给getFieldDecorator和组件本身
+
+    /**
+     * 将传入参数分配给getFieldDecorator和组件本身
+     * @param {*} props 
+     */
     transProps(props){
         let objProps = {};
         let formProps = {};
@@ -207,7 +224,11 @@ class TableEx extends Component {
 			return true;
 		}
 		return false;
-	}
+    }
+    
+    /**
+     * 页面渲染
+     */
     render() {
         const {getFieldDecorator} = this.props.form;
         const {allwaysEdit} = this.props;

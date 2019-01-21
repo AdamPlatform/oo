@@ -1,9 +1,15 @@
+/**
+ * 详情页面
+ */
 import React, { Component } from 'react'
 import Modal from 'antd/lib/modal'
 import Button from 'antd/lib/button'
 import Fields from './fields'
 
 class Detial extends Component {
+    /**
+     * 构造函数 初始化
+     */
     constructor() {
         super();
         this.state = {
@@ -13,14 +19,23 @@ class Detial extends Component {
         }
     }
 
+    /**
+     * 取消
+     */
     onCancel() {
         this.setState({visible: false});
     }
 
+    /**
+     * 确定
+     */
     onOk() {
         this.setState({visible: false});
     }
     
+    /**
+     * 渲染函数
+     */
     render() {
         let cw = document.documentElement.clientWidth || document.body.clientWidth;
         return <span>
