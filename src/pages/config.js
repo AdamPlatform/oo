@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Modal from 'antd/lib/modal'
 import Button from 'antd/lib/button'
 import TableEx from '../components/TableEx';
-import {getConfig, setConfig} from '../defautConfig'
+import {setConfig} from '../defautConfig'
 import * as Action from '../action/moudleConfig'
 const {
 	Input,
@@ -23,7 +23,7 @@ class Config extends Component {
 		}
 	}
 	componentWillMount() {
-		let config = this.props.tables_config.fields_config || [];
+		let config = this.props.tableConfig.fields_config || [];
 		this.setState({config: config, configJSON: JSON.stringify(config)});
 	}
     
@@ -34,8 +34,8 @@ class Config extends Component {
 				config[i] = record;
 			}
 		}
-		setConfig(config);
-		this.setState({config});
+		
+		this.setState({config: config, configJSON: JSON.stringify(config)});
 		return true;
     }
     
@@ -77,7 +77,8 @@ class Config extends Component {
 		let config = global.parseArray(this.state.configJSON);
 		let record = {};
 		record.fields_config = config;
-		Action.modify(this.props.data._id, record);
+		Action.modify(this.props.tableConfig._id, record);
+		this.setState({config: config});
     }
 
     onTableChange(pagination, filters, sorter) {
@@ -119,8 +120,6 @@ class Config extends Component {
 		let isQuery = generateOption(isQueryArray);
 		const isSortArray = [{value: '1', label: '排序'}, {value: '0', label: '不排序'}]
 		let isSort = generateOption(isSortArray);
-		const InputWayArray = [{value: '0', label: '手工输入'}, {value: '1', label: '选择输入'}]
-		let inputWay = generateOption(InputWayArray);
 		const dataTypeArray = [{value: 'STRING', label: '文本'}, 
 			{value: 'TEXT', label: '文本域'}, 
 			{value: 'NUMBER', label: '数字'}, 
@@ -141,10 +140,12 @@ class Config extends Component {
 		}
 		let columns = [
 			{title: '字段名', dataIndex: 'dataIndex', key: 'dataIndex', width: 200},
-			{title: '列名', dataIndex: 'name', key: 'name', width: 200},
-			{title: '配置列名', dataIndex: 'showName', key: 'showName', width: 200,
+			{title: '列名', dataIndex: 'name', key: 'name', width: 200,
 				component: {
-					name: Input
+					name: Input,
+					props: {
+						rules: [{ required: true, message: '列名必须输入', }]
+					}
 				}
 			},
 			{title: '是否显示', dataIndex: 'isShow', key: 'isShow', width: 200, 
@@ -217,19 +218,7 @@ class Config extends Component {
 					}
 				}
 			},
-			{title: '输入方式', dataIndex: 'inputWay', key: 'inputWay', width: 200, 
-				render: text => selectValueToLable(text, inputWay),
-				component: (text, record, index) => {
-                    return {
-                        name: Select,
-                        props: {
-                            disabled: record.inputWayDisabled === '1',
-                            children: inputWay,
-                        }
-                    }
-                }
-			},
-			{title: '数据类型', dataIndex: 'dataType', key: 'dataType', width: 200, 
+			{title: '数据类型', dataIndex: 'dataType', key: 'dataType', width: 240, 
 				render: text => selectValueToLable(text, dataType),
 				component: (text, record, index) => {
                     return {
@@ -241,20 +230,9 @@ class Config extends Component {
                     }
                 }
 			}, 
-			{title: '数字精度或文本长度', dataIndex: 'valueLen', key: 'valueLen', width: 200,
+			{title: '参数', dataIndex: 'valueLen', key: 'valueLen', width: 200,
 				component: {
-					name: InputNumber,
-					props: {
-						min: 0,
-						step: 1,
-					}
-				}
-			},
-			{title: '选择取值', dataIndex: 'propValues', key: 'propValues', width: 200,
-				component: (text, record, index) => {
-					return {
-						name: Input
-					}
+					name: Input.TextArea
 				}
 			},
 			{title: '默认值', dataIndex: 'defaultValue', key: 'defaultValue', width: 200,

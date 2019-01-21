@@ -180,7 +180,7 @@ class List extends Component {
                     <a>删除</a>
                 </Popconfirm>
                 let edit = <Modify data={record} tableConfig={tableConfig} refresh={this.refresh.bind(this)}/>;
-                let configField = <FieldsConfig tables_config={record}/>
+                let configField = <FieldsConfig tableConfig={record}/>
                 return <span>{edit}{split}{configField}{split}{del}</span>;
             }
         })

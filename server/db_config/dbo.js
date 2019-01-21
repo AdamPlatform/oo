@@ -18,6 +18,8 @@ module.exports = {
             record.modifiedAt = new Date();
             let id = ObjectId();
             record.tableName = `t${id}`;
+            record.fields_config = [{"dataIndex":`${record.tableName}_code`,"name":"编码","isShow":"1","isRequire":"1","disabled":"1","isQuery":"1","isSort":"1","width":160,"dataType":"STRING","isShowDisabled":"1","isRequireDisabled":"1","disabledDisabled":"1","isQueryDisabled":"1","dataTypeDisabled":"1"},
+                {"dataIndex":`${record.tableName}_name`,"name":"名称","isShow":"1","isRequire":"0","disabled":"0","isQuery":"1","isSort":"1","width":160,"dataType":"STRING","isShowDisabled":"1","isRequireDisabled":"1","disabledDisabled":"1","isQueryDisabled":"1","dataTypeDisabled":"1"}]
             let moduleName = record.moduleName;
             if (moduleName === null || moduleName === undefined) {
                 defer.reject({message: "模块名称不能为空"});
