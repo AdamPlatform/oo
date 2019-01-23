@@ -1,4 +1,16 @@
+/**
+ * 全局变量和函数
+ */
 import moment from 'moment'
+
+/**
+ * 网页宽度
+ */
+global.clientWidth = document.documentElement.clientWidth || document.body.clientWidth;
+
+/**
+ * 保留几位小数，默认6位，小数位数不够不补0
+ */
 global.toFixedEx = function (source, precision = 6) {
     let num = parseFloat(source);
     if (isNaN(num)) {
@@ -7,6 +19,9 @@ global.toFixedEx = function (source, precision = 6) {
     return (parseInt(num * Math.pow(10, precision) + 0.5, 10) / Math.pow(10, precision)).toString();
 };
 
+/**
+ * 保留几位小数，默认2位，小数位数不够补0
+ */
 global.toFixed = function (source, precision = 2) {
     let num = parseFloat(source);
     if (isNaN(num)) {
@@ -15,6 +30,9 @@ global.toFixed = function (source, precision = 2) {
     return num.toFixed(precision);
 };
 
+/**
+ * 浏览器地址栏携带参数解析
+ */
 global.parseSearchStr = () => {
     let search = window.location.search || '';
     search = decodeURI(search, "UTF-8");
@@ -33,6 +51,7 @@ global.parseSearchStr = () => {
         }, {});
     return paramObj;
 };
+
 /**
  * 将null或undefined转化为空字符串
  * @param {*} obj 
@@ -149,6 +168,9 @@ global.parseArray = (str) => {
 /**
 * sortByKeyAndType
 * 根据数据类型生成排序函数
+* key 指定排序字段
+* type 字段类型
+* order 排序类型，默认升序
 */
 global.sortByKeyAndType = (key, type, order) => (a, b) => {
     if (type === 'STRING') {
@@ -176,6 +198,12 @@ global.sortByKeyAndType = (key, type, order) => (a, b) => {
     }
 };
 
+/**
+ * 将数据保存为全局变量
+ * obj 页面this对象
+ * key 模块名称
+ * data 要保存的数据
+ */
 global.storeData = (obj, key, data) => {
     global[key] = global[key] || {};
     global[key] = Object.assign(global[key], data);

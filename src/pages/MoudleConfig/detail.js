@@ -37,7 +37,6 @@ class Detial extends Component {
      * 渲染函数
      */
     render() {
-        let cw = document.documentElement.clientWidth || document.body.clientWidth;
         return <span>
             <a onClick={() => { this.setState({visible: true});}}>详情</a>
             {this.state.visible && <Modal
@@ -46,7 +45,7 @@ class Detial extends Component {
                 onCancel={this.onCancel.bind(this)}
                 onClose={this.onCancel.bind(this)}
                 maskClosable={false}
-                width={cw - 100}
+                width={global.clientWidth - 100}
                 onOk={this.onOk.bind(this)}
                 footer={[<Button key='1' type='primary' onClick={this.onCancel.bind(this)} children='关闭'/>]}
             >

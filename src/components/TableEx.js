@@ -314,7 +314,7 @@ class TableEx extends Component {
                                             })
                                         ]
                                     }),
-                                    oldCol.render && React.createElement('span', {className:'ant-divider', key: '8'})
+                                    oldCol.render && oldCol.render(text, record, index) && React.createElement('span', {className:'ant-divider', key: '8'})
                                 ]
                             }),
                             record.id !== 'new' && oldCol.render && oldCol.render(text, record, index)

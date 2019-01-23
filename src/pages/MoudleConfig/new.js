@@ -58,7 +58,6 @@ class New extends Component {
         this.props.tableConfig.forEach(config => {
             data[config.dataIndex] = config.defaultValue;
         })
-        let cw = document.documentElement.clientWidth || document.body.clientWidth;
         return <span>
             <Button type='primary' onClick={() => { this.setState({visible: true})}}>新增</Button>
             {this.state.visible && <Modal
@@ -67,7 +66,7 @@ class New extends Component {
                 onCancel={this.onCancel.bind(this)}
                 onClose={this.onCancel.bind(this)}
                 maskClosable={false}
-                width={cw - 100}
+                width={global.clientWidth - 100}
                 onOk={this.onOk.bind(this)}
             >
                 <Spin spinning={this.state.loading}>

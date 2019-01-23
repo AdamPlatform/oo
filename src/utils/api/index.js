@@ -4,12 +4,13 @@ const envObj = {
   production: 'http://oo.com',
 }
 let evn = {};
-let envName = process.env.NOMES_VERNAME || 'development';
+let envName = process.env.OO_VERNAME || 'development';
 evn.baseURI = envObj[envName] || 'http://localhost:52491';
 
 export const baseURI = evn.baseURI;
-
-
+/**
+ * json数据格式
+ */
 const api = new Api({
   baseURI: baseURI,
   headers: {

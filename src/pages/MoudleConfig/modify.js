@@ -54,7 +54,6 @@ class Modify extends Component {
      * 渲染函数
      */
     render() {
-        let cw = document.documentElement.clientWidth || document.body.clientWidth;
         return <span>
             <a onClick={() => { this.setState({visible: true}); }}>修改</a>
             {this.state.visible && <Modal
@@ -63,7 +62,7 @@ class Modify extends Component {
                 onCancel={this.onCancel.bind(this)}
                 onClose={this.onCancel.bind(this)}
                 maskClosable={false}
-                width={cw - 100}
+                width={global.clientWidth - 100}
                 onOk={this.onOk.bind(this)}
             >
                 <Spin spinning={this.state.loading}>

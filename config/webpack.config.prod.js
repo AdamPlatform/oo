@@ -25,7 +25,7 @@ const getClientEnvironment = require('./env');
 const CompressionPlugin = require("compression-webpack-plugin");
 const AntdList = require("./antd-list");
 const RouteList = require('./route-list');
-const NOMES_VERNO = process.env.NOMES_VERNO == null ? '' : process.env.NOMES_VERNO;
+const OO_VERNO = process.env.OO_VERNO == null ? '' : process.env.OO_VERNO;
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
 const publicPath = paths.servedPath;
@@ -48,7 +48,7 @@ if (env.stringified['process.env'].NODE_ENV !== '"production"') {
 }
 
 // Note: defined here because it will be used more than once.
-const cssFilename = 'static' + NOMES_VERNO +  '/css/[name].css';
+const cssFilename = 'static' + OO_VERNO +  '/css/[name].css';
 
 // ExtractTextPlugin expects the build output to be flat.
 // (See https://github.com/webpack-contrib/extract-text-webpack-plugin/issues/27)
@@ -79,8 +79,8 @@ module.exports = {
     // Generated JS file names (with nested folders).
     // There will be one main bundle, and one file per asynchronous chunk.
     // We don't currently advertise code splitting but Webpack supports it.
-    filename: 'static' + NOMES_VERNO +  '/js/[name].js',
-    chunkFilename: 'static' + NOMES_VERNO +  '/js/[name].chunck.js',
+    filename: 'static' + OO_VERNO +  '/js/[name].js',
+    chunkFilename: 'static' + OO_VERNO +  '/js/[name].chunck.js',
     // We inferred the "public path" (such as / or /my-project) from homepage.
     publicPath: './',
     // Point sourcemap entries to original disk location (format as URL on Windows)
@@ -172,7 +172,7 @@ module.exports = {
             loader: require.resolve('url-loader'),
             options: {
               limit: 10000,
-              name: 'static' + NOMES_VERNO +  '/media/[name].[ext]',
+              name: 'static' + OO_VERNO +  '/media/[name].[ext]',
             },
           },
           // Process JS with Babel.
@@ -254,7 +254,7 @@ module.exports = {
             // by webpacks internal loaders.
             exclude: [/\.js$/, /\.html$/, /\.json$/],
             options: {
-              name: 'static' + NOMES_VERNO +  '/media/[name].[ext]',
+              name: 'static' + OO_VERNO +  '/media/[name].[ext]',
             },
           },
           // ** STOP ** Are you adding a new loader?
@@ -359,7 +359,7 @@ module.exports = {
     new webpack.optimize.CommonsChunkPlugin({
       names: Object.values(AntdList),
       name: Object.keys(AntdList),
-      filename: 'static' + NOMES_VERNO +  '/js/antd/[name].js',
+      filename: 'static' + OO_VERNO +  '/js/antd/[name].js',
       minChunks: 2,
     }),
     /* new webpack.ContextReplacementPlugin(

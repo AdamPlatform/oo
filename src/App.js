@@ -25,7 +25,7 @@ class App extends Component {
 
   getCols() {
     let cols = 1;
-    let cw = document.documentElement.clientWidth || document.body.clientWidth;
+    let cw = global.clientWidth;
 		if (cw >= 1280) {
 		  cols = 4
 		} else if (cw >= 960 && cw < 1280) {

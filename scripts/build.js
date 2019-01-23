@@ -44,7 +44,7 @@ const useYarn = fs.existsSync(paths.yarnLockFile);
 // These sizes are pretty large. We'll warn for bundles exceeding them.
 const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
 const WARN_AFTER_CHUNK_GZIP_SIZE = 1024 * 1024;
-const NOMES_VERNO = process.env.NOMES_VERNO == null ? '' : process.env.NOMES_VERNO;
+const OO_VERNO = process.env.OO_VERNO == null ? '' : process.env.OO_VERNO;
 // Warn and crash if required files are missing
 if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
   process.exit(1);
@@ -156,9 +156,9 @@ async function copyPublicFolder() {
   await fs.emptyDir(paths.appBuild);
   // Merge with the public folder
   await fs.copy(paths.appPublic, paths.appBuild);
-  await fs.rename(paths.appBuild + '/index.html', paths.appBuild + '/index' + NOMES_VERNO + '.html');
+  await fs.rename(paths.appBuild + '/index.html', paths.appBuild + '/index' + OO_VERNO + '.html');
   await fs.remove(paths.appBuild + '/index.html');
 }
 async function arterBuild() { 
-  await fs.rename(paths.appBuild + '/index.html', paths.appBuild + '/index' + NOMES_VERNO + '.html');
+  await fs.rename(paths.appBuild + '/index.html', paths.appBuild + '/index' + OO_VERNO + '.html');
 }

@@ -1,17 +1,25 @@
 import React, { Component } from 'react';
 import Modal from 'antd/lib/modal'
 import Button from 'antd/lib/button'
+import Select from 'antd/lib/select'
+import Input from 'antd/lib/input'
+import InputNumber from 'antd/lib/input-number'
+
+import Search from '../components/Search'
 import TableEx from '../components/TableEx';
 import {setConfig} from '../defautConfig'
 import * as Action from '../action/moudleConfig'
-const {
-	Input,
-	InputNumber,
-	Select,
-} = require('antd');
+
 const Option = Select.Option;
 
+let mainSearchFeilds = [];
+let moreSearchFeilds = [];
+
 class Config extends Component {
+	/**
+     * 构造函数 初始化
+     * @param {*} props 
+     */
 	constructor(props) {
 		super();
 		this.state = {
@@ -19,15 +27,28 @@ class Config extends Component {
 			config: [],
 			sorter: {},
 			page: 1,
-            pageSize: 10,
+			pageSize: 10,
+			searchFields: {},
+			showMore: false,
+			query: {}
 		}
 	}
+
+	/**
+     * 页面开始加载时
+     */
 	componentWillMount() {
 		let config = this.props.tableConfig.fields_config || [];
 		this.setState({config: config, configJSON: JSON.stringify(config)});
 	}
-    
-	onSave(dataIndex, record) {
+	
+	/**
+     * 保存
+     * @param {*} id 
+     * @param {*} record 
+     * @param {*} index 
+     */
+	onSave(id, record, index) {
 		let config = this.state.config.map(item => Object.assign({}, item));
 		for (let i in config) {
 			if (record.dataIndex === config[i].dataIndex) {
@@ -38,7 +59,12 @@ class Config extends Component {
 		this.setState({config: config, configJSON: JSON.stringify(config)});
 		return true;
     }
-    
+	
+	/**
+	 * 上移
+	 * @param {*} text 
+	 * @param {*} record 
+	 */
 	up(text, record) {
 		let config = this.state.config.map(item => Object.assign({}, item));
 		let pos = 0;
@@ -55,7 +81,12 @@ class Config extends Component {
 			this.setState({config});
 		}
     }
-    
+	
+	/**
+	 * 下移
+	 * @param {*} text 
+	 * @param {*} record 
+	 */
 	down(text, record) {
 		let config = this.state.config.map(item => Object.assign({}, item));
 		let pos = 0;
@@ -73,6 +104,10 @@ class Config extends Component {
 			this.setState({config});
 		}
 	}
+
+	/**
+	 * 直接修改
+	 */
     modifyDirect() {
 		let config = global.parseArray(this.state.configJSON);
 		let record = {};
@@ -81,6 +116,12 @@ class Config extends Component {
 		this.setState({config: config});
     }
 
+	/**
+	 * 表格发生变化时回调函数
+	 * @param {*} pagination 
+	 * @param {*} filters 
+	 * @param {*} sorter 
+	 */
     onTableChange(pagination, filters, sorter) {
         let page = pagination.current;
 		let pageSize = pagination.pageSize;
@@ -92,16 +133,48 @@ class Config extends Component {
 			page = 1;		
         }
         this.setState({page: page, pageSize:pageSize});
-    }
+	}
+	
+	/**
+	 * 取消
+	 */
 	onCancel() {
 		this.setState({visible: false});
-		this.props.refresh && this.props.refresh();
+	}
+
+	/**
+     * 清空搜索条件
+     */
+    resetSearch() {
+        this.setState({ searchFields: {}, query: {}});
     }
+	
+	/**
+     * 搜索按钮响应函数
+     * @param {*} query 
+     * @param {*} searchFields 
+     */
+    onSearch(query, searchFields) {
+        // global.storeData(this, 'MoudleConfig', {searchFields: searchFields });
+        // const {pageSize, sorter} = this.state;
+        // this.getList(1, pageSize, query, sorter);
+	}
+
+	/**
+     * 显示更多搜索条件
+     */
+    handleMore() {
+        this.setState({showMore: !this.state.showMore});
+    }
+	
+	/**
+	 * 渲染函数
+	 */
 	render(){
         const pagination = {//分页
 			total: this.state.config.length,
 			showSizeChanger: true,
-			pageSizeOptions: ['10', '20', '30', '40'],
+			pageSizeOptions: ['10', '20', '30', '40', '100', '200', '500', '1000'],
 			showQuickJumper: true,
 			pageSize: this.state.pageSize,
 			current: this.state.page,
@@ -243,16 +316,17 @@ class Config extends Component {
 				}
 			},
 			{title: '操作', dataIndex: 'dataIndex', key: 'operation', width: 400,
-				render: (text,record)=>{
-					return (record.isShow !== '0' && <span key='updown'>
-						<a onClick={this.up.bind(this, text, record)}>上移</a>
-						<span className="ant-divider"/>
-						<a onClick={this.down.bind(this, text, record)}>下移</a>
+				render: (text, record, index)=>{
+					return (record.isShow !== '0' && index > 1 && <span key='updown'>
+						{index > 2 && <a onClick={this.up.bind(this, text, record)}>上移</a>}
+						{index > 2 && <span className="ant-divider"/>}
+						{index > 1 && <a onClick={this.down.bind(this, text, record)}>下移</a>}
 					</span>);
 				}
 			},
 		];
-		let cw = document.documentElement.clientWidth || document.body.clientWidth;
+	
+		let {searchFields, showMore} = this.state;
 		return (<span>
             <a onClick={() => { this.setState({visible: true}); }}>配置字段</a>
             {this.state.visible && <Modal
@@ -261,9 +335,28 @@ class Config extends Component {
                 onCancel={this.onCancel.bind(this)}
                 onClose={this.onCancel.bind(this)}
                 maskClosable={false}
-                width={cw - 100}
+                width={global.clientWidth - 100}
 				footer={[<Button key='1' type='primary' onClick={this.onCancel.bind(this)} children='关闭'/>]}
-            >
+			>
+				<Search
+					mainSearchFeilds={mainSearchFeilds}
+					cols={global.cols}
+					moreSearchFeilds={moreSearchFeilds}
+					handleMore={this.handleMore.bind(this)}
+					onSearch={this.onSearch.bind(this)}
+					resetSearch={this.resetSearch.bind(this)}
+					placeholder='请输入模块名称'
+					searchFields={searchFields}
+					showMore={showMore}
+					btnName='搜索'
+					simpleText='精简搜素条件'
+					moreText='更多搜索条件'
+				/>
+				<div style={{marginTop: 16, marginBottom: 8}}>
+					<Button type='primary' style={{marginRight: 16}}>新增</Button>
+					<Button style={{marginRight: 16}}>新增5个</Button>
+					<Button style={{marginRight: 16}}>新增10个</Button>
+				</div>
 				<TableEx 
 					saveName='保存' 
 					rowKey={record => record.dataIndex}

@@ -1,6 +1,5 @@
 import superagent from 'superagent';
 import { Modal } from 'antd';
-const {getCookie} = require('../cookie');
 const methods = [
   'get',
   'head',
@@ -10,7 +9,9 @@ const methods = [
   'options',
   'patch'
 ];
-
+/**
+ * superagent封装restful接口
+ */
 class _Api {
 
   constructor(opts) {
@@ -29,7 +30,6 @@ class _Api {
         if (params) {
           request.query(params);
         }
-        this.opts.headers.token = getCookie('token') || '';
         if (this.opts.headers) {
           request.set(this.opts.headers);
         }
