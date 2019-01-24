@@ -22,7 +22,8 @@
     "build": "node ./bin/react-scripts.js  build",
     "test": "node ./bin/react-scripts.js  test --env=jsdom",
     "eject": "node ./bin/react-scripts.js  eject",
-    "serve": "node ./node_modules/serve/bin/serve.js -s build"
+    "serve": "node ./node_modules/serve/bin/serve.js -s build",
+    "service": "node ./hot-reload.js"
   },
   "dependencies": {
     "antd": "^3.12.1",

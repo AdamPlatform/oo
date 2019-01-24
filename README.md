@@ -41,7 +41,6 @@ $ npm run test | yarn test
 ## 编译打包
 
 ```shell
-$ set OO_VERNO=版本号
 $ npm run build | yarn build
 ```
 ## 本地服务发布

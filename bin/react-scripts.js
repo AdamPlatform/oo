@@ -25,9 +25,6 @@ switch (script) {
   case 'start':
   case 'test': {
     let scriptPath = '../scripts/' + script;
-    if (script === 'start') {
-      scriptPath = '../hot-reload';
-    }
     const result = spawn.sync(
       'node',
       nodeArgs

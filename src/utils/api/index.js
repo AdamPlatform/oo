@@ -1,11 +1,11 @@
 import Api from './api';
 const envObj = {
-  development: 'http://localhost:52491',
+  development: 'http://localhost:32087',
   production: 'http://oo.com',
 }
 let evn = {};
-let envName = process.env.OO_VERNAME || 'development';
-evn.baseURI = envObj[envName] || 'http://localhost:52491';
+let envName = process.env.NODE_ENV || 'development';
+evn.baseURI = envObj[envName] || 'http://localhost:32087';
 
 export const baseURI = evn.baseURI;
 /**

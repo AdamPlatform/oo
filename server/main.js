@@ -47,7 +47,6 @@ const config = {
     }
 }
 module.exports = function (app) {
-    console.log(app.path, 'app');
     const log4js = require('log4js');
     log4js.configure({
         appenders: { cheese: { type: 'file', filename: 'cheese.log' } },
