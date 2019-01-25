@@ -29,7 +29,8 @@ oo系统是一个可以按照用户自己需求来定制的一个软件系统，
 $ git 
 $ cd oo
 $ npm install | yarn install
-$ npm start | yarn start
+$ npm start | yarn start 前端
+$ npm run service | yarn service 后端
 ```
 
 ## 单元测试

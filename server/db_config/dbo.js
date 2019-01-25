@@ -128,5 +128,122 @@ module.exports = {
             
         });
         return defer.promise;
-    }
+    },
+
+    /**
+     * 获取单个表格配置
+     */
+    getOne: (_id) => {
+        let defer = Q.defer();
+        connect(db => {
+            let oo = db.db('oo');
+            let collection = oo.collection("tables_config");
+            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+                if (error && error.message) {
+                    defer.reject(error);
+                    db.close();
+                    return;
+                }
+                defer.resolve(doc);
+            });        
+        });
+        return defer.promise;
+    },
+
+    /**
+     * 新增配置字段
+     */
+    addField: (_id, num) => {
+        let defer = Q.defer();
+        connect(db => {
+            let oo = db.db('oo');
+            let collection = oo.collection("tables_config");
+            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+                if (error && error.message) {
+                    defer.reject(error);
+                    db.close();
+                    return;
+                }
+                let fields_config = doc.fields_config || [];
+                let startIndex = fields_config.length + 1;
+                let fields = [];
+                let total = parseInt(num);
+                for (let i = 0; i < total; ++i) {
+                    let dataIndex = ObjectId();
+                    fields.push({"dataIndex":`${dataIndex}`,"name":`字段${startIndex + i}`,"isShow":"1","isRequire":"1","disabled":"1","isQuery":"1","isSort":"1","width":160,"dataType":"STRING","isShowDisabled":"1","isRequireDisabled":"1","disabledDisabled":"1","isQueryDisabled":"1","dataTypeDisabled":"1"})
+                }
+                fields_config = fields_config.concat(fields);
+                collection.updateOne({_id: ObjectId(_id)}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
+                    if (error && error.message) {
+                        defer.reject(error);
+                        db.close();
+                        return;
+                    }
+                    defer.resolve({});
+                    db.close();
+                });        
+            });        
+        });
+        return defer.promise;
+    },
+
+    /**
+     * 删除一个配置字段
+     */
+    delOneField: (_id, dataIndex) => {
+        let defer = Q.defer();
+        connect(db => {
+            let oo = db.db('oo');
+            let collection = oo.collection("tables_config");
+            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+                if (error && error.message) {
+                    defer.reject(error);
+                    db.close();
+                    return;
+                }
+                let fields_config = doc.fields_config || [];
+                fields_config = fields_config.filter(item => item.dataIndex !== dataIndex);
+                collection.updateOne({_id: ObjectId(_id)}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
+                    if (error && error.message) {
+                        defer.reject(error);
+                        db.close();
+                        return;
+                    }
+                    defer.resolve({});
+                    db.close();
+                });        
+            });        
+        });
+        return defer.promise;
+    },
+    
+    /**
+     * 删除一个配置字段
+     */
+    modifyOneField: (_id, dataIndex) => {
+        let defer = Q.defer();
+        connect(db => {
+            let oo = db.db('oo');
+            let collection = oo.collection("tables_config");
+            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+                if (error && error.message) {
+                    defer.reject(error);
+                    db.close();
+                    return;
+                }
+                let fields_config = doc.fields_config || [];
+                fields_config = fields_config.filter(item => item.dataIndex !== dataIndex);
+                collection.updateOne({_id: ObjectId(_id)}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
+                    if (error && error.message) {
+                        defer.reject(error);
+                        db.close();
+                        return;
+                    }
+                    defer.resolve({});
+                    db.close();
+                });        
+            });        
+        });
+        return defer.promise;
+    },
 };

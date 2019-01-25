@@ -11,7 +11,7 @@ import Modify from './modify'
 import New from './new'
 import * as Action from '../../action/moudleConfig'
 import {configToColumn, configToItemProps} from '../../components/PageCreator'
-import FieldsConfig from '../config'
+import FieldsConfig from '../FieldsConfig'
 let mainSearchFeilds = [];
 let moreSearchFeilds = [];
 /**
@@ -180,7 +180,7 @@ class List extends Component {
                     <a>删除</a>
                 </Popconfirm>
                 let edit = <Modify data={record} tableConfig={tableConfig} refresh={this.refresh.bind(this)}/>;
-                let configField = <FieldsConfig tableConfig={record}/>
+                let configField = <FieldsConfig data={record} refresh={this.refresh.bind(this)}/>
                 return <span>{edit}{split}{configField}{split}{del}</span>;
             }
         })

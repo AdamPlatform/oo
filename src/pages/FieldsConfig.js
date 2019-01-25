@@ -4,6 +4,8 @@ import Button from 'antd/lib/button'
 import Select from 'antd/lib/select'
 import Input from 'antd/lib/input'
 import InputNumber from 'antd/lib/input-number'
+import Popconfirm from 'antd/lib/popconfirm'
+import Spin from 'antd/lib/spin'
 
 import Search from '../components/Search'
 import TableEx from '../components/TableEx';
@@ -15,7 +17,7 @@ const Option = Select.Option;
 let mainSearchFeilds = [];
 let moreSearchFeilds = [];
 
-class Config extends Component {
+class FieldsConfig extends Component {
 	/**
      * 构造函数 初始化
      * @param {*} props 
@@ -30,7 +32,9 @@ class Config extends Component {
 			pageSize: 10,
 			searchFields: {},
 			showMore: false,
-			query: {}
+			query: {},
+			addNum: 1,
+			loading: false,
 		}
 	}
 
@@ -38,8 +42,15 @@ class Config extends Component {
      * 页面开始加载时
      */
 	componentWillMount() {
-		let config = this.props.tableConfig.fields_config || [];
+		let config = this.props.data.fields_config || [];
 		this.setState({config: config, configJSON: JSON.stringify(config)});
+	}
+
+	refresh() {
+		Action.getOne(this.props.data._id, doc => {
+			let config = doc.fields_config || [];
+			this.setState({config: config, configJSON: JSON.stringify(config), loading: false});
+		})
 	}
 	
 	/**
@@ -49,14 +60,10 @@ class Config extends Component {
      * @param {*} index 
      */
 	onSave(id, record, index) {
-		let config = this.state.config.map(item => Object.assign({}, item));
-		for (let i in config) {
-			if (record.dataIndex === config[i].dataIndex) {
-				config[i] = record;
-			}
-		}
-		
-		this.setState({config: config, configJSON: JSON.stringify(config)});
+		this.setState({visible: false});
+		Action.modifyOneField(this.props.data._id, record, () => {
+			this.refresh();
+		});
 		return true;
     }
 	
@@ -112,7 +119,7 @@ class Config extends Component {
 		let config = global.parseArray(this.state.configJSON);
 		let record = {};
 		record.fields_config = config;
-		Action.modify(this.props.tableConfig._id, record);
+		Action.modify(this.props.data._id, record);
 		this.setState({config: config});
     }
 
@@ -140,6 +147,7 @@ class Config extends Component {
 	 */
 	onCancel() {
 		this.setState({visible: false});
+		this.props.refresh && this.props.refresh();
 	}
 
 	/**
@@ -165,7 +173,28 @@ class Config extends Component {
      */
     handleMore() {
         this.setState({showMore: !this.state.showMore});
-    }
+	}
+	
+	/**
+	 * 新增字段
+	 */
+	addField() {
+		this.setState({loading: true})
+		Action.addField(this.props.data._id, this.state.addNum, () => {
+			this.refresh();
+		})
+	}
+
+	/**
+	 * 删除一个字段
+	 * @param {*} dataIndex 
+	 */
+	delOneField(dataIndex) {
+		this.setState({loading: true})
+		Action.delOneField(this.props.data._id, dataIndex, () => {
+			this.refresh();
+		})
+	}
 	
 	/**
 	 * 渲染函数
@@ -212,8 +241,9 @@ class Config extends Component {
 			return value;
 		}
 		let columns = [
-			{title: '字段名', dataIndex: 'dataIndex', key: 'dataIndex', width: 200},
-			{title: '列名', dataIndex: 'name', key: 'name', width: 200,
+			{title: '序号', dataIndex: 'index', key: 'index', width: 60},
+			{title: '字段名', dataIndex: 'dataIndex', key: 'dataIndex', width: 160},
+			{title: '列名', dataIndex: 'name', key: 'name', width: 120,
 				component: {
 					name: Input,
 					props: {
@@ -221,7 +251,7 @@ class Config extends Component {
 					}
 				}
 			},
-			{title: '是否显示', dataIndex: 'isShow', key: 'isShow', width: 200, 
+			{title: '是否显示', dataIndex: 'isShow', key: 'isShow', width: 80, 
 				render: text => selectValueToLable(text, children),
 				component: (text, record, index) => {
 					return {
@@ -234,7 +264,7 @@ class Config extends Component {
 				},
 				sorter: (a,b) => a.isShow - b.isShow
             },
-			{title: '是否必填', dataIndex: 'isRequire', key: 'isRequire', width: 200, 
+			{title: '是否必填', dataIndex: 'isRequire', key: 'isRequire', width: 80, 
 				render: text => selectValueToLable(text, isRequireOption),
                 component: (text, record, index) => {
                     return {
@@ -246,7 +276,7 @@ class Config extends Component {
                     }
                 }
             },
-			{title: '是否修改', dataIndex: 'disabled', key: 'disabled', width: 200, 
+			{title: '是否修改', dataIndex: 'disabled', key: 'disabled', width: 80, 
 				render: text => selectValueToLable(text, disabledOption),
                 component: (text, record, index) => {
                     return {
@@ -258,7 +288,7 @@ class Config extends Component {
                     }
                 }
             },
-			{title: '是否查询', dataIndex: 'isQuery', key: 'isQuery', width: 200, 
+			{title: '是否查询', dataIndex: 'isQuery', key: 'isQuery', width: 80, 
 				render: text => selectValueToLable(text, isQuery),
 				component: (text, record, index) => {
                     return {
@@ -270,7 +300,7 @@ class Config extends Component {
                     }
                 }
 			},
-			{title: '是否排序', dataIndex: 'isSort', key: 'isSort', width: 200, 
+			{title: '是否排序', dataIndex: 'isSort', key: 'isSort', width: 80, 
 				render: text => selectValueToLable(text, isSort),
 				component: (text, record, index) => {
                     return {
@@ -282,7 +312,7 @@ class Config extends Component {
                     }
                 }
 			},
-			{title: '列宽', dataIndex: 'width', key: 'width', width: 200,
+			{title: '列宽', dataIndex: 'width', key: 'width', width: 60,
 				component: {
 					name: InputNumber,
 					props: {
@@ -291,7 +321,7 @@ class Config extends Component {
 					}
 				}
 			},
-			{title: '数据类型', dataIndex: 'dataType', key: 'dataType', width: 240, 
+			{title: '数据类型', dataIndex: 'dataType', key: 'dataType', width: 80, 
 				render: text => selectValueToLable(text, dataType),
 				component: (text, record, index) => {
                     return {
@@ -303,24 +333,29 @@ class Config extends Component {
                     }
                 }
 			}, 
-			{title: '参数', dataIndex: 'valueLen', key: 'valueLen', width: 200,
+			{title: '参数', dataIndex: 'valueLen', key: 'valueLen', width: 120,
 				component: {
 					name: Input.TextArea
 				}
 			},
-			{title: '默认值', dataIndex: 'defaultValue', key: 'defaultValue', width: 200,
+			{title: '默认值', dataIndex: 'defaultValue', key: 'defaultValue', width: 120,
 				component: (text, record, index) => {
 					return {
 						name: Input
 					}
 				}
 			},
-			{title: '操作', dataIndex: 'dataIndex', key: 'operation', width: 400,
-				render: (text, record, index)=>{
-					return (record.isShow !== '0' && index > 1 && <span key='updown'>
-						{index > 2 && <a onClick={this.up.bind(this, text, record)}>上移</a>}
+			{title: '操作', dataIndex: 'dataIndex', key: 'operation', width: 200,
+				render: (text, record)=>{
+					let index = record.index;
+					return (record.isShow !== '0' && index > 2 && <span key='updown'>
+						{index > 3 && <a onClick={this.up.bind(this, text, record)}>上移</a>}
+						{index > 3 && <span className="ant-divider"/>}
+						{index > 2 && <a onClick={this.down.bind(this, text, record)}>下移</a>}
 						{index > 2 && <span className="ant-divider"/>}
-						{index > 1 && <a onClick={this.down.bind(this, text, record)}>下移</a>}
+						{index > 2 && <Popconfirm title="确定要删除这条数据吗？" onConfirm={this.delOneField.bind(this, text)}>
+							<a>删除</a>
+						</Popconfirm>}
 					</span>);
 				}
 			},
@@ -338,39 +373,50 @@ class Config extends Component {
                 width={global.clientWidth - 100}
 				footer={[<Button key='1' type='primary' onClick={this.onCancel.bind(this)} children='关闭'/>]}
 			>
-				<Search
-					mainSearchFeilds={mainSearchFeilds}
-					cols={global.cols}
-					moreSearchFeilds={moreSearchFeilds}
-					handleMore={this.handleMore.bind(this)}
-					onSearch={this.onSearch.bind(this)}
-					resetSearch={this.resetSearch.bind(this)}
-					placeholder='请输入模块名称'
-					searchFields={searchFields}
-					showMore={showMore}
-					btnName='搜索'
-					simpleText='精简搜素条件'
-					moreText='更多搜索条件'
-				/>
-				<div style={{marginTop: 16, marginBottom: 8}}>
-					<Button type='primary' style={{marginRight: 16}}>新增</Button>
-					<Button style={{marginRight: 16}}>新增5个</Button>
-					<Button style={{marginRight: 16}}>新增10个</Button>
-				</div>
-				<TableEx 
-					saveName='保存' 
-					rowKey={record => record.dataIndex}
-					columns={columns} 
-					dataSource={this.state.config}
-					onChange={this.onTableChange.bind(this)}
-					onSave={this.onSave.bind(this)}
-					pagination={pagination}
-				/>
-				<div><Button style={{marginBottom: 8}} onClick={this.modifyDirect.bind(this)}>直接修改</Button>&nbsp;&nbsp;&nbsp;&nbsp;</div>
-				<Input.TextArea style={{width: '100%', height: 300}} value={this.state.configJSON} onChange={e => {this.setState({configJSON: e.target.value})}}/>
+				<Spin spinning={this.state.loading}>
+					<Search
+						mainSearchFeilds={mainSearchFeilds}
+						cols={global.cols}
+						moreSearchFeilds={moreSearchFeilds}
+						handleMore={this.handleMore.bind(this)}
+						onSearch={this.onSearch.bind(this)}
+						resetSearch={this.resetSearch.bind(this)}
+						placeholder='请输入字段名称'
+						searchFields={searchFields}
+						showMore={showMore}
+						btnName='搜索'
+						simpleText='精简搜素条件'
+						moreText='更多搜索条件'
+					/>
+					<div style={{marginTop: 16, marginBottom: 8}}>
+						<Button type='primary' onClick={this.addField.bind(this)} style={{marginRight: 16}}>新增</Button>
+						<InputNumber
+							value={this.state.addNum}
+							min={1}
+							max={100}
+							formatter={value => `${value}个`}
+							parser={value => value.replace('个', '')}
+							onChange={value => this.setState({addNum: value})}
+						/>
+					</div>
+					<TableEx 
+						saveName='保存' 
+						rowKey={record => record.index}
+						columns={columns} 
+						dataSource={this.state.config.map((item, index) => {
+							item.index = index + 1;
+							return item;
+						})}
+						onChange={this.onTableChange.bind(this)}
+						onSave={this.onSave.bind(this)}
+						pagination={pagination}
+					/>
+					<div><Button style={{marginBottom: 8}} onClick={this.modifyDirect.bind(this)}>直接修改</Button>&nbsp;&nbsp;&nbsp;&nbsp;</div>
+					<Input.TextArea style={{width: '100%', height: 300}} value={this.state.configJSON} onChange={e => {this.setState({configJSON: e.target.value})}}/>
+				</Spin>
 			</Modal>}
 		</span>);
 	}
 }
 
-export default Config;
+export default FieldsConfig;

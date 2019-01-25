@@ -9,10 +9,8 @@ import api from '../utils/api';
  * @param {*} moreSearchFeilds 
  */
 export function getList(page, pageSize, query, sorter, cb) {
-    let cond = { page, pageSize, query, sorter }
-    api.put('/table_list', {
-        data : cond
-    }).then(payload => {
+    let data = { page, pageSize, query, sorter }
+    api.put('/table_list', { data }).then(payload => {
         cb && cb(payload.body || {});
     }, () => {
         cb && cb({});
@@ -25,9 +23,7 @@ export function getList(page, pageSize, query, sorter, cb) {
  */
 export function del(_id, cb) {
     api.del('/table', {
-        params: {
-            _id: _id
-        }
+        params: { _id }
     }).then(payload => {
         cb && cb();
     }, () => {
@@ -49,14 +45,66 @@ export function add(record, cb) {
 }
 
 /**
+ * 获取一条表格配置
+ * @param {*} _id 
+ * @param {*} cb 
+ */
+export function getOne(_id, cb) {
+    api.get('/table', {
+        params: { _id }
+    }).then(payload => {
+        cb && cb(payload.body || {});
+    }, () => {
+        cb && cb({});
+    })
+}
+
+/**
  * 修改
  */
 export function modify(_id, record, cb) {
     api.put('/table', {
-        params: {
-            _id: _id
-        },
+        params: { _id },
         data: record
+    }).then(payload => {
+        cb && cb();
+    }, () => {
+        cb && cb();
+    })
+}
+
+/**
+ * 新增配置字段
+ */
+export function addField(_id, num, cb) {
+    api.post('/table_field', {
+        params: { _id, num },
+    }).then(payload => {
+        cb && cb();
+    }, () => {
+        cb && cb();
+    })
+}
+
+/**
+ * 删除一个配置字段
+ */
+export function delOneField(_id, dataIndex, cb) {
+    api.del('/table_field', {
+        params: { _id, dataIndex },
+    }).then(payload => {
+        cb && cb();
+    }, () => {
+        cb && cb();
+    })
+}
+
+/**
+ * 修改一个配置字段
+ */
+export function modifyOneField(_id, record, cb) {
+    api.put('/table_field', {
+        params: { _id, record },
     }).then(payload => {
         cb && cb();
     }, () => {
