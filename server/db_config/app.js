@@ -81,4 +81,22 @@ module.exports = (app) => {
             res.status(400).send(error);
         });
     });
+
+    // 上移一个配置字段
+    app.put('/table_field/up', (req, res) => {
+        dbo.fieldUp(req.query._id, req.query.dataIndex).then(() => {
+            res.send(null);
+        }, error => {
+            res.status(400).send(error);
+        });
+    });
+
+    // 上移一个配置字段
+    app.put('/table_field/down', (req, res) => {
+        dbo.fieldDown(req.query._id, req.query.dataIndex).then(() => {
+            res.send(null);
+        }, error => {
+            res.status(400).send(error);
+        });
+    });
 };

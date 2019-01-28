@@ -111,3 +111,30 @@ export function modifyOneField(_id, record, cb) {
         cb && cb();
     })
 }
+
+/**
+ * 上移一个配置字段
+ */
+export function fieldUp(_id, dataIndex, cb) {
+    api.put('/table_field/up', {
+        params: { _id, dataIndex },
+    }).then(payload => {
+        cb && cb();
+    }, () => {
+        cb && cb();
+    })
+}
+
+/**
+ * 下移一个配置字段
+ */
+export function fieldDown(_id, dataIndex, cb) {
+    api.put('/table_field/down', {
+        params: { _id, dataIndex },
+    }).then(payload => {
+        cb && cb();
+    }, () => {
+        cb && cb();
+    })
+}
+

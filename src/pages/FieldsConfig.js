@@ -60,7 +60,7 @@ class FieldsConfig extends Component {
      * @param {*} index 
      */
 	onSave(id, record, index) {
-		this.setState({visible: false});
+		this.setState({loading: true});
 		Action.modifyOneField(this.props.data._id, record, () => {
 			this.refresh();
 		});
@@ -73,20 +73,10 @@ class FieldsConfig extends Component {
 	 * @param {*} record 
 	 */
 	up(text, record) {
-		let config = this.state.config.map(item => Object.assign({}, item));
-		let pos = 0;
-		for (let i in config) {
-			if (config[i].dataIndex === record.dataIndex) {
-				pos = i;
-				break;
-			}
-		}
-		if (pos > 0) {
-			config.splice(pos, 1);		
-			config.splice(pos - 1, 0, record);
-			setConfig(config);
-			this.setState({config});
-		}
+		this.setState({loading: true});
+		Action.fieldUp(this.props.data._id, record.dataIndex, () => {
+			this.refresh();
+		})
     }
 	
 	/**
@@ -95,21 +85,10 @@ class FieldsConfig extends Component {
 	 * @param {*} record 
 	 */
 	down(text, record) {
-		let config = this.state.config.map(item => Object.assign({}, item));
-		let pos = 0;
-		for (let i in config) {
-			if (config[i].dataIndex === record.dataIndex) {
-				pos = i;
-				break;
-			}
-		}
-
-		if (pos < config.length - 1) {
-			config.splice(pos, 1);		
-			config.splice(parseInt(pos, 10) + 1, 0, record);
-			setConfig(config);
-			this.setState({config});
-		}
+		this.setState({loading: true});
+		Action.fieldDown(this.props.data._id, record.dataIndex, () => {
+			this.refresh();
+		})
 	}
 
 	/**
@@ -119,8 +98,9 @@ class FieldsConfig extends Component {
 		let config = global.parseArray(this.state.configJSON);
 		let record = {};
 		record.fields_config = config;
-		Action.modify(this.props.data._id, record);
-		this.setState({config: config});
+		Action.modify(this.props.data._id, record, () => {
+			this.refresh();
+		});
     }
 
 	/**
@@ -251,7 +231,7 @@ class FieldsConfig extends Component {
 					}
 				}
 			},
-			{title: '是否显示', dataIndex: 'isShow', key: 'isShow', width: 80, 
+			{title: '是否显示', dataIndex: 'isShow', key: 'isShow', width: 100, 
 				render: text => selectValueToLable(text, children),
 				component: (text, record, index) => {
 					return {
@@ -312,7 +292,7 @@ class FieldsConfig extends Component {
                     }
                 }
 			},
-			{title: '列宽', dataIndex: 'width', key: 'width', width: 60,
+			{title: '列宽', dataIndex: 'width', key: 'width', width: 100,
 				component: {
 					name: InputNumber,
 					props: {
@@ -345,14 +325,14 @@ class FieldsConfig extends Component {
 					}
 				}
 			},
-			{title: '操作', dataIndex: 'dataIndex', key: 'operation', width: 200,
+			{title: '操作', dataIndex: 'dataIndex', key: 'operation', width: 240,
 				render: (text, record)=>{
 					let index = record.index;
 					return (record.isShow !== '0' && index > 2 && <span key='updown'>
 						{index > 3 && <a onClick={this.up.bind(this, text, record)}>上移</a>}
 						{index > 3 && <span className="ant-divider"/>}
-						{index > 2 && <a onClick={this.down.bind(this, text, record)}>下移</a>}
-						{index > 2 && <span className="ant-divider"/>}
+						{index > 2 && index < this.state.config.length && <a onClick={this.down.bind(this, text, record)}>下移</a>}
+						{index > 2 && index < this.state.config.length && <span className="ant-divider"/>}
 						{index > 2 && <Popconfirm title="确定要删除这条数据吗？" onConfirm={this.delOneField.bind(this, text)}>
 							<a>删除</a>
 						</Popconfirm>}
