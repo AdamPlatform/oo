@@ -315,4 +315,74 @@ module.exports = {
         });
         return defer.promise;
     },
+
+    /**
+     * 上移一个配置字段至顶部
+     */
+    fieldUpToTop: (_id, dataIndex) => {
+        let defer = Q.defer();
+        connect(db => {
+            let oo = db.db('oo');
+            let collection = oo.collection("tables_config");
+            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+                if (error && error.message) {
+                    defer.reject(error);
+                    db.close();
+                    return;
+                }
+                let fields_config = doc.fields_config || [];
+                let index = fields_config.findIndex(item => item.dataIndex === dataIndex);
+                if (index > 1) {
+                    let item = Object.assign({}, fields_config[index]);
+                    fields_config.splice(index, 1);
+                    fields_config.splice(2, 0, item);
+                }
+                collection.updateOne({_id: ObjectId(_id)}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
+                    if (error && error.message) {
+                        defer.reject(error);
+                        db.close();
+                        return;
+                    }
+                    defer.resolve({});
+                    db.close();
+                });        
+            });        
+        });
+        return defer.promise;
+    },
+
+    /**
+     * 下移一个配置字段至底部
+     */
+    fieldDownToBottom: (_id, dataIndex) => {
+        let defer = Q.defer();
+        connect(db => {
+            let oo = db.db('oo');
+            let collection = oo.collection("tables_config");
+            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+                if (error && error.message) {
+                    defer.reject(error);
+                    db.close();
+                    return;
+                }
+                let fields_config = doc.fields_config || [];
+                let index = fields_config.findIndex(item => item.dataIndex === dataIndex);
+                if (index > 1) {
+                    let item = Object.assign({}, fields_config[index]);
+                    fields_config.splice(index, 1);
+                    fields_config.push(item);
+                }
+                collection.updateOne({_id: ObjectId(_id)}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
+                    if (error && error.message) {
+                        defer.reject(error);
+                        db.close();
+                        return;
+                    }
+                    defer.resolve({});
+                    db.close();
+                });        
+            });        
+        });
+        return defer.promise;
+    },
 };

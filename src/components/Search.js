@@ -71,6 +71,7 @@ class Search extends Component {
         const {getFieldDecorator} = this.props.form;
         // 从更多查询条件中剔除精简查询条件及Tabs
         let {cols, gutter, moreSearchFeilds} = this.props;
+        moreSearchFeilds = moreSearchFeilds || [];
         moreSearchFeilds.map(field => field.param.props.onKeyDown = this.keyPress.bind(this));
         let searchItems = createItems(getFieldDecorator, cols, gutter || 8, moreSearchFeilds, false, true);
         const colLayout = {
@@ -128,7 +129,7 @@ class Search extends Component {
                                         '重置'
                                     ]
                                 }),
-                                React.createElement(Button, {
+                                !this.props.simple && React.createElement(Button, {
                                     key: 'btn3',
                                     style: {marginLeft: 8},
                                     type: "ghost",
@@ -162,5 +163,6 @@ Search.propTypes = {
     btnName: PropTypes.string,
     simpleText: PropTypes.string,
     moreText: PropTypes.string,
+    simple: PropTypes.bool,
 };
 export default Form.create()(Search)

@@ -99,4 +99,22 @@ module.exports = (app) => {
             res.status(400).send(error);
         });
     });
+
+    // 上移一个配置字段至顶部
+    app.put('/table_field/up_top', (req, res) => {
+        dbo.fieldUpToTop(req.query._id, req.query.dataIndex).then(() => {
+            res.send(null);
+        }, error => {
+            res.status(400).send(error);
+        });
+    });
+
+    // 上移一个配置字段至底部
+    app.put('/table_field/down_bottom', (req, res) => {
+        dbo.fieldDownToBottom(req.query._id, req.query.dataIndex).then(() => {
+            res.send(null);
+        }, error => {
+            res.status(400).send(error);
+        });
+    });
 };

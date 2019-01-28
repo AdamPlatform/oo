@@ -6,16 +6,16 @@ import Input from 'antd/lib/input'
 import InputNumber from 'antd/lib/input-number'
 import Popconfirm from 'antd/lib/popconfirm'
 import Spin from 'antd/lib/spin'
+import Menu from 'antd/lib/menu'
+import Dropdown from 'antd/lib/dropdown'
+import Icon from 'antd/lib/icon'
 
 import Search from '../components/Search'
 import TableEx from '../components/TableEx';
-import {setConfig} from '../defautConfig'
 import * as Action from '../action/moudleConfig'
+import {configToItemProps} from '../components/PageCreator'
 
 const Option = Select.Option;
-
-let mainSearchFeilds = [];
-let moreSearchFeilds = [];
 
 class FieldsConfig extends Component {
 	/**
@@ -27,11 +27,11 @@ class FieldsConfig extends Component {
 		this.state = {
 			configJSON: '[]',
 			config: [],
+			allConfig: [],
 			sorter: {},
 			page: 1,
 			pageSize: 10,
 			searchFields: {},
-			showMore: false,
 			query: {},
 			addNum: 1,
 			loading: false,
@@ -43,13 +43,13 @@ class FieldsConfig extends Component {
      */
 	componentWillMount() {
 		let config = this.props.data.fields_config || [];
-		this.setState({config: config, configJSON: JSON.stringify(config)});
+		this.setState({allConfig: config, config: config, configJSON: JSON.stringify(config)});
 	}
 
 	refresh() {
 		Action.getOne(this.props.data._id, doc => {
 			let config = doc.fields_config || [];
-			this.setState({config: config, configJSON: JSON.stringify(config), loading: false});
+			this.setState({allConfig: config, config: config, configJSON: JSON.stringify(config), loading: false});
 		})
 	}
 	
@@ -72,7 +72,7 @@ class FieldsConfig extends Component {
 	 * @param {*} text 
 	 * @param {*} record 
 	 */
-	up(text, record) {
+	up(record) {
 		this.setState({loading: true});
 		Action.fieldUp(this.props.data._id, record.dataIndex, () => {
 			this.refresh();
@@ -84,9 +84,29 @@ class FieldsConfig extends Component {
 	 * @param {*} text 
 	 * @param {*} record 
 	 */
-	down(text, record) {
+	down(record) {
 		this.setState({loading: true});
 		Action.fieldDown(this.props.data._id, record.dataIndex, () => {
+			this.refresh();
+		})
+	}
+	
+	/**
+	 * 上移至顶部
+	 */
+	upToTop(record) {
+		this.setState({loading: true});
+		Action.fieldUpToTop(this.props.data._id, record.dataIndex, () => {
+			this.refresh();
+		})
+	}
+
+	/**
+	 * 下移至底部
+	 */
+	downToBottom(record) {
+		this.setState({loading: true});
+		Action.fieldDownToBottom(this.props.data._id, record.dataIndex, () => {
 			this.refresh();
 		})
 	}
@@ -131,35 +151,26 @@ class FieldsConfig extends Component {
 	}
 
 	/**
-     * 清空搜索条件
-     */
-    resetSearch() {
-        this.setState({ searchFields: {}, query: {}});
-    }
-	
-	/**
      * 搜索按钮响应函数
      * @param {*} query 
      * @param {*} searchFields 
      */
     onSearch(query, searchFields) {
-        // global.storeData(this, 'MoudleConfig', {searchFields: searchFields });
-        // const {pageSize, sorter} = this.state;
-        // this.getList(1, pageSize, query, sorter);
+		let value = searchFields.mainKey || '';
+		value = value.trim();
+		if (value === '') {
+			this.setState({config: this.state.allConfig});
+		} else {
+			let config = this.state.allConfig.filter(item => item.name.indexOf(value) !== -1);
+			this.setState({config: config});
+		}
 	}
 
-	/**
-     * 显示更多搜索条件
-     */
-    handleMore() {
-        this.setState({showMore: !this.state.showMore});
-	}
-	
 	/**
 	 * 新增字段
 	 */
 	addField() {
-		this.setState({loading: true})
+		this.setState({loading: true});
 		Action.addField(this.props.data._id, this.state.addNum, () => {
 			this.refresh();
 		})
@@ -180,14 +191,16 @@ class FieldsConfig extends Component {
 	 * 渲染函数
 	 */
 	render(){
+		let mainSearchFeilds = [configToItemProps({"dataIndex":`${this.props.data.tableName}_name`,"name":"名称","isShow":"1", "disabled":"1","isQuery":"1","width":160,"dataType":"STRING"})];
+		const {config, page, pageSize, visible, addNum, loading, configJSON, searchFields} = this.state;
         const pagination = {//分页
-			total: this.state.config.length,
+			total: config.length,
 			showSizeChanger: true,
 			pageSizeOptions: ['10', '20', '30', '40', '100', '200', '500', '1000'],
 			showQuickJumper: true,
-			pageSize: this.state.pageSize,
-			current: this.state.page,
-			showTotal: () => `共 ${this.state.config.length} 条`,
+			pageSize: pageSize,
+			current: page,
+			showTotal: () => `共 ${config.length} 条`,
 		};
 		let generateOption = (optionArray) => {
 			return optionArray.map((item, index) => {
@@ -328,50 +341,69 @@ class FieldsConfig extends Component {
 			{title: '操作', dataIndex: 'dataIndex', key: 'operation', width: 240,
 				render: (text, record)=>{
 					let index = record.index;
+					let moreOptions = [];
+					if (index > 3) {
+						let up = <Menu.Item key={moreOptions.length + 1} >
+							<a style={{ color: '#2db7f5' }} onClick={this.up.bind(this, record)}>上移</a>
+						</Menu.Item>
+						moreOptions.push(up);
+					}
+					if (index > 2 && index < config.length) {
+						let down = <Menu.Item key={moreOptions.length + 1} >
+							<a style={{ color: '#2db7f5' }} onClick={this.down.bind(this, record)}>下移</a>
+						</Menu.Item>
+						moreOptions.push(down);
+					}
+					if (index > 3) {
+						let up = <Menu.Item key={moreOptions.length + 1} >
+							<a style={{ color: '#2db7f5' }} onClick={this.upToTop.bind(this, record)}>上移至顶部</a>
+						</Menu.Item>
+						moreOptions.push(up);
+					}
+					if (index > 2 && index < config.length) {
+						let down = <Menu.Item key={moreOptions.length + 1} >
+							<a style={{ color: '#2db7f5' }} onClick={this.downToBottom.bind(this, record)}>下移至底部</a>
+						</Menu.Item>
+						moreOptions.push(down);
+					}
+					
 					return (record.isShow !== '0' && index > 2 && <span key='updown'>
-						{index > 3 && <a onClick={this.up.bind(this, text, record)}>上移</a>}
-						{index > 3 && <span className="ant-divider"/>}
-						{index > 2 && index < this.state.config.length && <a onClick={this.down.bind(this, text, record)}>下移</a>}
-						{index > 2 && index < this.state.config.length && <span className="ant-divider"/>}
 						{index > 2 && <Popconfirm title="确定要删除这条数据吗？" onConfirm={this.delOneField.bind(this, text)}>
 							<a>删除</a>
 						</Popconfirm>}
+						{index > 2 && <span className="ant-divider"/>}
+						{index > 2 && <Dropdown overlay={<Menu>{moreOptions}</Menu>}>
+							<a className="ant-dropdown-link">更多  <Icon type="down" /></a>
+						</Dropdown>}
 					</span>);
 				}
 			},
 		];
-	
-		let {searchFields, showMore} = this.state;
+		
 		return (<span>
             <a onClick={() => { this.setState({visible: true}); }}>配置字段</a>
-            {this.state.visible && <Modal
+            {visible && <Modal
                 title='配置字段'
-                visible={this.state.visible}
+                visible={visible}
                 onCancel={this.onCancel.bind(this)}
                 onClose={this.onCancel.bind(this)}
                 maskClosable={false}
                 width={global.clientWidth - 100}
 				footer={[<Button key='1' type='primary' onClick={this.onCancel.bind(this)} children='关闭'/>]}
 			>
-				<Spin spinning={this.state.loading}>
+				<Spin spinning={loading}>
 					<Search
+						simple
 						mainSearchFeilds={mainSearchFeilds}
-						cols={global.cols}
-						moreSearchFeilds={moreSearchFeilds}
-						handleMore={this.handleMore.bind(this)}
 						onSearch={this.onSearch.bind(this)}
-						resetSearch={this.resetSearch.bind(this)}
 						placeholder='请输入字段名称'
 						searchFields={searchFields}
-						showMore={showMore}
 						btnName='搜索'
-						simpleText='精简搜素条件'
-						moreText='更多搜索条件'
 					/>
 					<div style={{marginTop: 16, marginBottom: 8}}>
 						<Button type='primary' onClick={this.addField.bind(this)} style={{marginRight: 16}}>新增</Button>
 						<InputNumber
-							value={this.state.addNum}
+							value={addNum}
 							min={1}
 							max={100}
 							formatter={value => `${value}个`}
@@ -383,7 +415,7 @@ class FieldsConfig extends Component {
 						saveName='保存' 
 						rowKey={record => record.index}
 						columns={columns} 
-						dataSource={this.state.config.map((item, index) => {
+						dataSource={config.map((item, index) => {
 							item.index = index + 1;
 							return item;
 						})}
@@ -392,7 +424,7 @@ class FieldsConfig extends Component {
 						pagination={pagination}
 					/>
 					<div><Button style={{marginBottom: 8}} onClick={this.modifyDirect.bind(this)}>直接修改</Button>&nbsp;&nbsp;&nbsp;&nbsp;</div>
-					<Input.TextArea style={{width: '100%', height: 300}} value={this.state.configJSON} onChange={e => {this.setState({configJSON: e.target.value})}}/>
+					<Input.TextArea style={{width: '100%', height: 300}} value={configJSON} onChange={e => {this.setState({configJSON: e.target.value})}}/>
 				</Spin>
 			</Modal>}
 		</span>);

@@ -138,3 +138,29 @@ export function fieldDown(_id, dataIndex, cb) {
     })
 }
 
+/**
+ * 上移一个配置字段到顶部
+ */
+export function fieldUpToTop(_id, dataIndex, cb) {
+    api.put('/table_field/up_top', {
+        params: { _id, dataIndex },
+    }).then(payload => {
+        cb && cb();
+    }, () => {
+        cb && cb();
+    })
+}
+
+/**
+ * 下移一个配置字段到底部
+ */
+export function fieldDownToBottom(_id, dataIndex, cb) {
+    api.put('/table_field/down_bottom', {
+        params: { _id, dataIndex },
+    }).then(payload => {
+        cb && cb();
+    }, () => {
+        cb && cb();
+    })
+}
+
