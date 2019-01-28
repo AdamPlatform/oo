@@ -16,7 +16,9 @@ import * as Action from '../action/moudleConfig'
 import {configToItemProps} from '../components/PageCreator'
 
 const Option = Select.Option;
-
+const aStyle = {
+	color: '#1890ff', //  hover #40a9ff
+}
 class FieldsConfig extends Component {
 	/**
      * 构造函数 初始化
@@ -344,25 +346,25 @@ class FieldsConfig extends Component {
 					let moreOptions = [];
 					if (index > 3) {
 						let up = <Menu.Item key={moreOptions.length + 1} >
-							<a style={{ color: '#2db7f5' }} onClick={this.up.bind(this, record)}>上移</a>
+							<a style={aStyle} onClick={this.up.bind(this, record)}>上移</a>
 						</Menu.Item>
 						moreOptions.push(up);
 					}
 					if (index > 2 && index < config.length) {
 						let down = <Menu.Item key={moreOptions.length + 1} >
-							<a style={{ color: '#2db7f5' }} onClick={this.down.bind(this, record)}>下移</a>
+							<a style={aStyle} onClick={this.down.bind(this, record)}>下移</a>
 						</Menu.Item>
 						moreOptions.push(down);
 					}
 					if (index > 3) {
 						let up = <Menu.Item key={moreOptions.length + 1} >
-							<a style={{ color: '#2db7f5' }} onClick={this.upToTop.bind(this, record)}>上移至顶部</a>
+							<a style={aStyle} onClick={this.upToTop.bind(this, record)}>上移至顶部</a>
 						</Menu.Item>
 						moreOptions.push(up);
 					}
 					if (index > 2 && index < config.length) {
 						let down = <Menu.Item key={moreOptions.length + 1} >
-							<a style={{ color: '#2db7f5' }} onClick={this.downToBottom.bind(this, record)}>下移至底部</a>
+							<a style={aStyle} onClick={this.downToBottom.bind(this, record)}>下移至底部</a>
 						</Menu.Item>
 						moreOptions.push(down);
 					}
