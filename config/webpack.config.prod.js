@@ -1,11 +1,9 @@
 // @remove-on-eject-begin
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 // @remove-on-eject-end
 'use strict';
@@ -45,7 +43,7 @@ if (env.stringified['process.env'].NODE_ENV !== '"production"') {
 }
 
 // Note: defined here because it will be used more than once.
-const cssFilename = 'static/css/[name].css';
+const cssFilename = 'static/css/[name].[contenthash:8].css';
 
 // ExtractTextPlugin expects the build output to be flat.
 // (See https://github.com/webpack-contrib/extract-text-webpack-plugin/issues/27)
@@ -64,22 +62,22 @@ module.exports = {
   bail: true,
   // We generate sourcemaps in production. This is slow but gives good results.
   // You can exclude the *.map files from the build during deployment.
-  devtool: /*shouldUseSourceMap ? 'source-map' :*/ false,
+  devtool: shouldUseSourceMap ? 'source-map' : false,
   // In production, we only want to load the polyfills and the app code.
   entry: Object.assign({
     polyfills: require.resolve('./polyfills'), 
-    oo: paths.appIndexJs, 
-  }, RouteList),
+    index: paths.appIndexJs, 
+  }),
   output: {
     // The build folder.
     path: paths.appBuild,
     // Generated JS file names (with nested folders).
     // There will be one main bundle, and one file per asynchronous chunk.
     // We don't currently advertise code splitting but Webpack supports it.
-    filename: 'static/js/[name].js',
-    chunkFilename: 'static/js/[name].chunck.js',
+    filename: 'static/js/[name].[chunkhash:8].js',
+    chunkFilename: 'static/js/[name].[chunkhash:8].chunk.js',
     // We inferred the "public path" (such as / or /my-project) from homepage.
-    publicPath: './',
+    publicPath: publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
     devtoolModuleFilenameTemplate: info =>
       path
@@ -101,7 +99,7 @@ module.exports = {
     // https://github.com/facebookincubator/create-react-app/issues/290
     // `web` extension prefixes have been added for better support
     // for React Native Web.
-    extensions: ['.web.js', '.js', '.json', '.web.jsx', '.jsx'],
+    extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
     alias: {
       // @remove-on-eject-begin
       // Resolve Babel runtime relative to react-scripts.
@@ -122,7 +120,7 @@ module.exports = {
       // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
-      new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson])
+      new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
     ],
   },
   module: {
@@ -135,7 +133,7 @@ module.exports = {
       // First, run the linter.
       // It's important to do this before Babel processes the JS.
       {
-        test: /\.(js|jsx)$/,
+        test: /\.(js|jsx|mjs)$/,
         enforce: 'pre',
         use: [
           {
@@ -169,12 +167,12 @@ module.exports = {
             loader: require.resolve('url-loader'),
             options: {
               limit: 10000,
-              name: 'static/media/[name].[ext]',
+              name: 'static/media/[name].[hash:8].[ext]',
             },
           },
           // Process JS with Babel.
           {
-            test: /\.(js|jsx)$/,
+            test: /\.(js|jsx|mjs)$/,
             include: paths.appSrc,
             loader: require.resolve('babel-loader'),
             options: {
@@ -202,7 +200,12 @@ module.exports = {
             loader: ExtractTextPlugin.extract(
               Object.assign(
                 {
-                  fallback: require.resolve('style-loader'),
+                  fallback: {
+                    loader: require.resolve('style-loader'),
+                    options: {
+                      hmr: false,
+                    },
+                  },
                   use: [
                     {
                       loader: require.resolve('css-loader'),
@@ -241,7 +244,7 @@ module.exports = {
           },
           // "file" loader makes sure assets end up in the `build` folder.
           // When you `import` an asset, you get its filename.
-          // This loader don't uses a "test" so it will catch all modules
+          // This loader doesn't use a "test" so it will catch all modules
           // that fall through the other loaders.
           {
             loader: require.resolve('file-loader'),
@@ -249,9 +252,9 @@ module.exports = {
             // it's runtime that would otherwise processed through "file" loader.
             // Also exclude `html` and `json` extensions so they get processed
             // by webpacks internal loaders.
-            exclude: [/\.js$/, /\.html$/, /\.json$/],
+            exclude: [/\.(js|jsx|mjs)$/, /\.html$/, /\.json$/],
             options: {
-              name: 'static/media/[name].[ext]',
+              name: 'static/media/[name].[hash:8].[ext]',
             },
           },
           // ** STOP ** Are you adding a new loader?
@@ -298,6 +301,9 @@ module.exports = {
         // Pending further investigation:
         // https://github.com/mishoo/UglifyJS2/issues/2011
         comparisons: false,
+      },
+      mangle: {
+        safari10: true,
       },
       output: {
         comments: false,
@@ -354,11 +360,11 @@ module.exports = {
     // You can remove this if you don't use Moment.js:
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new CompressionPlugin({
-      asset: "[path].gz[query]",
-      algorithm: "gzip",
-      test: /\.(js|css|html)$/,
-      threshold: 10240,
-      minRatio: 0.8
+        asset: "[path].gz[query]",
+        algorithm: "gzip",
+        test: /\.(js|css|html)$/,
+        threshold: 10240,
+        minRatio: 0.8
     })
   ],
   // Some libraries import Node modules but don't use them in the browser.
@@ -368,5 +374,6 @@ module.exports = {
     fs: 'empty',
     net: 'empty',
     tls: 'empty',
+    child_process: 'empty',
   },
 };
