@@ -22,14 +22,15 @@ class Search extends Component {
                 searchFields[key] = searchFields[key].trim();
             }
         }
-        let sql;
-        
-        if (this.props.showMore) {
-            sql = generateSql(searchFields, mainSearchFeilds, moreSearchFeilds)
-        } else {
-            sql = generateSql(searchFields, mainSearchFeilds)
-        }
-        this.props.onSearch && this.props.onSearch(sql, searchFields);
+        let mainFeilds = (mainSearchFeilds || []).map(item => {
+            const {id, dataType} = item;
+            return {id, dataType};
+        })
+        let moreFeilds = (moreSearchFeilds || []).map(item => {
+            const {id, dataType} = item;
+            return {id, dataType};
+        })
+        this.props.onSearch && this.props.onSearch({searchFields, mainFeilds, moreFeilds}, searchFields);
     }
 
     /**

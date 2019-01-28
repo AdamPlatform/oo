@@ -3,9 +3,8 @@
  */
 let Q = require('q');
 let {connect} = require('../database');
-let uuid = require('uuid/v1');
-let ObjectId = require('mongodb').ObjectId ;
-const moment = require('moment');
+let ObjectId = require('mongodb').ObjectId;
+let {generateSql} = require('../utils');
 module.exports = {
     /**
      * 新增
@@ -18,8 +17,8 @@ module.exports = {
             record.modifiedAt = new Date();
             let id = ObjectId();
             record.tableName = `t${id}`;
-            record.fields_config = [{"dataIndex":`${record.tableName}_code`,"name":"编码","isShow":"1","isRequire":"1","disabled":"1","isQuery":"1","isSort":"1","width":160,"dataType":"STRING","isShowDisabled":"1","isRequireDisabled":"1","disabledDisabled":"1","isQueryDisabled":"1","dataTypeDisabled":"1"},
-                {"dataIndex":`${record.tableName}_name`,"name":"名称","isShow":"1","isRequire":"0","disabled":"0","isQuery":"1","isSort":"1","width":160,"dataType":"STRING","isShowDisabled":"1","isRequireDisabled":"1","disabledDisabled":"1","isQueryDisabled":"1","dataTypeDisabled":"1"}]
+            record.fields_config = [{"dataIndex":`${record.tableName}_code`,"name":"编码","isShow":"1","isRequire":"1","isUnique":"1","disabled":"1","isQuery":"1","isSort":"1","width":160,"dataType":"STRING","isShowDisabled":"1","isRequireDisabled":"1","disabledDisabled":"1","isQueryDisabled":"1","dataTypeDisabled":"1", "isUniqueDisabled":"1"},
+                {"dataIndex":`${record.tableName}_name`,"name":"名称","isShow":"1","isRequire":"0","isUnique":"0","disabled":"0","isQuery":"1","isSort":"1","width":160,"dataType":"STRING","isShowDisabled":"1","isRequireDisabled":"1","disabledDisabled":"1","isQueryDisabled":"1","dataTypeDisabled":"1"}]
             let moduleName = record.moduleName;
             if (moduleName === null || moduleName === undefined) {
                 defer.reject({message: "模块名称不能为空"});
@@ -111,7 +110,8 @@ module.exports = {
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            let cursor = collection.find(query).collation({locale: "zh"});
+            let findCond = generateSql(query);
+            let cursor = collection.find(findCond).collation({locale: "zh"});
             let totalElements = 0;
             cursor.count((err, result) => {
                 totalElements = result;
@@ -170,7 +170,7 @@ module.exports = {
                 let total = parseInt(num);
                 for (let i = 0; i < total; ++i) {
                     let dataIndex = ObjectId();
-                    fields.push({"dataIndex":`${dataIndex}`,"name":`字段${startIndex + i}`,"isShow":"1","isRequire":"1","disabled":"1","isQuery":"1","isSort":"1","width":160,"dataType":"STRING"})
+                    fields.push({"dataIndex":`${dataIndex}`,"name":`字段${startIndex + i}`,"isShow":"1","isRequire":"1","isUnique":"0","disabled":"1","isQuery":"1","isSort":"1","width":160,"dataType":"STRING"})
                 }
                 fields_config = fields_config.concat(fields);
                 collection.updateOne({_id: ObjectId(_id)}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {

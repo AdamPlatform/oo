@@ -204,29 +204,25 @@ class FieldsConfig extends Component {
 			current: page,
 			showTotal: () => `共 ${config.length} 条`,
 		};
-		let generateOption = (optionArray) => {
-			return optionArray.map((item, index) => {
-				return <Option key={index} value={item.value}>{item.label}</Option>;
+		let generateOption = (str) => {
+			return str.split('/').map((item, index) => {
+				return <Option key={index} value={index.toString()}>{item}</Option>;
+			});
+		}
+		let generateOption2 = (options) => {
+			return options.map(item => {
+				return <Option key={item.value} value={item.value}>{item.label}</Option>;
 			});
         }
-        const disabledArray = [{value: '1', label: '不可修改'}, {value: '0', label: '可修改'}]
-        let disabledOption = generateOption(disabledArray);
-		const optionArray = [{value: '1', label: '显示'}, {value: '0', label: '不显示'}]
-		let children = generateOption(optionArray);
-		const isQueryArray = [{value: '1', label: '查询'}, {value: '0', label: '不查询'}]
-		let isQuery = generateOption(isQueryArray);
-		const isSortArray = [{value: '1', label: '排序'}, {value: '0', label: '不排序'}]
-		let isSort = generateOption(isSortArray);
-		const dataTypeArray = [{value: 'STRING', label: '文本'}, 
+		const dataTypeArray = [
+			{value: 'STRING', label: '文本'}, 
 			{value: 'TEXT', label: '文本域'}, 
 			{value: 'NUMBER', label: '数字'}, 
 			{value: 'MONEY', label: '金额'}, 
             {value: 'DATE', label: '日期'}, 
             {value: 'TIME', label: '时间'},
 		];
-        let dataType = generateOption(dataTypeArray);
-        const isRequireArray = [{value: '1', label: '必填'}, {value: '0', label: '选填'}]
-		let isRequireOption = generateOption(isRequireArray);
+        let dataType = generateOption2(dataTypeArray);
 		let selectValueToLable = (value, children) => {
 			for (let obj of children) {
 				if (value === obj.props.value) {
@@ -247,12 +243,12 @@ class FieldsConfig extends Component {
 				}
 			},
 			{title: '是否显示', dataIndex: 'isShow', key: 'isShow', width: 100, 
-				render: text => selectValueToLable(text, children),
+				render: text => selectValueToLable(text, generateOption('不显示/显示')),
 				component: (text, record, index) => {
 					return {
 						name: Select,
 						props: {
-							children: children,
+							children: generateOption('不显示/显示'),
 							disabled: record.isShowDisabled === '1',
 						}
 					}
@@ -260,48 +256,60 @@ class FieldsConfig extends Component {
 				sorter: (a,b) => a.isShow - b.isShow
             },
 			{title: '是否必填', dataIndex: 'isRequire', key: 'isRequire', width: 80, 
-				render: text => selectValueToLable(text, isRequireOption),
+				render: text => selectValueToLable(text, generateOption('选填/必填')),
                 component: (text, record, index) => {
                     return {
                         name: Select,
                         props: {
-                            children: isRequireOption,
+                            children: generateOption('选填/必填'),
                             disabled: record.isRequireDisabled === '1'
+                        }
+                    }
+                }
+			},
+			{title: '是否唯一', dataIndex: 'isUnique', key: 'isUnique', width: 80, 
+				render: text => selectValueToLable(text, generateOption('不唯一/唯一')),
+                component: (text, record, index) => {
+                    return {
+                        name: Select,
+                        props: {
+                            children: generateOption('不唯一/唯一'),
+                            disabled: record.isUniqueDisabled === '1'
                         }
                     }
                 }
             },
 			{title: '是否修改', dataIndex: 'disabled', key: 'disabled', width: 80, 
-				render: text => selectValueToLable(text, disabledOption),
+				render: text => selectValueToLable(text, generateOption('可修改/不可修改')),
                 component: (text, record, index) => {
                     return {
                         name: Select,
                         props: {
-                            children: disabledOption,
+                            children: generateOption('可修改/不可修改'),
                             disabled: record.disabledDisabled === '1'
                         }
                     }
                 }
             },
 			{title: '是否查询', dataIndex: 'isQuery', key: 'isQuery', width: 80, 
-				render: text => selectValueToLable(text, isQuery),
+				render: text => selectValueToLable(text, generateOption('不查询/查询')),
 				component: (text, record, index) => {
                     return {
                         name: Select,
                         props: {
-                            children: isQuery,
+                            children: generateOption('不查询/查询'),
                             disabled: record.isQueryDisabled === '1'
                         }
                     }
                 }
 			},
 			{title: '是否排序', dataIndex: 'isSort', key: 'isSort', width: 80, 
-				render: text => selectValueToLable(text, isSort),
+				render: text => selectValueToLable(text, generateOption('不排序/排序')),
 				component: (text, record, index) => {
                     return {
                         name: Select,
                         props: {
-                            children: isSort,
+                            children: generateOption('不排序/排序'),
                             disabled: record.isSortDisabled === '1'
                         }
                     }
@@ -340,7 +348,7 @@ class FieldsConfig extends Component {
 					}
 				}
 			},
-			{title: '操作', dataIndex: 'dataIndex', key: 'operation', width: 240,
+			{title: '操作', dataIndex: 'dataIndex', key: 'operation', width: 160,
 				render: (text, record)=>{
 					let index = record.index;
 					let moreOptions = [];
