@@ -1,7 +1,7 @@
 ## 何时使用
 - 表格需要可编辑
 ## 如何使用
-- 可编辑功能使用参见文件 ./example/src/pages/config.js
+- 可编辑功能使用参见文件 ../modules/FieldsConfig.js
 ## 说明
 - 本组件包装了ant design Table组件，所以支持ant design Table组件的全部参数
 - [ant design Table使用介绍](https://ant.design/components/table-cn/)

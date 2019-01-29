@@ -3,7 +3,7 @@ import Menu from 'antd/lib/menu'
 import Row from 'antd/lib/row'
 import Col from 'antd/lib/col'
 import Icon from 'antd/lib/icon'
-import MoudleConfig from './pages/MoudleConfig/list'
+import MoudleConfig from './modules/MoudleConfig/list'
 class App extends Component {
   constructor() {
     super();
