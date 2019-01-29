@@ -20,12 +20,17 @@ class App extends Component {
 		global.cols = this.getCols();
 	}
 
-	componentWillMount() {
-		window.addEventListener('resize', this.onWindowResize.bind(this));
+	getModuleConfigs() {
+		console.log('getModuleConfigs------------');
 		getList(1, 9999, {}, {}, (body => {
 			let moduleConfigs = body.list;
-			this.setState({moduleConfigs: moduleConfigs.filter(item => item.isMenu === '1')});
+			this.setState({moduleConfigs: moduleConfigs.filter(item => item.isMenu === '是')});
 		}))
+	}
+
+	componentWillMount() {
+		window.addEventListener('resize', this.onWindowResize.bind(this));
+		this.getModuleConfigs();
 	}
 	
 	componentWillUnmount() {
@@ -61,6 +66,7 @@ class App extends Component {
 		const mode = this.state.folded ? 'vertical' : 'inline';
 		let moduleMenus = this.state.moduleConfigs.map(config => {
 			let page = <List config={config}/>
+			console.log(config.tableName, config.moduleName,'config.tableName');
 			return <Menu.Item key={config.tableName}>
 				<a onClick={() => {this.setState({page})}}>{config.moduleName}</a>
 			</Menu.Item>
@@ -70,7 +76,7 @@ class App extends Component {
 				<aside className="ant-layout-sider" style={this.state.folded ? foldedstyle : {}}>
 					<Menu mode={mode} selectedKeys={[]}>
 						<Menu.Item key="sysconfig">
-							<a onClick={() => {this.setState({page: <MoudleConfig/>})}}>系统设置</a>
+							<a onClick={() => {this.setState({page: <MoudleConfig refresh={this.getModuleConfigs.bind(this)}/>})}}>系统设置</a>
 						</Menu.Item>
 						{moduleMenus}
 					</Menu>

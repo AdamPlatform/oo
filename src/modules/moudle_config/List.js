@@ -137,6 +137,7 @@ class List extends Component {
      * @param {*} body 
      */
     refresh(body) {
+        this.props.refresh && this.props.refresh();
         const {page, pageSize, query, sorter} = this.state;
         this.getList((body && body.page) || page, pageSize, query, sorter);
     }

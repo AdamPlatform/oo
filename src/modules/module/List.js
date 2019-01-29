@@ -150,6 +150,7 @@ class List extends Component {
             title: '序号',
             key: 'index',
             width: 60,
+            fixed: 'left',
             render: (text, record, index) => {
                 let ret = index + 1 + (page - 1) * pageSize;
                 return ret;
@@ -160,6 +161,7 @@ class List extends Component {
             dataIndex: '_id',
             key: 'operation',
             width: 200,
+            fixed: 'right',
             render: (text, record) => {
                 let split = <span className="ant-divider"/>
                 let del = <Popconfirm title="确定要删除这条数据吗？" onConfirm={this.del.bind(this, text)}>
@@ -170,6 +172,15 @@ class List extends Component {
                 return <span>{detail}{split}{edit}{split}{del}</span>;
             }
         })
+
+        console.log(scrollx, global.clientWidth, 'scrollx < global.clientWidth');
+        if (scrollx < global.clientWidth) {
+            columns.forEach(col => {
+                if (col.fixed) {
+                    delete col.fixed;
+                }
+            })
+        }
 
         mainSearchFeilds = [];
         moreSearchFeilds = [];
