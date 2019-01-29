@@ -94,5 +94,6 @@ module.exports = function (app) {
         next();
     }); 
     require('./db_config/app')(app);
+    require('./module/app')(app);
 }
 

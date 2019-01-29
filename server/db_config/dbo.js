@@ -19,8 +19,9 @@ module.exports = {
             record.tableName = `t${id}`;
             record.fields_config = [{"dataIndex":`${record.tableName}_code`,"name":"编码","isShow":"1","isRequire":"1","isUnique":"1","disabled":"1","isQuery":"1","isSort":"1","width":160,"dataType":"STRING","isShowDisabled":"1","isRequireDisabled":"1","disabledDisabled":"1","isQueryDisabled":"1","dataTypeDisabled":"1", "isUniqueDisabled":"1"},
                 {"dataIndex":`${record.tableName}_name`,"name":"名称","isShow":"1","isRequire":"0","isUnique":"0","disabled":"0","isQuery":"1","isSort":"1","width":160,"dataType":"STRING","isShowDisabled":"1","isRequireDisabled":"1","disabledDisabled":"1","isQueryDisabled":"1","dataTypeDisabled":"1"}]
-            let moduleName = record.moduleName;
-            if (moduleName === null || moduleName === undefined) {
+            let moduleName = record.moduleName || '';
+            moduleName = moduleName.trim();
+            if (moduleName === '') {
                 defer.reject({message: "模块名称不能为空"});
                 db.close();
                 return;
@@ -125,7 +126,6 @@ module.exports = {
                     db.close();       
                 });
             });
-            
         });
         return defer.promise;
     },
