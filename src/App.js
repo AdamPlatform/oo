@@ -3,7 +3,10 @@ import Menu from 'antd/lib/menu'
 import Row from 'antd/lib/row'
 import Col from 'antd/lib/col'
 import Icon from 'antd/lib/icon'
+
 import MoudleConfig from './modules/moudle_config/List'
+import {getList} from './modules/moudle_config/Action'
+import List from './modules/module/List'
 
 class App extends Component {
 	constructor() {
@@ -12,13 +15,17 @@ class App extends Component {
 			update: false,
 			folded: false,
 			page: null,
+			moduleConfigs: [],
 		};
 		global.cols = this.getCols();
 	}
 
 	componentWillMount() {
 		window.addEventListener('resize', this.onWindowResize.bind(this));
-		
+		getList(1, 9999, {}, {}, (body => {
+			let moduleConfigs = body.list;
+			this.setState({moduleConfigs: moduleConfigs.filter(item => item.isMenu === '1')});
+		}))
 	}
 	
 	componentWillUnmount() {
@@ -52,6 +59,12 @@ class App extends Component {
 		};
 		const toggermenustyle = this.state.folded ? 'menu-unfold' : 'menu-fold';
 		const mode = this.state.folded ? 'vertical' : 'inline';
+		let moduleMenus = this.state.moduleConfigs.map(config => {
+			let page = <List config={config}/>
+			return <Menu.Item key={config.tableName}>
+				<a onClick={() => {this.setState({page})}}>{config.moduleName}</a>
+			</Menu.Item>
+		})
 		return (
 			<div>
 				<aside className="ant-layout-sider" style={this.state.folded ? foldedstyle : {}}>
@@ -59,6 +72,7 @@ class App extends Component {
 						<Menu.Item key="sysconfig">
 							<a onClick={() => {this.setState({page: <MoudleConfig/>})}}>系统设置</a>
 						</Menu.Item>
+						{moduleMenus}
 					</Menu>
 				</aside>
 				<div className="ant-layout-main" style={this.state.folded ? { marginLeft: '72px' } : {}}>
