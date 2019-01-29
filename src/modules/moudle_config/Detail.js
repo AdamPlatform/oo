@@ -4,7 +4,7 @@
 import React, { Component } from 'react'
 import Modal from 'antd/lib/modal'
 import Button from 'antd/lib/button'
-import Fields from './fields'
+import Fields from './Fields'
 
 class Detial extends Component {
     /**

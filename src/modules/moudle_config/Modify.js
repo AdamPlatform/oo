@@ -4,7 +4,7 @@
 import React, { Component } from 'react'
 import Spin from 'antd/lib/spin'
 import Modal from 'antd/lib/modal'
-import Fields from './fields'
+import Fields from './Fields'
 import * as Action from '../../action/moudleConfig'
 
 class Modify extends Component {

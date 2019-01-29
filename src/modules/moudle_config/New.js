@@ -4,7 +4,7 @@
 import React, { Component } from 'react'
 import Button from 'antd/lib/button'
 import Modal from 'antd/lib/modal'
-import Fields from './fields'
+import Fields from './Fields'
 import Spin from 'antd/lib/spin'
 import * as Action from '../../action/moudleConfig'
 
