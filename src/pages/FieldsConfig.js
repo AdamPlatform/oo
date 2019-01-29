@@ -348,7 +348,7 @@ class FieldsConfig extends Component {
 					}
 				}
 			},
-			{title: '操作', dataIndex: 'dataIndex', key: 'operation', width: 160,
+			{title: '操作', dataIndex: 'dataIndex', key: 'operation', width: 220,
 				render: (text, record)=>{
 					let index = record.index;
 					let moreOptions = [];

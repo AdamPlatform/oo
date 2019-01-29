@@ -3,7 +3,7 @@
  */
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
-import {createItems, generateSql} from './PageCreator';
+import {createItems} from './PageCreator';
 import Icon from 'antd/lib/icon'
 import Button from 'antd/lib/button'
 import Row from 'antd/lib/row'

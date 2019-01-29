@@ -170,7 +170,7 @@ module.exports = {
                 let total = parseInt(num);
                 for (let i = 0; i < total; ++i) {
                     let dataIndex = ObjectId();
-                    fields.push({"dataIndex":`${dataIndex}`,"name":`字段${startIndex + i}`,"isShow":"1","isRequire":"1","isUnique":"0","disabled":"1","isQuery":"1","isSort":"1","width":160,"dataType":"STRING"})
+                    fields.push({"dataIndex":`${dataIndex}`,"name":`字段${startIndex + i}`,"isShow":"1","isRequire":"0","isUnique":"0","disabled":"0","isQuery":"1","isSort":"1","width":120,"dataType":"STRING"})
                 }
                 fields_config = fields_config.concat(fields);
                 collection.updateOne({_id: ObjectId(_id)}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {

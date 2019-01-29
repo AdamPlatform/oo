@@ -109,6 +109,18 @@ export function createItem(getFieldDecorator, dataType, id, param, disabled, gut
                 objProps.format = 'YYYY-MM-DD HH:mm:ss';
             }
             if (isForSearch) {
+                objProps.ranges={ 
+                    '今天': [moment().startOf('day'), moment().endOf('day')], 
+                    '本周': [moment().startOf('week'), moment().endOf('week')],
+                    '本月': [moment().startOf('month'), moment().endOf('month')],
+                    '本季': [moment().startOf('quarter'), moment().endOf('quarter')],
+                    '本年': [moment().startOf('year'), moment().endOf('year')],
+                    '昨天': [moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').endOf('day')], 
+                    '上周': [moment().subtract(1, 'weeks').startOf('week'), moment().subtract(1, 'weeks').endOf('week')],
+                    '上月': [moment().subtract(1, 'months').startOf('month'), moment().subtract(1, 'months').endOf('month')],
+                    '上季': [moment().subtract(1, 'quarters').startOf('quarter'), moment().subtract(1, 'quarters').endOf('quarter')],
+                    '上年': [moment().subtract(1, 'years').startOf('year'), moment().subtract(1, 'years').endOf('year')],
+                }
                 name = RangePicker;
             } else {
                 name = DatePicker
