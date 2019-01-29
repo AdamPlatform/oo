@@ -8,6 +8,7 @@ module.exports = (app) => {
     app.post('/table', (req, res) => {
         dbo.addTable(req.body).then(data => {
             res.send(data);
+            require('../module/app')(app);
         }, error => {
             res.status(400).send(error);
         });
@@ -20,6 +21,7 @@ module.exports = (app) => {
         }
         dbo.deleteTalbe(req.query._id).then(data => {
             res.send(data);
+            require('../module/app')(app);
         }, error => {
             res.status(400).send(error);
         })
@@ -28,7 +30,8 @@ module.exports = (app) => {
     // 更新
     app.put('/table', (req, res) => {
         if (req.query == null || req.query._id == null) {
-            res.status(400).send('id不能为空')
+            res.status(400).send('id不能为空');
+            require('../module/app')(app);
         }
         dbo.updateTalbe(req.query._id, req.body).then(data => {
             res.send(data);
@@ -68,6 +71,7 @@ module.exports = (app) => {
     app.delete('/table_field', (req, res) => {
         dbo.delOneField(req.query._id, req.query.dataIndex).then(() => {
             res.send(null);
+            require('../module/app')(app);
         }, error => {
             res.status(400).send(error);
         });
@@ -77,6 +81,7 @@ module.exports = (app) => {
     app.put('/table_field', (req, res) => {
         dbo.modifyOneField(req.query._id, req.query.record).then(() => {
             res.send(null);
+            require('../module/app')(app);
         }, error => {
             res.status(400).send(error);
         });
