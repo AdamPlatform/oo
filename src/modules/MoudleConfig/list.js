@@ -24,9 +24,9 @@ const getConfig = () => {
         {"name":"数据模型","showName":"数据模型","dataIndex":"dataMoudle","isRequire": "1","isShow":"1","width":80,"dataType":"SELECT","propValues":"线型/树形","defaultValue":"线形","isQuery":"1","isSort":"1"},
         {"name":"流程","showName":"流程","dataIndex":"hasProcess","isRequire": "1","isShow":"1","width":120,"dataType":"SELECT","propValues":"否/是","defaultValue":"否","isQuery":"1","isSort":"1"},
         {"name":"附件","showName":"附件","dataIndex":"hasFile","isRequire": "0","isShow":"0","width":120,"dataType":"SELECT","propValues":"否/是","defaultValue":"否","isQuery":"1","isSort":"1"},
-        {"name":"描述","showName":"描述","dataIndex":"descripe","isRequire": "0","isShow":"1","width":120,"dataType":"STRING","propValues":"","defaultValue":"","isQuery":"1","isSort":"1"},
-        {"name":"创建时间","showName":"创建时间","dataIndex":"createdAt","isRequire": "0","isShow":"1","width":120,"dataType":"TIME","propValues":"","defaultValue":"","isQuery":"1","isSort":"1"},
-        {"name":"修改时间","showName":"修改时间","dataIndex":"modifiedAt","isRequire": "0","isShow":"1","width":120,"dataType":"TIME","propValues":"","defaultValue":"","isQuery":"1","isSort":"1"},
+        {"name":"描述","showName":"描述","dataIndex":"descripe","isRequire": "0","isShow":"1","width":200,"dataType":"STRING","propValues":"","defaultValue":"","isQuery":"1","isSort":"1"},
+        {"name":"创建时间","showName":"创建时间","dataIndex":"createdAt","isRequire": "0","isShow":"1","width":200,"dataType":"TIME","propValues":"","defaultValue":"","isQuery":"1","isSort":"1"},
+        {"name":"修改时间","showName":"修改时间","dataIndex":"modifiedAt","isRequire": "0","isShow":"1","width":200,"dataType":"TIME","propValues":"","defaultValue":"","isQuery":"1","isSort":"1"},
     ];
 }
 class List extends Component {
@@ -163,7 +163,6 @@ class List extends Component {
             title: '序号',
             key: 'index',
             width: 60,
-            fixed: 'left',
             render: (text, record, index) => {
                 let ret = index + 1 + (page - 1) * pageSize;
                 return ret;
@@ -173,7 +172,7 @@ class List extends Component {
             title: '操作',
             dataIndex: '_id',
             key: 'operation',
-            width: 160,
+            width: 200,
             render: (text, record) => {
                 let split = <span className="ant-divider"/>
                 let del = <Popconfirm title="确定要删除这条数据吗？" onConfirm={this.del.bind(this, text)}>

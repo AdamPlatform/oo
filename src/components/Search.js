@@ -94,21 +94,22 @@ class Search extends Component {
         
         return React.createElement('div', {
             children: [
-                React.createElement(Row, {
+                React.createElement('nobr', {
                     key: 'row1',
                     type: 'flex',
                     justify: 'start',
                     style: { marginBottom: 8 },
                     children: [
-                        React.createElement(Col, Object.assign({key: 'col1'}, colLayout,{
+                        React.createElement('span', Object.assign({key: 'col1'}, colLayout,{
                             children: getFieldDecorator('mainKey', {initialValue: searchFields.mainKey})(
                                 React.createElement(Input, {
+                                    style: {width: 300},
                                     placeholder: this.props.placeholder || "请输入",
                                     onKeyDown: this.keyPress.bind(this)
                                 })
                             )
                         })),
-                        React.createElement(Col, Object.assign({key: 'col2'}, colLayout,{
+                        React.createElement('span', Object.assign({key: 'col2'}, colLayout,{
                             children: [
                                 React.createElement(Button, {
                                     key: 'btn1',

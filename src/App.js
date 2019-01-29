@@ -15,7 +15,7 @@ class App extends Component {
     global.cols = this.getCols();
   }
 
-  componentDidMount() {
+  componentWillMount() {
     window.addEventListener('resize', this.onWindowResize.bind(this))
   }
   
@@ -39,8 +39,9 @@ class App extends Component {
   }
 
   onWindowResize() {
+    global.clientWidth = document.documentElement.clientWidth || document.body.clientWidth;
     global.cols = this.getCols();
-    //this.setState({ update: !this.state.update });
+    this.setState({ update: !this.state.update });
   }
 
   render() {
