@@ -286,7 +286,7 @@ class FieldsConfig extends Component {
                         name: Select,
                         props: {
                             children: generateOption('可修改/不可修改'),
-                            disabled: record.disabledDisabled === '1'
+                            //disabled: record.disabledDisabled === '1'
                         }
                     }
                 }
