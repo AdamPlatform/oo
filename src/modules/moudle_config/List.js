@@ -156,7 +156,7 @@ class List extends Component {
                 if (config.isQuery === '1') {
                     searchFormFields.push(configToItemProps(config, null, searchFields[config.dataIndex], null, true));
                 }
-                scrollx += config.width;
+                scrollx += parseInt(config.width, 10);
                 columns.push(configToColumn(config));
             }
         });
@@ -164,6 +164,7 @@ class List extends Component {
             title: '序号',
             key: 'index',
             width: 60,
+            fixed: 'left',
             render: (text, record, index) => {
                 let ret = index + 1 + (page - 1) * pageSize;
                 return ret;
@@ -174,6 +175,7 @@ class List extends Component {
             dataIndex: '_id',
             key: 'operation',
             width: 200,
+            fixed: 'right',
             render: (text, record) => {
                 let split = <span className="ant-divider"/>
                 let del = <Popconfirm title="确定要删除这条数据吗？" onConfirm={this.del.bind(this, text)}>
@@ -183,7 +185,16 @@ class List extends Component {
                 let configField = <FieldsConfig data={record} refresh={this.refresh.bind(this)}/>
                 return <span>{edit}{split}{configField}{split}{del}</span>;
             }
-        })
+        });
+
+        // 如果表格宽度小于正文宽度，去掉固定列设置
+        if (scrollx + 224 < global.clientWidth) {
+            columns.forEach(col => {
+                if (col.fixed) {
+                    delete col.fixed;
+                }
+            })
+        }
 
         mainSearchFeilds = [];
         moreSearchFeilds = [];

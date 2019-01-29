@@ -21,7 +21,6 @@ class App extends Component {
 	}
 
 	getModuleConfigs() {
-		console.log('getModuleConfigs------------');
 		getList(1, 9999, {}, {}, (body => {
 			let moduleConfigs = body.list;
 			this.setState({moduleConfigs: moduleConfigs.filter(item => item.isMenu === '是')});
@@ -66,7 +65,6 @@ class App extends Component {
 		const mode = this.state.folded ? 'vertical' : 'inline';
 		let moduleMenus = this.state.moduleConfigs.map(config => {
 			let page = <List config={config}/>
-			console.log(config.tableName, config.moduleName,'config.tableName');
 			return <Menu.Item key={config.tableName}>
 				<a onClick={() => {this.setState({page})}}>{config.moduleName}</a>
 			</Menu.Item>
@@ -91,7 +89,7 @@ class App extends Component {
 						<Col></Col>
 					</Row>
 					<div className="ant-layout-container">
-						{this.state.page || <MoudleConfig/>}
+						{this.state.page || <MoudleConfig refresh={this.getModuleConfigs.bind(this)}/>}
 					</div>
 				</div>
 			</div>

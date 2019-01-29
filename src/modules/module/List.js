@@ -46,6 +46,16 @@ class List extends Component {
     }
 
     /**
+     * componentWillReceiveProps 页面获取新的props
+     */
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.config !== this.props.config) {
+            this.tableName = nextProps.config.tableName;
+            this.refresh();
+        }
+    }
+
+    /**
      * 获取列表（分页）
      * @param {*} page          当前页
      * @param {*} pageSize      分页条数
@@ -142,7 +152,7 @@ class List extends Component {
                 if (config.isQuery === '1') {
                     searchFormFields.push(configToItemProps(config, null, searchFields[config.dataIndex], null, true));
                 }
-                scrollx += config.width;
+                scrollx += parseInt(config.width, 10);
                 columns.push(configToColumn(config));
             }
         });
@@ -171,10 +181,10 @@ class List extends Component {
                 let edit = <Modify tableName={this.props.config.tableName} data={record} tableConfig={tableConfig} refresh={this.refresh.bind(this)}/>;
                 return <span>{detail}{split}{edit}{split}{del}</span>;
             }
-        })
+        });
 
-        console.log(scrollx, global.clientWidth, 'scrollx < global.clientWidth');
-        if (scrollx < global.clientWidth) {
+        // 如果表格宽度小于正文宽度，去掉固定列设置
+        if (scrollx + 224 < global.clientWidth) {
             columns.forEach(col => {
                 if (col.fixed) {
                     delete col.fixed;
