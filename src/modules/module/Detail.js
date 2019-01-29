@@ -6,7 +6,7 @@ import Modal from 'antd/lib/modal'
 import Button from 'antd/lib/button'
 import Fields from './Fields'
 
-class Detial extends Component {
+export default class Detial extends Component {
     /**
      * 构造函数 初始化
      */
@@ -14,8 +14,6 @@ class Detial extends Component {
         super();
         this.state = {
             visible: false,
-            classConfig: [],
-            update: false,
         }
     }
 
@@ -26,13 +24,6 @@ class Detial extends Component {
         this.setState({visible: false});
     }
 
-    /**
-     * 确定
-     */
-    onOk() {
-        this.setState({visible: false});
-    }
-    
     /**
      * 渲染函数
      */
@@ -46,7 +37,7 @@ class Detial extends Component {
                 onClose={this.onCancel.bind(this)}
                 maskClosable={false}
                 width={global.clientWidth - 100}
-                onOk={this.onOk.bind(this)}
+                onOk={this.onCancel.bind(this)}
                 footer={[<Button key='1' type='primary' onClick={this.onCancel.bind(this)} children='关闭'/>]}
             >
                 <Fields 
@@ -59,4 +50,3 @@ class Detial extends Component {
         </span>
     }
 }
-export default Detial;

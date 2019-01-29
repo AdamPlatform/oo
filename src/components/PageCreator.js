@@ -69,7 +69,7 @@ export function createItem(getFieldDecorator, dataType, id, param, disabled, gut
     }
     let component;
     let name;
-    if (['STRING', 'NUMBER', 'MONEY', 'DATE', 'TIME', 'TEXT'].indexOf(dataType) === -1) {
+    if (['SELECT', 'STRING', 'NUMBER', 'MONEY', 'DATE', 'TIME', 'TEXT'].indexOf(dataType) === -1) {
         if (antdNameObj[dataType]) {
             name = antdNameObj[dataType]
         }
@@ -77,9 +77,15 @@ export function createItem(getFieldDecorator, dataType, id, param, disabled, gut
     if (disabled) {
         component = React.createElement('span', {children: funcProps.initialValue});
         if (funcProps.initialValue) {
-            if (dataType === 'TEXT') {
+            if (-1 !== ['STRING', 'SELECT'].indexOf(dataType)) {
+                component = React.createElement('span', {children: funcProps.initialValue});
+            } else if (dataType === 'TEXT') {
                 objProps.disabled = true;
                 component = React.createElement(Input.TextArea, Object.assign({}, objProps));
+            } else if (dataType === 'NUMBER') {
+                component = React.createElement('span', {children: global.toFixedEx(funcProps.initialValue)});
+            } else if (dataType === 'MONEY') {
+                component = React.createElement('span', {children: global.toFixed(funcProps.initialValue)});
             } else if (dataType === 'DATE') {
                 component = React.createElement('span', {children: moment(funcProps.initialValue).format('YYYY-MM-DD')});
             } else if (dataType === 'TIME') {
