@@ -9,9 +9,9 @@ import TableEx from '../../components/TableEx'
 import Search from '../../components/Search'
 import Modify from './Modify'
 import New from './New'
-import * as Action from '../../action/moudleConfig'
+import * as Action from './Action'
 import {configToColumn, configToItemProps} from '../../components/PageCreator'
-import FieldsConfig from '../FieldsConfig'
+import FieldsConfig from './FieldsConfig'
 let mainSearchFeilds = [];
 let moreSearchFeilds = [];
 /**

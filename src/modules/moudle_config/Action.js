@@ -1,7 +1,7 @@
 /**
  * 模块管理接口
  */
-import api from '../utils/api';
+import api from '../../utils/api';
 /**
  * 查询
  * @param {*} searchFields 

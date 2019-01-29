@@ -10,10 +10,10 @@ import Menu from 'antd/lib/menu'
 import Dropdown from 'antd/lib/dropdown'
 import Icon from 'antd/lib/icon'
 
-import Search from '../components/Search'
-import TableEx from '../components/TableEx';
-import * as Action from '../action/moudleConfig'
-import {configToItemProps} from '../components/PageCreator'
+import Search from '../../components/Search'
+import TableEx from '../../components/TableEx'
+import * as Action from './Action'
+import {configToItemProps} from '../../components/PageCreator'
 
 const Option = Select.Option;
 const aStyle = {
