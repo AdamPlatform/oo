@@ -17,7 +17,8 @@ module.exports = (app) => {
         // 删除
         app.delete(`/${tableName}`, (req, res) => {
             if (req.query == null || req.query.id == null) {
-                res.status(400).send('id不能为空')
+                res.status(400).send({message: 'id不能为空'});
+                return;
             }
             dbo.delete(req.query.id, moudleConfig).then(data => {
                 res.send(data);
@@ -29,7 +30,8 @@ module.exports = (app) => {
         // 更新
         app.put(`/${tableName}`, (req, res) => {
             if (req.query == null || req.query.id == null) {
-                res.status(400).send('id不能为空')
+                res.status(400).send({message: 'id不能为空'});
+                return;
             }
             dbo.update(req.query.id, req.body, moudleConfig).then(data => {
                 res.send(data);
@@ -61,7 +63,8 @@ module.exports = (app) => {
         // 新增
         app.post(`/${tableName}`, (req, res) => {
             if (req.query == null || req.query.pid == null) {
-                res.status(400).send('pid不能为空')
+                res.status(400).send({message: 'pid不能为空'});
+                return;
             }
             dbo.addTreeNode(req.query.pid, req.body, moudleConfig).then(data => {
                 res.send(data);
@@ -73,7 +76,8 @@ module.exports = (app) => {
         // 删除
         app.delete(`/${tableName}`, (req, res) => {
             if (req.query == null || req.query.id == null) {
-                res.status(400).send('id不能为空')
+                res.status(400).send({message: 'id不能为空'});
+                return;
             }
             dbo.deleteTreeNode(req.query.id, moudleConfig).then(data => {
                 res.send(data);
@@ -85,7 +89,8 @@ module.exports = (app) => {
         // 更新
         app.put(`/${tableName}`, (req, res) => {
             if (req.query == null || req.query.id == null) {
-                res.status(400).send('id不能为空')
+                res.status(400).send({message: 'id不能为空'});
+                return;
             }
             dbo.update(req.query.id, req.body, moudleConfig).then(data => {
                 res.send(data);

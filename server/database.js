@@ -13,7 +13,14 @@ module.exports = {
                 return;
             }
             if (db) {
-                dbOper && dbOper(db);
+                try {
+                    dbOper && dbOper(db);
+                } catch (error) {
+                    console.log(error, 'server error-------------');
+                    db.close();
+
+                }
+                
             }
         });
     }

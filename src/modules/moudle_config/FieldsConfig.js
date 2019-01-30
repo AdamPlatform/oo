@@ -238,6 +238,7 @@ class FieldsConfig extends Component {
 		const dataTypeArray = [
 			{value: 'STRING', label: '文本'}, 
 			{value: 'TEXT', label: '文本域'}, 
+			{value: 'SELECT', label: '选择'}, 
 			{value: 'NUMBER', label: '数字'}, 
 			{value: 'MONEY', label: '金额'}, 
             {value: 'DATE', label: '日期'}, 
@@ -357,7 +358,7 @@ class FieldsConfig extends Component {
                     }
                 }
 			}, 
-			{title: '参数', dataIndex: 'valueLen', key: 'valueLen', width: 120,
+			{title: '参数', dataIndex: 'params', key: 'params', width: 120,
 				component: {
 					name: Input
 				}

@@ -244,8 +244,8 @@ export function configToItemProps(field, index, initialValue, specialItemProps, 
         formField.param.props.min = 0;
         initialValue = (initialValue && global.toFixed(initialValue)) || 0;
     } else if (dataType === 'SELECT') {
-        let propValues = field.propValues.split('/');
-        let children = propValues.map((prop, index) => {
+        let params = (field.params || '').split('/');
+        let children = params.map((prop, index) => {
             return React.createElement(Option, {
                 key: index.toString(),
                 value: prop,
