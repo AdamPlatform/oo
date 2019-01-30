@@ -31,10 +31,10 @@ module.exports = (app) => {
     app.put('/table', (req, res) => {
         if (req.query == null || req.query.id == null) {
             res.status(400).send('id不能为空');
-            require('../module/app')(app);
         }
         dbo.updateTalbe(req.query.id, req.body).then(data => {
             res.send(data);
+            require('../module/app')(app);
         }, error => {
             res.status(400).send(error);
         });

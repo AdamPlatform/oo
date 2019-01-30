@@ -12,7 +12,6 @@ var url = require('url');
 var fs = require("fs");
 //路径解析模块
 var path = require("path");
-console.log('main run');
 /**
  * 获取文档的内容类型
  * @param filePath

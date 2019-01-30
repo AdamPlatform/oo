@@ -53,12 +53,25 @@ class FieldsConfig extends Component {
      */
 	componentWillMount() {
 		let config = this.props.data.fields_config || [];
+		if (config.length < RESERVED_FIELDS_NUM) {
+			Modal.warning({
+				title: '配置文件损坏，请联系管理员'
+			});
+			return;
+		}
 		this.setState({allConfig: config, config: config, configJSON: JSON.stringify(config)});
 	}
 
 	refresh() {
 		Action.getOne(this.props.data.id, doc => {
 			let config = doc.fields_config || [];
+			if (config.length < RESERVED_FIELDS_NUM) {
+				Modal.warning({
+					title: '配置文件损坏，请联系管理员'
+				});
+				this.setState({loading: false})
+				return;
+			}
 			this.setState({allConfig: config, config: config, configJSON: JSON.stringify(config), loading: false});
 		})
 	}
@@ -240,9 +253,9 @@ class FieldsConfig extends Component {
 			return value;
 		}
 		let columns = [
-			{title: '序号', dataIndex: 'index', key: 'index', width: 60},
-			{title: '字段名', dataIndex: 'dataIndex', key: 'dataIndex', width: 160},
-			{title: '列名', dataIndex: 'name', key: 'name', width: 120,
+			{title: '序号', dataIndex: 'index', key: 'index', width: 60, fixed: 'left'},
+			{title: '字段名', dataIndex: 'dataIndex', key: 'dataIndex', width: 160, fixed: 'left'},
+			{title: '列名', dataIndex: 'name', key: 'name', width: 120, fixed: 'left',
 				component: {
 					name: Input,
 					props: {
@@ -250,7 +263,7 @@ class FieldsConfig extends Component {
 					}
 				}
 			},
-			{title: '是否显示', dataIndex: 'isShow', key: 'isShow', width: 100, 
+			{title: '是否显示', dataIndex: 'isShow', key: 'isShow', width: 100, fixed: 'left', 
 				render: text => selectValueToLable(text, generateOption('不显示/显示')),
 				component: (text, record, index) => {
 					return {
@@ -263,7 +276,7 @@ class FieldsConfig extends Component {
 				},
 				sorter: (a,b) => a.isShow - b.isShow
             },
-			{title: '是否必填', dataIndex: 'isRequire', key: 'isRequire', width: 80, 
+			{title: '是否必填', dataIndex: 'isRequire', key: 'isRequire', width: 100, 
 				render: text => selectValueToLable(text, generateOption('选填/必填')),
                 component: (text, record, index) => {
                     return {
@@ -275,7 +288,7 @@ class FieldsConfig extends Component {
                     }
                 }
 			},
-			{title: '是否唯一', dataIndex: 'isUnique', key: 'isUnique', width: 80, 
+			{title: '是否唯一', dataIndex: 'isUnique', key: 'isUnique', width: 100, 
 				render: text => selectValueToLable(text, generateOption('不唯一/唯一')),
                 component: (text, record, index) => {
                     return {
@@ -287,7 +300,7 @@ class FieldsConfig extends Component {
                     }
                 }
             },
-			{title: '是否修改', dataIndex: 'disabled', key: 'disabled', width: 80, 
+			{title: '是否修改', dataIndex: 'disabled', key: 'disabled', width: 100, 
 				render: text => selectValueToLable(text, generateOption('可修改/不可修改')),
                 component: (text, record, index) => {
                     return {
@@ -299,7 +312,7 @@ class FieldsConfig extends Component {
                     }
                 }
             },
-			{title: '是否查询', dataIndex: 'isQuery', key: 'isQuery', width: 80, 
+			{title: '是否查询', dataIndex: 'isQuery', key: 'isQuery', width: 100, 
 				render: text => selectValueToLable(text, generateOption('不查询/查询')),
 				component: (text, record, index) => {
                     return {
@@ -311,7 +324,7 @@ class FieldsConfig extends Component {
                     }
                 }
 			},
-			{title: '是否排序', dataIndex: 'isSort', key: 'isSort', width: 80, 
+			{title: '是否排序', dataIndex: 'isSort', key: 'isSort', width: 100, 
 				render: text => selectValueToLable(text, generateOption('不排序/排序')),
 				component: (text, record, index) => {
                     return {
@@ -332,7 +345,7 @@ class FieldsConfig extends Component {
 					}
 				}
 			},
-			{title: '数据类型', dataIndex: 'dataType', key: 'dataType', width: 80, 
+			{title: '数据类型', dataIndex: 'dataType', key: 'dataType', width: 100, 
 				render: text => selectValueToLable(text, dataType),
 				component: (text, record, index) => {
                     return {
@@ -346,7 +359,7 @@ class FieldsConfig extends Component {
 			}, 
 			{title: '参数', dataIndex: 'valueLen', key: 'valueLen', width: 120,
 				component: {
-					name: Input.TextArea
+					name: Input
 				}
 			},
 			{title: '默认值', dataIndex: 'defaultValue', key: 'defaultValue', width: 120,
@@ -356,11 +369,11 @@ class FieldsConfig extends Component {
 					}
 				}
 			},
-			{title: '操作', dataIndex: 'dataIndex', key: 'operation', width: 220,
+			{title: '操作', dataIndex: 'dataIndex', key: 'operation', width: 240, fixed: 'right',
 				render: (text, record)=>{
 					let index = record.index;
 					let moreOptions = [];
-					if (index > TOP_FIELDS_NUM + 1 && index < config.length - BOTTOM_FIELDS_NUM) {
+					if (index > TOP_FIELDS_NUM + 1 && index <= config.length - BOTTOM_FIELDS_NUM) {
 						let up = <Menu.Item key={moreOptions.length + 1} >
 							<a style={aStyle} onClick={this.up.bind(this, record)}>上移</a>
 						</Menu.Item>
@@ -372,7 +385,7 @@ class FieldsConfig extends Component {
 						</Menu.Item>
 						moreOptions.push(down);
 					}
-					if (index > TOP_FIELDS_NUM + 1 && index < config.length - BOTTOM_FIELDS_NUM) {
+					if (index > TOP_FIELDS_NUM + 1 && index <= config.length - BOTTOM_FIELDS_NUM) {
 						let up = <Menu.Item key={moreOptions.length + 1} >
 							<a style={aStyle} onClick={this.upToTop.bind(this, record)}>上移至顶部</a>
 						</Menu.Item>
@@ -385,18 +398,32 @@ class FieldsConfig extends Component {
 						moreOptions.push(down);
 					}
 					
-					return (record.isShow !== '0' && index > 2 && <span key='updown'>
-						{index > 2 && <Popconfirm title="确定要删除这条数据吗？" onConfirm={this.delOneField.bind(this, text)}>
+					let isShowOper = index > TOP_FIELDS_NUM && index <= config.length - BOTTOM_FIELDS_NUM;
+					return (record.isShow !== '0' && isShowOper && <span key='updown'>
+						<Popconfirm title="确定要删除这条数据吗？" onConfirm={this.delOneField.bind(this, text)}>
 							<a>删除</a>
-						</Popconfirm>}
-						{index > 2 && <span className="ant-divider"/>}
-						{index > 2 && <Dropdown overlay={<Menu>{moreOptions}</Menu>}>
-							<a className="ant-dropdown-link">更多  <Icon type="down" /></a>
-						</Dropdown>}
+						</Popconfirm>
+						<span className="ant-divider"/>
+						<Dropdown overlay={<Menu>{moreOptions}</Menu>}>
+							<a className="ant-dropdown-link">更多<Icon type="down" /></a>
+						</Dropdown>
 					</span>);
 				}
 			},
 		];
+
+		let scrollx = 0;
+		columns.forEach(col => {
+			scrollx += parseInt(col.width);
+		})
+		// 如果表格宽度小于正文宽度，去掉固定列设置
+        if (scrollx + 224 < global.clientWidth) {
+            columns.forEach(col => {
+                if (col.fixed) {
+                    delete col.fixed;
+                }
+            })
+        }
 		
 		return (<span>
             <a onClick={() => { this.setState({visible: true}); }}>配置字段</a>
@@ -440,6 +467,7 @@ class FieldsConfig extends Component {
 						onChange={this.onTableChange.bind(this)}
 						onSave={this.onSave.bind(this)}
 						pagination={pagination}
+						scroll={{ x: scrollx }}
 					/>
 					<div><Button style={{marginBottom: 8}} onClick={this.modifyDirect.bind(this)}>直接修改</Button>&nbsp;&nbsp;&nbsp;&nbsp;</div>
 					<Input.TextArea style={{width: '100%', height: 300}} value={configJSON} onChange={e => {this.setState({configJSON: e.target.value})}}/>

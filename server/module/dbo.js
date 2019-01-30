@@ -14,7 +14,7 @@ module.exports = {
         let defer = Q.defer();
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            record[`${moudleConfig.tableName}_id`] = ObjectId();
+            record[`${moudleConfig.tableName}_id`] = ObjectId().toString();
             record[`${moudleConfig.tableName}_createdAt`] = new Date();
             record[`${moudleConfig.tableName}_modifiedAt`] = new Date();
             let fields_config = moudleConfig.fields_config || [];
@@ -247,7 +247,7 @@ module.exports = {
                     defer.reject({message: `未找到父节点，请联系管理员`});
                     db.close();
                 }
-                let newId = ObjectId();
+                let newId = ObjectId().toString();
                 record[`${moudleConfig.tableName}_levels`] = doc[`${moudleConfig.tableName}_levels`] + ',' + newId;
                 record[`${moudleConfig.tableName}_id`] = newId;
                 record[`${moudleConfig.tableName}_createdAt`] = new Date();

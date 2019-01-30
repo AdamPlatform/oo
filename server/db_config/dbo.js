@@ -22,7 +22,7 @@ module.exports = {
             const collection = db.db("oo").collection("tables_config");
             record.createdAt = new Date();
             record.modifiedAt = new Date();
-            let id = ObjectId();
+            let id = ObjectId().toString();
             record.id = id;
             record.tableName = `t${id}`;
             record.fields_config = [
@@ -60,7 +60,7 @@ module.exports = {
 
                     if (record.dataMoudle === '树') {
                         let table = db.db("oo").collection(record.tableName);
-                        let newId = ObjectId();
+                        let newId = ObjectId().toString();
                         let rootNode = {
                             [`${record.tableName}_id`]: newId, 
                             [`${record.tableName}_pid`]: null, 
@@ -104,6 +104,12 @@ module.exports = {
                     db.close();
                     return;
                 }
+
+                if (null === doc) {
+                    defer.reject({message: `未找到模块${id}，请联系管理员`});
+                    db.close();
+                }
+
                 let table = oo.collection(doc.tableName);
                 table.find({}).count((error, result) => {
                     if (error && error.message) {
@@ -150,7 +156,13 @@ module.exports = {
                     return;
                 }
 
+                if (null === doc) {
+                    defer.reject({message: `未找到模块${id}，请联系管理员`});
+                    db.close();
+                }
+
                 let table = oo.collection(doc.tableName);
+                record.modifiedAt = new Date();
                 if (record.dataMoudle !== doc.dataMoudle && record.dataMoudle === '树') {
                     /**
                      * 如果原来列表模型数据为空，则修改模型，否则不允许修改模型
@@ -168,7 +180,6 @@ module.exports = {
                             return;
                         }
 
-                        record.modifiedAt = new Date();
                         collection.updateOne({id: id}, {$set: record}, null, (error, result) => {
                             if (error && error.message) {
                                 defer.reject(error);
@@ -176,7 +187,7 @@ module.exports = {
                                 return;
                             }
 
-                            let newId = ObjectId();
+                            let newId = ObjectId().toString();
                             let rootNode = {
                                 [`${doc.tableName}_id`]: newId,
                                 [`${doc.tableName}_pid`]: null, 
@@ -214,7 +225,6 @@ module.exports = {
                             return;
                         }
 
-                        record.modifiedAt = new Date();
                         collection.updateOne({id: id}, {$set: record}, null, (error, result) => {
                             if (error && error.message) {
                                 defer.reject(error);
@@ -232,6 +242,16 @@ module.exports = {
                                 db.close();
                             });
                         });        
+                    });
+                } else {
+                    collection.updateOne({id: id}, {$set: record}, null, (error, result) => {
+                        if (error && error.message) {
+                            defer.reject(error);
+                            db.close();
+                            return;
+                        }
+                        defer.resolve(record);
+                        db.close();
                     });
                 }
             });
@@ -325,10 +345,11 @@ module.exports = {
                 let fields = [];
                 let total = parseInt(num);
                 for (let i = 0; i < total; ++i) {
-                    let dataIndex = ObjectId();
+                    let dataIndex = ObjectId().toString();
                     fields.push({"dataIndex":`${dataIndex}`,"name":`字段${startIndex + i}`,"isShow":"1","isRequire":"0","isUnique":"0","disabled":"0","isQuery":"1","isSort":"1","width":120,"dataType":"STRING"})
                 }
-                fields_config = fields_config.splice(fields_config.length - BOTTOM_FIELDS_NUM - 1, 0, ...fields)
+                fields_config.splice(fields_config.length - BOTTOM_FIELDS_NUM, 0, ...fields);
+
                 collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
                     if (error && error.message) {
                         defer.reject(error);
@@ -437,7 +458,7 @@ module.exports = {
                     return;
                 }
                 let index = fields_config.findIndex(item => item.dataIndex === dataIndex);
-                if (index > TOP_FIELDS_NUM && index < fields_config.length - BOTTOM_FIELDS_NUM - 1) {
+                if (index > TOP_FIELDS_NUM && index < fields_config.length - BOTTOM_FIELDS_NUM) {
                     [fields_config[index], fields_config[index - 1]] = [fields_config[index - 1], fields_config[index]]
                 }
                 collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
@@ -475,7 +496,7 @@ module.exports = {
                     return;
                 }
                 let index = fields_config.findIndex(item => item.dataIndex === dataIndex);
-                if (index > TOP_FIELDS_NUM - 1 && index < fields_config.length - BOTTOM_FIELDS_NUM - 2) {
+                if (index > TOP_FIELDS_NUM - 1 && index < fields_config.length - BOTTOM_FIELDS_NUM - 1) {
                     [fields_config[index], fields_config[index + 1]] = [fields_config[index + 1], fields_config[index]]
                 }
                 collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
@@ -513,7 +534,7 @@ module.exports = {
                     return;
                 }
                 let index = fields_config.findIndex(item => item.dataIndex === dataIndex);
-                if (index > TOP_FIELDS_NUM && index < fields_config.length - BOTTOM_FIELDS_NUM - 1) {
+                if (index > TOP_FIELDS_NUM && index < fields_config.length - BOTTOM_FIELDS_NUM) {
                     let item = Object.assign({}, fields_config[index]);
                     fields_config.splice(index, 1);
                     fields_config.splice(TOP_FIELDS_NUM, 0, item);
@@ -553,10 +574,10 @@ module.exports = {
                     return;
                 }
                 let index = fields_config.findIndex(item => item.dataIndex === dataIndex);
-                if (index > TOP_FIELDS_NUM - 1 && index < fields_config.length - BOTTOM_FIELDS_NUM - 2) {
+                if (index > TOP_FIELDS_NUM - 1 && index < fields_config.length - BOTTOM_FIELDS_NUM - 1) {
                     let item = Object.assign({}, fields_config[index]);
                     fields_config.splice(index, 1);
-                    fields_config.splice(fields_config.length - BOTTOM_FIELDS_NUM - 1, 0, item);
+                    fields_config.splice(fields_config.length - BOTTOM_FIELDS_NUM, 0, item);
                 }
                 collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
                     if (error && error.message) {
