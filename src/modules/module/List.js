@@ -19,20 +19,21 @@ class List extends Component {
     /**
      * 使用全局变量保存页面状态
      */
-    constructor() {
+    constructor(props) {
         super();
-        global.MoudleConfig = global.MoudleConfig || {};
+        this.tableName = props.config.tableName;
+        global[this.tableName] = global[this.tableName] || {};
         this.state = {
-            searchFields: global.MoudleConfig.searchFields || {},
-            showMore: global.MoudleConfig.showMore || false,
-            page: global.MoudleConfig.page || 1,
-            pageSize: global.MoudleConfig.pageSize || 10,
-            list: global.MoudleConfig.list || [],
-            totalElements: global.MoudleConfig.totalElements || 0,
-            tableConfig: global.MoudleConfig.tableConfig || [],
-            sorter: global.MoudleConfig.sorter || {},
-            loading: global.MoudleConfig.loading || false,
-            query: global.MoudleConfig.query || {},
+            searchFields: global[this.tableName].searchFields || {},
+            showMore: global[this.tableName].showMore || false,
+            page: global[this.tableName].page || 1,
+            pageSize: global[this.tableName].pageSize || 10,
+            list: global[this.tableName].list || [],
+            totalElements: global[this.tableName].totalElements || 0,
+            tableConfig: global[this.tableName].tableConfig || [],
+            sorter: global[this.tableName].sorter || {},
+            loading: global[this.tableName].loading || false,
+            query: global[this.tableName].query || {},
         };
     }
 
@@ -40,7 +41,6 @@ class List extends Component {
      * componentDidMount 页面加载完成后获取数据
      */
     componentDidMount() {
-        this.tableName = this.props.config.tableName;
         const {page, pageSize, query, sorter} = this.state;
         this.getList(page, pageSize, query, sorter);
     }
@@ -177,8 +177,8 @@ class List extends Component {
                 let del = <Popconfirm title="确定要删除这条数据吗？" onConfirm={this.del.bind(this, text)}>
                     <a>删除</a>
                 </Popconfirm>
-                let detail = <Detail data={record} tableConfig={tableConfig}/>;
-                let edit = <Modify tableName={this.props.config.tableName} data={record} tableConfig={tableConfig} refresh={this.refresh.bind(this)}/>;
+                let detail = <Detail tableName={this.tableName} data={record} tableConfig={tableConfig}/>;
+                let edit = <Modify tableName={this.tableName} data={record} tableConfig={tableConfig} refresh={this.refresh.bind(this)}/>;
                 return <span>{detail}{split}{edit}{split}{del}</span>;
             }
         });
@@ -224,7 +224,7 @@ class List extends Component {
                 simpleText='精简搜素条件'
                 moreText='更多搜索条件'
             />
-            <New tableName={this.props.config.tableName} tableConfig={tableConfig} refresh={this.refresh.bind(this)}/>
+            <New tableName={this.tableName} tableConfig={tableConfig} refresh={this.refresh.bind(this)}/>
             <TableEx
                 scroll={{ x: scrollx }}
                 columns={columns}

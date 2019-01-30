@@ -47,7 +47,8 @@ class Search extends Component {
     resetSearch() {
         this.props.form.resetFields();
         let dateFields = {};
-        for (let field of this.props.moreSearchFeilds) {
+        let moreSearchFeilds = this.props.moreSearchFeilds || [];
+        for (let field of moreSearchFeilds) {
             if (['DATE', 'TIME'].indexOf(field.dataType) !== -1) {
                 dateFields[field.id] = [undefined, undefined];
             }

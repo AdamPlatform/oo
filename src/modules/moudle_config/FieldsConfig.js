@@ -414,7 +414,7 @@ class FieldsConfig extends Component {
 
 		let scrollx = 0;
 		columns.forEach(col => {
-			scrollx += parseInt(col.width);
+			scrollx += parseInt(col.width, 10);
 		})
 		// 如果表格宽度小于正文宽度，去掉固定列设置
         if (scrollx + 224 < global.clientWidth) {
