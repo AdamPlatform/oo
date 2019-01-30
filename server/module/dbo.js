@@ -19,7 +19,10 @@ module.exports = {
             record[`${moudleConfig.tableName}_modifiedAt`] = new Date();
             let fields_config = moudleConfig.fields_config || [];
             // 获取配置中的唯一字段
-            let uniqueFields = fields_config.filter(item => item.isUnique === '1');
+            let uniqueFields = fields_config.filter(
+                item => item.isUnique === '1' && 
+                [`${moudleConfig.tableName}_createdAt`, `${moudleConfig.tableName}_modifiedAt`].indexOf(item.dataIndex
+            ) === -1);
             // 唯一字段查询条件
             let orQuery = {$or: []};
             // 唯一字段名称数组
@@ -111,7 +114,10 @@ module.exports = {
                 }
                 let fields_config = moudleConfig.fields_config || [];
                 // 获取配置中的唯一字段
-                let uniqueFields = fields_config.filter(item => item.isUnique === '1');
+                let uniqueFields = fields_config.filter(
+                    item => item.isUnique === '1' && 
+                    [`${moudleConfig.tableName}_createdAt`, `${moudleConfig.tableName}_modifiedAt`].indexOf(item.dataIndex
+                ) === -1);
                 // 唯一字段查询条件
                 let orQuery = {$or: []};
                 // 唯一字段名称数组
@@ -254,7 +260,10 @@ module.exports = {
                 record[`${moudleConfig.tableName}_modifiedAt`] = new Date();
                 let fields_config = moudleConfig.fields_config || [];
                 // 获取配置中的唯一字段
-                let uniqueFields = fields_config.filter(item => item.isUnique === '1');
+                let uniqueFields = fields_config.filter(
+                    item => item.isUnique === '1' && 
+                    [`${moudleConfig.tableName}_createdAt`, `${moudleConfig.tableName}_modifiedAt`].indexOf(item.dataIndex
+                ) === -1);
                 // 唯一字段查询条件
                 let orQuery = {$or: []};
                 // 唯一字段名称数组
