@@ -16,10 +16,10 @@ module.exports = (app) => {
 
         // 删除
         app.delete(`/${tableName}`, (req, res) => {
-            if (req.query == null || req.query._id == null) {
+            if (req.query == null || req.query.id == null) {
                 res.status(400).send('id不能为空')
             }
-            dbo.delete(req.query._id, moudleConfig).then(data => {
+            dbo.delete(req.query.id, moudleConfig).then(data => {
                 res.send(data);
             }, error => {
                 res.status(400).send(error);
@@ -28,10 +28,10 @@ module.exports = (app) => {
 
         // 更新
         app.put(`/${tableName}`, (req, res) => {
-            if (req.query == null || req.query._id == null) {
+            if (req.query == null || req.query.id == null) {
                 res.status(400).send('id不能为空')
             }
-            dbo.update(req.query._id, req.body, moudleConfig).then(data => {
+            dbo.update(req.query.id, req.body, moudleConfig).then(data => {
                 res.send(data);
             }, error => {
                 res.status(400).send(error);
@@ -49,7 +49,7 @@ module.exports = (app) => {
 
         // 查询单个
         app.get(`/${tableName}`, (req, res) => {
-            dbo.getOne(req.query._id, moudleConfig).then(data => {
+            dbo.getOne(req.query.id, moudleConfig).then(data => {
                 res.send(data);
             }, error => {
                 res.status(400).send(error);
@@ -72,10 +72,10 @@ module.exports = (app) => {
 
         // 删除
         app.delete(`/${tableName}`, (req, res) => {
-            if (req.query == null || req.query._id == null) {
+            if (req.query == null || req.query.id == null) {
                 res.status(400).send('id不能为空')
             }
-            dbo.deleteTreeNode(req.query._id, moudleConfig).then(data => {
+            dbo.deleteTreeNode(req.query.id, moudleConfig).then(data => {
                 res.send(data);
             }, error => {
                 res.status(400).send(error);
@@ -84,10 +84,10 @@ module.exports = (app) => {
 
         // 更新
         app.put(`/${tableName}`, (req, res) => {
-            if (req.query == null || req.query._id == null) {
+            if (req.query == null || req.query.id == null) {
                 res.status(400).send('id不能为空')
             }
-            dbo.update(req.query._id, req.body, moudleConfig).then(data => {
+            dbo.update(req.query.id, req.body, moudleConfig).then(data => {
                 res.send(data);
             }, error => {
                 res.status(400).send(error);
@@ -105,7 +105,7 @@ module.exports = (app) => {
 
         // 查询单个
         app.get(`/${tableName}`, (req, res) => {
-            dbo.getOne(req.query._id, moudleConfig).then(data => {
+            dbo.getOne(req.query.id, moudleConfig).then(data => {
                 res.send(data);
             }, error => {
                 res.status(400).send(error);

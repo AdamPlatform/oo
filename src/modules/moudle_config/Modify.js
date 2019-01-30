@@ -44,7 +44,7 @@ class Modify extends Component {
         }
         let record = this.formRef.props.form.getFieldsValue();
         this.setState({loading: true});
-        Action.modify(this.props.data._id, record, () => {
+        Action.modify(this.props.data.id, record, () => {
             this.props.refresh && this.props.refresh();
             this.setState({visible: false, loading: false,});
         });

@@ -23,6 +23,7 @@ module.exports = {
             record.createdAt = new Date();
             record.modifiedAt = new Date();
             let id = ObjectId();
+            record.id = id;
             record.tableName = `t${id}`;
             record.fields_config = [
                 {"dataIndex":`${record.tableName}_code`,"name":"编码","isShow":"1","isRequire":"1","isUnique":"1","disabled":"1","isQuery":"1","isSort":"1","width":160,"dataType":"STRING","isShowDisabled":"1","isRequireDisabled":"1","disabledDisabled":"1","isQueryDisabled":"1","dataTypeDisabled":"1", "isUniqueDisabled":"1"},
@@ -91,13 +92,13 @@ module.exports = {
     /**
      * 删除
      */
-    deleteTalbe: (_id) => {
+    deleteTalbe: (id) => {
         let defer = Q.defer();
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
 
-            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+            collection.findOne({id: id}, {}, (error, doc) => {
                 if (error && error.message) {
                     defer.reject(error);
                     db.close();
@@ -119,7 +120,7 @@ module.exports = {
                         return;
                     } 
 
-                    collection.deleteMany({_id: ObjectId(_id)}, null, (error, result) => {
+                    collection.deleteMany({id: id}, null, (error, result) => {
                         if (error && error.message) {
                             defer.reject(error);
                             db.close();
@@ -137,23 +138,23 @@ module.exports = {
     /**
      * 更新
      */
-    updateTalbe: (_id, record) => {
+    updateTalbe: (id, record) => {
         let defer = Q.defer();
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+            collection.findOne({id: id}, {}, (error, doc) => {
                 if (error && error.message) {
                     defer.reject(error);
                     db.close();
                     return;
                 }
 
+                let table = oo.collection(doc.tableName);
                 if (record.dataMoudle !== doc.dataMoudle && record.dataMoudle === '树') {
                     /**
                      * 如果原来列表模型数据为空，则修改模型，否则不允许修改模型
                      */
-                    let table = oo.collection(doc.tableName);
                     table.find({}).count((error, result) => {
                         if (error && error.message) {
                             defer.reject(error);
@@ -168,7 +169,7 @@ module.exports = {
                         }
 
                         record.modifiedAt = new Date();
-                        collection.updateOne({_id: ObjectId(_id)}, {$set: record}, null, (error, result) => {
+                        collection.updateOne({id: id}, {$set: record}, null, (error, result) => {
                             if (error && error.message) {
                                 defer.reject(error);
                                 db.close();
@@ -177,13 +178,13 @@ module.exports = {
 
                             let newId = ObjectId();
                             let rootNode = {
-                                [`${record.tableName}_id`]: newId,
-                                [`${record.tableName}_pid`]: null, 
-                                [`${record.tableName}_code`]: 'root', 
-                                [`${record.tableName}_levels`]: newId,
-                                [`${record.tableName}_name`]: record.moduleName,
-                                [`${record.tableName}_createdAt`]: new Date(),
-                                [`${record.tableName}_modifiedAt`]: new Date(),
+                                [`${doc.tableName}_id`]: newId,
+                                [`${doc.tableName}_pid`]: null, 
+                                [`${doc.tableName}_code`]: 'root', 
+                                [`${doc.tableName}_levels`]: newId,
+                                [`${doc.tableName}_name`]: record.moduleName,
+                                [`${doc.tableName}_createdAt`]: new Date(),
+                                [`${doc.tableName}_modifiedAt`]: new Date(),
                             }
                             table.insertOne(rootNode, null, (error, result) => {
                                 if (error && error.message) {
@@ -200,7 +201,6 @@ module.exports = {
                     /**
                      * 如果原来树形模型只有根节点，则修改模型，否则不允许修改模型
                      */
-                    let table = oo.collection(doc.tableName);
                     table.find({}).count((error, result) => {
                         if (error && error.message) {
                             defer.reject(error);
@@ -215,7 +215,7 @@ module.exports = {
                         }
 
                         record.modifiedAt = new Date();
-                        collection.updateOne({_id: ObjectId(_id)}, {$set: record}, null, (error, result) => {
+                        collection.updateOne({id: id}, {$set: record}, null, (error, result) => {
                             if (error && error.message) {
                                 defer.reject(error);
                                 db.close();
@@ -282,12 +282,12 @@ module.exports = {
     /**
      * 获取单个表格配置
      */
-    getOne: (_id) => {
+    getOne: (id) => {
         let defer = Q.defer();
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+            collection.findOne({id: id}, {}, (error, doc) => {
                 if (error && error.message) {
                     defer.reject(error);
                     db.close();
@@ -302,27 +302,34 @@ module.exports = {
     /**
      * 新增配置字段
      */
-    addField: (_id, num) => {
+    addField: (id, num) => {
         let defer = Q.defer();
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+            collection.findOne({id: id}, {}, (error, doc) => {
                 if (error && error.message) {
                     defer.reject(error);
                     db.close();
                     return;
                 }
                 let fields_config = doc.fields_config || [];
-                let startIndex = fields_config.length + 1;
+
+                if (fields_config.length < RESERVED_FIELDS_NUM) {
+                    defer.reject({message: "配置文件损坏，请联系管理员！"});
+                    db.close();
+                    return;
+                }
+
+                let startIndex = fields_config.length - BOTTOM_FIELDS_NUM + 1;
                 let fields = [];
                 let total = parseInt(num);
                 for (let i = 0; i < total; ++i) {
                     let dataIndex = ObjectId();
                     fields.push({"dataIndex":`${dataIndex}`,"name":`字段${startIndex + i}`,"isShow":"1","isRequire":"0","isUnique":"0","disabled":"0","isQuery":"1","isSort":"1","width":120,"dataType":"STRING"})
                 }
-                fields_config = fields_config.concat(fields);
-                collection.updateOne({_id: ObjectId(_id)}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
+                fields_config = fields_config.splice(fields_config.length - BOTTOM_FIELDS_NUM - 1, 0, ...fields)
+                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
                     if (error && error.message) {
                         defer.reject(error);
                         db.close();
@@ -339,20 +346,25 @@ module.exports = {
     /**
      * 删除一个配置字段
      */
-    delOneField: (_id, dataIndex) => {
+    delOneField: (id, dataIndex) => {
         let defer = Q.defer();
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+            collection.findOne({id: id}, {}, (error, doc) => {
                 if (error && error.message) {
                     defer.reject(error);
                     db.close();
                     return;
                 }
                 let fields_config = doc.fields_config || [];
+                if (fields_config.length < RESERVED_FIELDS_NUM) {
+                    defer.reject({message: "配置文件损坏，请联系管理员！"});
+                    db.close();
+                    return;
+                }
                 fields_config = fields_config.filter(item => item.dataIndex !== dataIndex);
-                collection.updateOne({_id: ObjectId(_id)}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
+                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
                     if (error && error.message) {
                         defer.reject(error);
                         db.close();
@@ -369,23 +381,28 @@ module.exports = {
     /**
      * 修改一个配置字段
      */
-    modifyOneField: (_id, record) => {
+    modifyOneField: (id, record) => {
         let defer = Q.defer();
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+            collection.findOne({id: id}, {}, (error, doc) => {
                 if (error && error.message) {
                     defer.reject(error);
                     db.close();
                     return;
                 }
                 let fields_config = doc.fields_config || [];
+                if (fields_config.length < RESERVED_FIELDS_NUM) {
+                    defer.reject({message: "配置文件损坏，请联系管理员！"});
+                    db.close();
+                    return;
+                }
                 let index = fields_config.findIndex(item => item.dataIndex === record.dataIndex);
                 if (index !== -1) {
                     fields_config[index] = Object.assign({}, fields_config[index], record);
                 }
-                collection.updateOne({_id: ObjectId(_id)}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
+                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
                     if (error && error.message) {
                         defer.reject(error);
                         db.close();
@@ -402,23 +419,28 @@ module.exports = {
     /**
      * 上移一个配置字段
      */
-    fieldUp: (_id, dataIndex) => {
+    fieldUp: (id, dataIndex) => {
         let defer = Q.defer();
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+            collection.findOne({id: id}, {}, (error, doc) => {
                 if (error && error.message) {
                     defer.reject(error);
                     db.close();
                     return;
                 }
                 let fields_config = doc.fields_config || [];
+                if (fields_config.length < RESERVED_FIELDS_NUM) {
+                    defer.reject({message: "配置文件损坏，请联系管理员！"});
+                    db.close();
+                    return;
+                }
                 let index = fields_config.findIndex(item => item.dataIndex === dataIndex);
-                if (index > 0) {
+                if (index > TOP_FIELDS_NUM && index < fields_config.length - BOTTOM_FIELDS_NUM - 1) {
                     [fields_config[index], fields_config[index - 1]] = [fields_config[index - 1], fields_config[index]]
                 }
-                collection.updateOne({_id: ObjectId(_id)}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
+                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
                     if (error && error.message) {
                         defer.reject(error);
                         db.close();
@@ -435,23 +457,28 @@ module.exports = {
     /**
      * 下移一个配置字段
      */
-    fieldDown: (_id, dataIndex) => {
+    fieldDown: (id, dataIndex) => {
         let defer = Q.defer();
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+            collection.findOne({id: id}, {}, (error, doc) => {
                 if (error && error.message) {
                     defer.reject(error);
                     db.close();
                     return;
                 }
                 let fields_config = doc.fields_config || [];
+                if (fields_config.length < RESERVED_FIELDS_NUM) {
+                    defer.reject({message: "配置文件损坏，请联系管理员！"});
+                    db.close();
+                    return;
+                }
                 let index = fields_config.findIndex(item => item.dataIndex === dataIndex);
-                if (index < fields_config.length - 1) {
+                if (index > TOP_FIELDS_NUM - 1 && index < fields_config.length - BOTTOM_FIELDS_NUM - 2) {
                     [fields_config[index], fields_config[index + 1]] = [fields_config[index + 1], fields_config[index]]
                 }
-                collection.updateOne({_id: ObjectId(_id)}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
+                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
                     if (error && error.message) {
                         defer.reject(error);
                         db.close();
@@ -468,25 +495,30 @@ module.exports = {
     /**
      * 上移一个配置字段至顶部
      */
-    fieldUpToTop: (_id, dataIndex) => {
+    fieldUpToTop: (id, dataIndex) => {
         let defer = Q.defer();
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+            collection.findOne({id: id}, {}, (error, doc) => {
                 if (error && error.message) {
                     defer.reject(error);
                     db.close();
                     return;
                 }
                 let fields_config = doc.fields_config || [];
+                if (fields_config.length < RESERVED_FIELDS_NUM) {
+                    defer.reject({message: "配置文件损坏，请联系管理员！"});
+                    db.close();
+                    return;
+                }
                 let index = fields_config.findIndex(item => item.dataIndex === dataIndex);
-                if (fields_config.length > RESERVED_FIELDS_NUM && index > TOP_FIELDS_NUM - 1 && index < fields_config.length - BOTTOM_FIELDS_NUM - 1) {
+                if (index > TOP_FIELDS_NUM && index < fields_config.length - BOTTOM_FIELDS_NUM - 1) {
                     let item = Object.assign({}, fields_config[index]);
                     fields_config.splice(index, 1);
                     fields_config.splice(TOP_FIELDS_NUM, 0, item);
                 }
-                collection.updateOne({_id: ObjectId(_id)}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
+                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
                     if (error && error.message) {
                         defer.reject(error);
                         db.close();
@@ -503,25 +535,30 @@ module.exports = {
     /**
      * 下移一个配置字段至底部
      */
-    fieldDownToBottom: (_id, dataIndex) => {
+    fieldDownToBottom: (id, dataIndex) => {
         let defer = Q.defer();
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+            collection.findOne({id: id}, {}, (error, doc) => {
                 if (error && error.message) {
                     defer.reject(error);
                     db.close();
                     return;
                 }
                 let fields_config = doc.fields_config || [];
+                if (fields_config.length < RESERVED_FIELDS_NUM) {
+                    defer.reject({message: "配置文件损坏，请联系管理员！"});
+                    db.close();
+                    return;
+                }
                 let index = fields_config.findIndex(item => item.dataIndex === dataIndex);
-                if (fields_config.length > RESERVED_FIELDS_NUM && index > TOP_FIELDS_NUM - 1 && index < fields_config.length - BOTTOM_FIELDS_NUM - 1) {
+                if (index > TOP_FIELDS_NUM - 1 && index < fields_config.length - BOTTOM_FIELDS_NUM - 2) {
                     let item = Object.assign({}, fields_config[index]);
                     fields_config.splice(index, 1);
                     fields_config.splice(fields_config.length - BOTTOM_FIELDS_NUM - 1, 0, item);
                 }
-                collection.updateOne({_id: ObjectId(_id)}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
+                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
                     if (error && error.message) {
                         defer.reject(error);
                         db.close();

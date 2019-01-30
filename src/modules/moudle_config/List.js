@@ -125,9 +125,9 @@ class List extends Component {
     /**
      * 删除操作
      */
-    del(_id) {
+    del(id) {
         global.storeData(this, 'MoudleConfig', {loading: true});
-        Action.del(_id, () => {
+        Action.del(id, () => {
             this.refresh();
         });
     }
@@ -172,7 +172,7 @@ class List extends Component {
         });
         columns.push({
             title: '操作',
-            dataIndex: '_id',
+            dataIndex: 'id',
             key: 'operation',
             width: 200,
             fixed: 'right',
@@ -234,7 +234,7 @@ class List extends Component {
                 columns={columns}
                 dataSource={list}
                 onChange={this.handleTableChange.bind(this)}
-                rowKey={record => record._id}
+                rowKey={record => record.id}
                 pagination={pagination}
             />
         </Spin>

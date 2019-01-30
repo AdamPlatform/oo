@@ -57,7 +57,7 @@ class FieldsConfig extends Component {
 	}
 
 	refresh() {
-		Action.getOne(this.props.data._id, doc => {
+		Action.getOne(this.props.data.id, doc => {
 			let config = doc.fields_config || [];
 			this.setState({allConfig: config, config: config, configJSON: JSON.stringify(config), loading: false});
 		})
@@ -71,7 +71,7 @@ class FieldsConfig extends Component {
      */
 	onSave(id, record, index) {
 		this.setState({loading: true});
-		Action.modifyOneField(this.props.data._id, record, () => {
+		Action.modifyOneField(this.props.data.id, record, () => {
 			this.refresh();
 		});
 		return true;
@@ -84,7 +84,7 @@ class FieldsConfig extends Component {
 	 */
 	up(record) {
 		this.setState({loading: true});
-		Action.fieldUp(this.props.data._id, record.dataIndex, () => {
+		Action.fieldUp(this.props.data.id, record.dataIndex, () => {
 			this.refresh();
 		})
     }
@@ -96,7 +96,7 @@ class FieldsConfig extends Component {
 	 */
 	down(record) {
 		this.setState({loading: true});
-		Action.fieldDown(this.props.data._id, record.dataIndex, () => {
+		Action.fieldDown(this.props.data.id, record.dataIndex, () => {
 			this.refresh();
 		})
 	}
@@ -106,7 +106,7 @@ class FieldsConfig extends Component {
 	 */
 	upToTop(record) {
 		this.setState({loading: true});
-		Action.fieldUpToTop(this.props.data._id, record.dataIndex, () => {
+		Action.fieldUpToTop(this.props.data.id, record.dataIndex, () => {
 			this.refresh();
 		})
 	}
@@ -116,7 +116,7 @@ class FieldsConfig extends Component {
 	 */
 	downToBottom(record) {
 		this.setState({loading: true});
-		Action.fieldDownToBottom(this.props.data._id, record.dataIndex, () => {
+		Action.fieldDownToBottom(this.props.data.id, record.dataIndex, () => {
 			this.refresh();
 		})
 	}
@@ -128,7 +128,7 @@ class FieldsConfig extends Component {
 		let config = global.parseArray(this.state.configJSON);
 		let record = {};
 		record.fields_config = config;
-		Action.modify(this.props.data._id, record, () => {
+		Action.modify(this.props.data.id, record, () => {
 			this.refresh();
 		});
     }
@@ -181,7 +181,7 @@ class FieldsConfig extends Component {
 	 */
 	addField() {
 		this.setState({loading: true});
-		Action.addField(this.props.data._id, this.state.addNum, () => {
+		Action.addField(this.props.data.id, this.state.addNum, () => {
 			this.refresh();
 		})
 	}
@@ -192,7 +192,7 @@ class FieldsConfig extends Component {
 	 */
 	delOneField(dataIndex) {
 		this.setState({loading: true})
-		Action.delOneField(this.props.data._id, dataIndex, () => {
+		Action.delOneField(this.props.data.id, dataIndex, () => {
 			this.refresh();
 		})
 	}

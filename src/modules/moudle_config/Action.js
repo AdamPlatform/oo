@@ -19,11 +19,11 @@ export function getList(page, pageSize, query, sorter, cb) {
 
 /**
  * 删除
- * @param {} _id 
+ * @param {} id 
  */
-export function del(_id, cb) {
+export function del(id, cb) {
     api.del('/table', {
-        params: { _id }
+        params: { id }
     }).then(payload => {
         cb && cb();
     }, () => {
@@ -46,12 +46,12 @@ export function add(record, cb) {
 
 /**
  * 获取一条表格配置
- * @param {*} _id 
+ * @param {*} id 
  * @param {*} cb 
  */
-export function getOne(_id, cb) {
+export function getOne(id, cb) {
     api.get('/table', {
-        params: { _id }
+        params: { id }
     }).then(payload => {
         cb && cb(payload.body || {});
     }, () => {
@@ -62,9 +62,9 @@ export function getOne(_id, cb) {
 /**
  * 修改
  */
-export function modify(_id, record, cb) {
+export function modify(id, record, cb) {
     api.put('/table', {
-        params: { _id },
+        params: { id },
         data: record
     }).then(payload => {
         cb && cb();
@@ -76,9 +76,9 @@ export function modify(_id, record, cb) {
 /**
  * 新增配置字段
  */
-export function addField(_id, num, cb) {
+export function addField(id, num, cb) {
     api.post('/table_field', {
-        params: { _id, num },
+        params: { id, num },
     }).then(payload => {
         cb && cb();
     }, () => {
@@ -89,9 +89,9 @@ export function addField(_id, num, cb) {
 /**
  * 删除一个配置字段
  */
-export function delOneField(_id, dataIndex, cb) {
+export function delOneField(id, dataIndex, cb) {
     api.del('/table_field', {
-        params: { _id, dataIndex },
+        params: { id, dataIndex },
     }).then(payload => {
         cb && cb();
     }, () => {
@@ -102,9 +102,9 @@ export function delOneField(_id, dataIndex, cb) {
 /**
  * 修改一个配置字段
  */
-export function modifyOneField(_id, record, cb) {
+export function modifyOneField(id, record, cb) {
     api.put('/table_field', {
-        params: { _id, record },
+        params: { id, record },
     }).then(payload => {
         cb && cb();
     }, () => {
@@ -115,9 +115,9 @@ export function modifyOneField(_id, record, cb) {
 /**
  * 上移一个配置字段
  */
-export function fieldUp(_id, dataIndex, cb) {
+export function fieldUp(id, dataIndex, cb) {
     api.put('/table_field/up', {
-        params: { _id, dataIndex },
+        params: { id, dataIndex },
     }).then(payload => {
         cb && cb();
     }, () => {
@@ -128,9 +128,9 @@ export function fieldUp(_id, dataIndex, cb) {
 /**
  * 下移一个配置字段
  */
-export function fieldDown(_id, dataIndex, cb) {
+export function fieldDown(id, dataIndex, cb) {
     api.put('/table_field/down', {
-        params: { _id, dataIndex },
+        params: { id, dataIndex },
     }).then(payload => {
         cb && cb();
     }, () => {
@@ -141,9 +141,9 @@ export function fieldDown(_id, dataIndex, cb) {
 /**
  * 上移一个配置字段到顶部
  */
-export function fieldUpToTop(_id, dataIndex, cb) {
+export function fieldUpToTop(id, dataIndex, cb) {
     api.put('/table_field/up_top', {
-        params: { _id, dataIndex },
+        params: { id, dataIndex },
     }).then(payload => {
         cb && cb();
     }, () => {
@@ -154,9 +154,9 @@ export function fieldUpToTop(_id, dataIndex, cb) {
 /**
  * 下移一个配置字段到底部
  */
-export function fieldDownToBottom(_id, dataIndex, cb) {
+export function fieldDownToBottom(id, dataIndex, cb) {
     api.put('/table_field/down_bottom', {
-        params: { _id, dataIndex },
+        params: { id, dataIndex },
     }).then(payload => {
         cb && cb();
     }, () => {

@@ -14,9 +14,9 @@ module.exports = {
         let defer = Q.defer();
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            record[`${record.tableName}_id`] = ObjectId();
-            record[`${record.tableName}_createdAt`] = new Date();
-            record[`${record.tableName}_modifiedAt`] = new Date();
+            record[`${moudleConfig.tableName}_id`] = ObjectId();
+            record[`${moudleConfig.tableName}_createdAt`] = new Date();
+            record[`${moudleConfig.tableName}_modifiedAt`] = new Date();
             let fields_config = moudleConfig.fields_config || [];
             // 获取配置中的唯一字段
             let uniqueFields = fields_config.filter(item => item.isUnique === '1');
@@ -78,11 +78,11 @@ module.exports = {
     /**
      * 删除
      */
-    delete: (_id, moudleConfig) => {
+    delete: (id, moudleConfig) => {
         let defer = Q.defer();
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            collection.deleteMany({_id: ObjectId(_id)}, null, (error, result) => {
+            collection.deleteMany({[`${moudleConfig.tableName}_id`]: id}, null, (error, result) => {
                 if (error && error.message) {
                     defer.reject(error);
                     db.close();
@@ -98,12 +98,12 @@ module.exports = {
     /**
      * 更新
      */
-    update: (_id, record, moudleConfig) => {
+    update: (id, record, moudleConfig) => {
         let defer = Q.defer();
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            record[`${record.tableName}_modifiedAt`] = new Date();
-            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+            record[`${moudleConfig.tableName}_modifiedAt`] = new Date();
+            collection.findOne({[`${moudleConfig.tableName}_id`]: id}, {}, (error, doc) => {
                 if (error && error.message) {
                     defer.reject(error);
                     db.close();
@@ -141,7 +141,7 @@ module.exports = {
                         } 
 
                         // 更新数据
-                        collection.updateOne({_id: ObjectId(_id)}, {$set: record}, null, (error, result) => {
+                        collection.updateOne({[`${moudleConfig.tableName}_id`]: id}, {$set: record}, null, (error, result) => {
                             if (error && error.message) {
                                 defer.reject(error);
                                 db.close();
@@ -153,7 +153,7 @@ module.exports = {
                     });
                 } else {
                     // 更新数据
-                    collection.updateOne({_id: ObjectId(_id)}, {$set: record}, null, (error, result) => {
+                    collection.updateOne({[`${moudleConfig.tableName}_id`]: id}, {$set: record}, null, (error, result) => {
                         if (error && error.message) {
                             defer.reject(error);
                             db.close();
@@ -210,11 +210,11 @@ module.exports = {
     /**
      * 获取单个表格配置
      */
-    getOne: (_id, moudleConfig) => {
+    getOne: (id, moudleConfig) => {
         let defer = Q.defer();
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+            collection.findOne({[`${moudleConfig.tableName}_id`]: id}, {}, (error, doc) => {
                 if (error && error.message) {
                     defer.reject(error);
                     db.close();
@@ -237,7 +237,7 @@ module.exports = {
         let defer = Q.defer();
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            collection.findOne({_id: ObjectId(pid)}, {}, (error, doc) => {
+            collection.findOne({[`${moudleConfig.tableName}_id`]: pid}, {}, (error, doc) => {
                 if (error && error.message) {
                     defer.reject(error);
                     db.close();
@@ -248,10 +248,10 @@ module.exports = {
                     db.close();
                 }
                 let newId = ObjectId();
-                record[`${record.tableName}_levels`] = doc[`${record.tableName}_levels`] + ',' + newId;
-                record[`${record.tableName}_id`] = newId;
-                record[`${record.tableName}_createdAt`] = new Date();
-                record[`${record.tableName}_modifiedAt`] = new Date();
+                record[`${moudleConfig.tableName}_levels`] = doc[`${moudleConfig.tableName}_levels`] + ',' + newId;
+                record[`${moudleConfig.tableName}_id`] = newId;
+                record[`${moudleConfig.tableName}_createdAt`] = new Date();
+                record[`${moudleConfig.tableName}_modifiedAt`] = new Date();
                 let fields_config = moudleConfig.fields_config || [];
                 // 获取配置中的唯一字段
                 let uniqueFields = fields_config.filter(item => item.isUnique === '1');
@@ -314,24 +314,24 @@ module.exports = {
     /**
      * 删除树节点
      */
-    deleteTreeNode: (_id, moudleConfig) => {
+    deleteTreeNode: (id, moudleConfig) => {
         let defer = Q.defer();
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+            collection.findOne({[`${moudleConfig.tableName}_id`]: id}, {}, (error, doc) => {
                 if (error && error.message) {
                     defer.reject(error);
                     db.close();
                     return;
                 }
 
-                if (doc[`${record.tableName}_pid`] === null) {
+                if (doc[`${moudleConfig.tableName}_pid`] === null) {
                     defer.reject({message: "根节点不能删除"});
                     db.close();
                     return;
                 }
 
-                collection.find({[`${record.tableName}_pid`]: _id}).count((error, result) => {
+                collection.find({[`${moudleConfig.tableName}_pid`]: id}).count((error, result) => {
                     if (error && error.message) {
                         defer.reject(error);
                         db.close();
@@ -344,7 +344,7 @@ module.exports = {
                         return;
                     } 
     
-                    collection.deleteMany({_id: ObjectId(_id)}, null, (error, result) => {
+                    collection.deleteMany({[`${moudleConfig.tableName}_id`]: id}, null, (error, result) => {
                         if (error && error.message) {
                             defer.reject(error);
                             db.close();

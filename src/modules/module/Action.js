@@ -19,11 +19,11 @@ export function getList(tableName, page, pageSize, query, sorter, cb) {
 
 /**
  * 删除
- * @param {} _id 
+ * @param {} id 
  */
-export function del(tableName, _id, cb) {
+export function del(tableName, id, cb) {
     api.del(`/${tableName}`, {
-        params: { _id }
+        params: { id }
     }).then(payload => {
         cb && cb();
     }, () => {
@@ -46,12 +46,12 @@ export function add(tableName, record, cb) {
 
 /**
  * 获取一条表格配置
- * @param {*} _id 
+ * @param {*} id 
  * @param {*} cb 
  */
-export function getOne(tableName, _id, cb) {
+export function getOne(tableName, id, cb) {
     api.get(`/${tableName}`, {
-        params: { _id }
+        params: { id }
     }).then(payload => {
         cb && cb(payload.body || {});
     }, () => {
@@ -62,9 +62,9 @@ export function getOne(tableName, _id, cb) {
 /**
  * 修改
  */
-export function modify(tableName, _id, record, cb) {
+export function modify(tableName, id, record, cb) {
     api.put(`/${tableName}`, {
-        params: { _id },
+        params: { id },
         data: record
     }).then(payload => {
         cb && cb();

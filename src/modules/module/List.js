@@ -122,9 +122,9 @@ class List extends Component {
     /**
      * 删除操作
      */
-    del(_id) {
+    del(id) {
         global.storeData(this, this.tableName, {loading: true});
-        Action.del(this.tableName, _id, () => {
+        Action.del(this.tableName, id, () => {
             this.refresh();
         });
     }
@@ -168,7 +168,7 @@ class List extends Component {
         });
         columns.push({
             title: '操作',
-            dataIndex: '_id',
+            dataIndex: `${this.tableName}_id`,
             key: 'operation',
             width: 200,
             fixed: 'right',
@@ -230,7 +230,7 @@ class List extends Component {
                 columns={columns}
                 dataSource={list}
                 onChange={this.handleTableChange.bind(this)}
-                rowKey={record => record._id}
+                rowKey={record => record[`${this.tableName}_id`]}
                 pagination={pagination}
             />
         </Spin>
