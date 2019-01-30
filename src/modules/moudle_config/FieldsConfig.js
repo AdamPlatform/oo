@@ -19,6 +19,14 @@ const Option = Select.Option;
 const aStyle = {
 	color: '#1890ff', //  hover #40a9ff
 }
+
+// 顶部保留字段数量
+const TOP_FIELDS_NUM = 2;
+// 底部保留字段数量
+const BOTTOM_FIELDS_NUM = 2;
+// 保留字段数量总数
+const RESERVED_FIELDS_NUM = TOP_FIELDS_NUM + BOTTOM_FIELDS_NUM;
+
 class FieldsConfig extends Component {
 	/**
      * 构造函数 初始化
@@ -352,25 +360,25 @@ class FieldsConfig extends Component {
 				render: (text, record)=>{
 					let index = record.index;
 					let moreOptions = [];
-					if (index > 3) {
+					if (index > TOP_FIELDS_NUM + 1 && index < config.length - BOTTOM_FIELDS_NUM) {
 						let up = <Menu.Item key={moreOptions.length + 1} >
 							<a style={aStyle} onClick={this.up.bind(this, record)}>上移</a>
 						</Menu.Item>
 						moreOptions.push(up);
 					}
-					if (index > 2 && index < config.length) {
+					if (index > TOP_FIELDS_NUM && index < config.length - BOTTOM_FIELDS_NUM) {
 						let down = <Menu.Item key={moreOptions.length + 1} >
 							<a style={aStyle} onClick={this.down.bind(this, record)}>下移</a>
 						</Menu.Item>
 						moreOptions.push(down);
 					}
-					if (index > 3) {
+					if (index > TOP_FIELDS_NUM + 1 && index < config.length - BOTTOM_FIELDS_NUM) {
 						let up = <Menu.Item key={moreOptions.length + 1} >
 							<a style={aStyle} onClick={this.upToTop.bind(this, record)}>上移至顶部</a>
 						</Menu.Item>
 						moreOptions.push(up);
 					}
-					if (index > 2 && index < config.length) {
+					if (index > TOP_FIELDS_NUM && index < config.length - BOTTOM_FIELDS_NUM) {
 						let down = <Menu.Item key={moreOptions.length + 1} >
 							<a style={aStyle} onClick={this.downToBottom.bind(this, record)}>下移至底部</a>
 						</Menu.Item>

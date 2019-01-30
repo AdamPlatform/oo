@@ -14,8 +14,8 @@ module.exports = {
         let defer = Q.defer();
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            record.createdAt = new Date();
-            record.modifiedAt = new Date();
+            record[`${record.tableName}_createdAt`] = new Date();
+            record[`${record.tableName}_modifiedAt`] = new Date();
             let fields_config = moudleConfig.fields_config || [];
             // 获取配置中的唯一字段
             let uniqueFields = fields_config.filter(item => item.isUnique === '1');
@@ -40,6 +40,7 @@ module.exports = {
                         db.close();
                         return;
                     }
+
                     if (result > 0) {
                         defer.reject({message: `${uniqueNamesStr}已存在，请检查`});
                         db.close();
@@ -100,7 +101,7 @@ module.exports = {
         let defer = Q.defer();
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            record.modifiedAt = new Date();
+            record[`${record.tableName}_modifiedAt`] = new Date();
             collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
                 if (error && error.message) {
                     defer.reject(error);
@@ -131,6 +132,7 @@ module.exports = {
                             db.close();
                             return;
                         }
+
                         if (result > 0) {
                             defer.reject({message: `${uniqueNamesStr}已存在，请检查`});
                             db.close();
@@ -183,7 +185,12 @@ module.exports = {
             let findCond = generateSql(query);
             let cursor = collection.find(findCond).collation({locale: "zh"});
             let totalElements = 0;
-            cursor.count((err, result) => {
+            cursor.count((error, result) => {
+                if (error && error.message) {
+                    defer.reject(error);
+                    db.close();
+                    return;
+                }
                 totalElements = result;
                 cursor.sort(sortField)
                     .skip(page > 0 ? ( ( page - 1 ) * pageSize ) : 0)
@@ -217,4 +224,60 @@ module.exports = {
         });
         return defer.promise;
     },
+
+    /**
+     * 删除树节点
+     */
+    deleteTreeNode: (_id, moudleConfig) => {
+        let defer = Q.defer();
+        connect(db => {
+            const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
+            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
+                if (error && error.message) {
+                    defer.reject(error);
+                    db.close();
+                    return;
+                }
+
+                if (doc[`${record.tableName}_pid`] === null) {
+                    defer.reject({message: "根节点不能删除"});
+                    db.close();
+                    return;
+                }
+
+                collection.find({[`${record.tableName}_pid`]: _id}).count((error, result) => {
+                    if (error && error.message) {
+                        defer.reject(error);
+                        db.close();
+                        return;
+                    }
+    
+                    if (result > 0) {
+                        defer.reject({message: "该节点存在子节点，不能删除"});
+                        db.close();
+                        return;
+                    } 
+    
+                    collection.deleteMany({_id: ObjectId(_id)}, null, (error, result) => {
+                        if (error && error.message) {
+                            defer.reject(error);
+                            db.close();
+                            return;
+                        }
+                        defer.resolve(null);
+                        db.close();
+                    });
+                })
+            });  
+            
+        });
+        return defer.promise;
+    },
+
+    /**
+     * 查询树
+     */
+    getTree: (moudleConfig) => {
+
+    }
 };
