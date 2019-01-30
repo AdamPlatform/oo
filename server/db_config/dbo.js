@@ -60,15 +60,32 @@ module.exports = {
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.deleteMany({_id: ObjectId(_id)}, null, (error, result) => {
+
+            collection.findOne({_id: ObjectId(_id)}, {}, (error, doc) => {
                 if (error && error.message) {
                     defer.reject(error);
                     db.close();
                     return;
                 }
-                defer.resolve(null);
-                db.close();
-            });
+                let table = oo.collection(doc.tableName);
+                table.find({}).count((err, result) => {
+                    if (result > 0) {
+                        defer.reject({message: "模块中已经存在数据，不能删除！"});
+                        db.close();
+                        return;
+                    } else {
+                        collection.deleteMany({_id: ObjectId(_id)}, null, (error, result) => {
+                            if (error && error.message) {
+                                defer.reject(error);
+                                db.close();
+                                return;
+                            }
+                            defer.resolve(null);
+                            db.close();
+                        });
+                    }
+                });
+            });    
         });
         return defer.promise;
     },
