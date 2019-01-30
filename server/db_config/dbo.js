@@ -59,9 +59,12 @@ module.exports = {
 
                     if (record.dataMoudle === '树') {
                         let table = db.db("oo").collection(record.tableName);
+                        let newId = ObjectId();
                         let rootNode = {
+                            [`${record.tableName}_id`]: newId, 
                             [`${record.tableName}_pid`]: null, 
                             [`${record.tableName}_code`]: 'root', 
+                            [`${record.tableName}_levels`]: newId,
                             [`${record.tableName}_name`]: record.moduleName,
                             [`${record.tableName}_createdAt`]: new Date(),
                             [`${record.tableName}_modifiedAt`]: new Date(),
@@ -172,9 +175,12 @@ module.exports = {
                                 return;
                             }
 
+                            let newId = ObjectId();
                             let rootNode = {
+                                [`${record.tableName}_id`]: newId,
                                 [`${record.tableName}_pid`]: null, 
                                 [`${record.tableName}_code`]: 'root', 
+                                [`${record.tableName}_levels`]: newId,
                                 [`${record.tableName}_name`]: record.moduleName,
                                 [`${record.tableName}_createdAt`]: new Date(),
                                 [`${record.tableName}_modifiedAt`]: new Date(),

@@ -14,6 +14,7 @@ module.exports = {
         let defer = Q.defer();
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
+            record[`${record.tableName}_id`] = ObjectId();
             record[`${record.tableName}_createdAt`] = new Date();
             record[`${record.tableName}_modifiedAt`] = new Date();
             let fields_config = moudleConfig.fields_config || [];
@@ -172,7 +173,7 @@ module.exports = {
      */
     getList: (data, moudleConfig) => {
         let {page, pageSize, query, sorter} = data;
-        let sortField = {createdAt: -1};
+        let sortField = {[`${moudleConfig.tableName}_createdAt`]: -1};
         if (sorter.field) {
             let order = sorter.order === 'ascend' ? 1 : -1
             sortField = {
@@ -221,6 +222,91 @@ module.exports = {
                 }
                 defer.resolve(doc);
             });        
+        });
+        return defer.promise;
+    },
+
+    /***************************************************************************
+     * 数据模型树操作
+     ***************************************************************************/
+
+    /**
+     * 新增树节点
+     */
+    addTreeNode: (pid, record, moudleConfig) => {
+        let defer = Q.defer();
+        connect(db => {
+            const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
+            collection.findOne({_id: ObjectId(pid)}, {}, (error, doc) => {
+                if (error && error.message) {
+                    defer.reject(error);
+                    db.close();
+                    return;
+                }
+                if (null === doc) {
+                    defer.reject({message: `未找到父节点，请联系管理员`});
+                    db.close();
+                }
+                let newId = ObjectId();
+                record[`${record.tableName}_levels`] = doc[`${record.tableName}_levels`] + ',' + newId;
+                record[`${record.tableName}_id`] = newId;
+                record[`${record.tableName}_createdAt`] = new Date();
+                record[`${record.tableName}_modifiedAt`] = new Date();
+                let fields_config = moudleConfig.fields_config || [];
+                // 获取配置中的唯一字段
+                let uniqueFields = fields_config.filter(item => item.isUnique === '1');
+                // 唯一字段查询条件
+                let orQuery = {$or: []};
+                // 唯一字段名称数组
+                let uniqueNameArr = [];
+                for (let config of uniqueFields) {
+                    let dataIndex = config.dataIndex;
+                    let value = record[dataIndex] || '';
+                    if (value !== '') {
+                        orQuery.$or.push({[dataIndex]: value});
+                        uniqueNameArr.push(config.name);
+                    }
+                }
+                let uniqueNamesStr = uniqueNameArr.join('或');
+                if (orQuery.$or.length > 0) {
+                    // 查询唯一字段是否重复
+                    collection.count(orQuery, {}, (error, result) => {
+                        if (error && error.message) {
+                            defer.reject(error);
+                            db.close();
+                            return;
+                        }
+
+                        if (result > 0) {
+                            defer.reject({message: `${uniqueNamesStr}已存在，请检查`});
+                            db.close();
+                            return;
+                        }
+
+                        // 插入一条数据
+                        collection.insertOne(record, null, (error, result) => {
+                            if (error && error.message) {
+                                defer.reject(error);
+                                db.close();
+                                return;
+                            }
+                            defer.resolve(record);
+                            db.close();
+                        });
+                    });
+                } else {
+                    // 插入一条数据
+                    collection.insertOne(record, null, (error, result) => {
+                        if (error && error.message) {
+                            defer.reject(error);
+                            db.close();
+                            return;
+                        }
+                        defer.resolve(record);
+                        db.close();
+                    });
+                }
+            }); 
         });
         return defer.promise;
     },

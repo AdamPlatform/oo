@@ -60,7 +60,10 @@ module.exports = (app) => {
     let treeApi = (app, tableName, moudleConfig) => {
         // 新增
         app.post(`/${tableName}`, (req, res) => {
-            dbo.add(req.body, moudleConfig).then(data => {
+            if (req.query == null || req.query.pid == null) {
+                res.status(400).send('pid不能为空')
+            }
+            dbo.addTreeNode(req.query.pid, req.body, moudleConfig).then(data => {
                 res.send(data);
             }, error => {
                 res.status(400).send(error);
