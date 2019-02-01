@@ -15,7 +15,7 @@ import {configToColumn, configToItemProps} from '../../components/PageCreator'
 let mainSearchFeilds = [];
 let moreSearchFeilds = [];
 
-class List extends Component {
+class TreeModule extends Component {
     /**
      * 使用全局变量保存页面状态
      */
@@ -236,4 +236,4 @@ class List extends Component {
         </Spin>
     }
 }
-export default List
+export default TreeModule

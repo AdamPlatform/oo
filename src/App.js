@@ -6,7 +6,8 @@ import Icon from 'antd/lib/icon'
 
 import MoudleConfig from './modules/moudle_config/List'
 import {getList} from './modules/moudle_config/Action'
-import List from './modules/list_module/List'
+import ListModule from './modules/list_module/ListModule'
+import TreeModule from './modules/tree_module/TreeModule'
 
 class App extends Component {
 	constructor() {
@@ -64,7 +65,12 @@ class App extends Component {
 		const toggermenustyle = this.state.folded ? 'menu-unfold' : 'menu-fold';
 		const mode = this.state.folded ? 'vertical' : 'inline';
 		let moduleMenus = this.state.moduleConfigs.map(config => {
-			let page = <List config={config}/>
+			let page = null
+			if (config.dataMoudle === '树') {
+				page = <TreeModule config={config}/>
+			} else {
+				page = <ListModule config={config}/>
+			}
 			return <Menu.Item key={config.tableName}>
 				<a onClick={() => {this.setState({page})}}>{config.moduleName}</a>
 			</Menu.Item>
