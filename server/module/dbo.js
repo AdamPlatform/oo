@@ -153,7 +153,7 @@ module.exports = {
                                 db.close();
                                 return;
                             }
-                            defer.resolve({});
+                            defer.resolve(Object.assign({}, doc, record));
                             db.close();
                         });    
                     });
@@ -165,7 +165,7 @@ module.exports = {
                             db.close();
                             return;
                         }
-                        defer.resolve({});
+                        defer.resolve(Object.assign({}, doc, record));
                         db.close();
                     });    
                 }

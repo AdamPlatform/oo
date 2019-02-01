@@ -64,7 +64,7 @@ export function modify(tableName, id, record, cb) {
         params: { id },
         data: record
     }).then(payload => {
-        cb && cb();
+        cb && cb(payload.body);
     }, () => {
         cb && cb();
     })

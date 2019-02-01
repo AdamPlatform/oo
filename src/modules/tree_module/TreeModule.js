@@ -16,6 +16,7 @@ import New from './New'
 import * as Action from './Action'
 import {configToItemProps} from '../../components/PageCreator'
 import { Modal } from 'antd';
+import { Record } from 'immutable';
 
 class TreeModule extends Component {
     /**
@@ -26,7 +27,7 @@ class TreeModule extends Component {
         this.tableName = props.config.tableName;
         global[this.tableName] = global[this.tableName] || {};
         this.state = {
-            loading: global[this.tableName].loading || false,
+            loading: false,
             editing: false,
             node: global[this.tableName].node || {},
         };
@@ -91,7 +92,30 @@ class TreeModule extends Component {
      * 点击保存时
      */
     onSave() {
-        this.setState({editing: false})
+        this.setState({editing: false});
+        let hasError = false;
+        // 校验数据
+		this.formRef.props.form.validateFields((errors, values) => {
+			if (!!errors) {
+                hasError = true;
+				return;
+			}
+        });
+        if (hasError) {
+            return;
+        }
+        let record = this.formRef.props.form.getFieldsValue();
+        this.setState({loading: true});
+        Action.modify(this.tableName, this.state.node[`${this.tableName}_id`], record, (data) => {
+            if (data) {
+                data.key = data[`${this.tableName}_id`];
+                data.label = data[`${this.tableName}_name`];
+                global.storeData(this, this.tableName, {
+                    node: data
+                });
+            }
+            this.refresh();
+        })
     }
 
     /**
@@ -102,7 +126,11 @@ class TreeModule extends Component {
             Modal.warning({title: '根节点不能删除'});
             return;
         }
+        this.setState({loading: true});
         Action.del(this.tableName, this.state.node[`${this.tableName}_id`], () => {
+            global.storeData(this, this.tableName, {
+                node: this.state.treeData[0]
+            });
             this.refresh();
         })
     }
@@ -130,7 +158,7 @@ class TreeModule extends Component {
                         {!editing && <Popconfirm title="确定要删除这条数据吗？" onConfirm={this.onDel.bind(this)}>
                             <Button style={{marginLeft: 16}}>删除</Button>
                         </Popconfirm>}
-                        {editing && <Button onClick={this.onSave.bind(this)} style={{marginLeft: 16}}>保存</Button>}
+                        {editing && <Button type='primary' onClick={this.onSave.bind(this)} style={{marginLeft: 16}}>保存</Button>}
                         {editing && <Button onClick={() => this.setState({editing: false})} style={{marginLeft: 16}}>取消</Button>}
                     </div>
                     <Fields
