@@ -38,9 +38,9 @@ module.exports = {
             let uniqueNamesStr = uniqueNameArr.join('或');
             if (orQuery.$or.length > 0) {
                 // 查询唯一字段是否重复
-                collection.count(orQuery, {}, (error, result) => {
-                    if (error) {
-                        defer.reject(error);
+                collection.count(orQuery, {}, (err, result) => {
+                    if (err) {
+                        defer.reject(err);
                         db.close();
                         return;
                     }
@@ -52,9 +52,9 @@ module.exports = {
                     }
 
                     // 插入一条数据
-                    collection.insertOne(record, null, (error, result) => {
-                        if (error) {
-                            defer.reject(error);
+                    collection.insertOne(record, null, (err, result) => {
+                        if (err) {
+                            defer.reject(err);
                             db.close();
                             return;
                         }
@@ -64,9 +64,9 @@ module.exports = {
                 });
             } else {
                 // 插入一条数据
-                collection.insertOne(record, null, (error, result) => {
-                    if (error) {
-                        defer.reject(error);
+                collection.insertOne(record, null, (err, result) => {
+                    if (err) {
+                        defer.reject(err);
                         db.close();
                         return;
                     }
@@ -85,9 +85,9 @@ module.exports = {
         let defer = Q.defer();
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            collection.deleteMany({[`${moudleConfig.tableName}_id`]: id}, null, (error, result) => {
-                if (error) {
-                    defer.reject(error);
+            collection.deleteMany({[`${moudleConfig.tableName}_id`]: id}, null, (err, result) => {
+                if (err) {
+                    defer.reject(err);
                     db.close();
                     return;
                 }
@@ -106,9 +106,9 @@ module.exports = {
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
             record[`${moudleConfig.tableName}_modifiedAt`] = new Date();
-            collection.findOne({[`${moudleConfig.tableName}_id`]: id}, {}, (error, doc) => {
-                if (error) {
-                    defer.reject(error);
+            collection.findOne({[`${moudleConfig.tableName}_id`]: id}, {}, (err, doc) => {
+                if (err) {
+                    defer.reject(err);
                     db.close();
                     return;
                 }
@@ -133,9 +133,9 @@ module.exports = {
                 let uniqueNamesStr = uniqueNameArr.join('或')
                 if (orQuery.$or.length > 0) {
                     // 查询唯一字段是否重复
-                    collection.count(orQuery, {}, (error, result) => {
-                        if (error) {
-                            defer.reject(error);
+                    collection.count(orQuery, {}, (err, result) => {
+                        if (err) {
+                            defer.reject(err);
                             db.close();
                             return;
                         }
@@ -147,9 +147,9 @@ module.exports = {
                         } 
 
                         // 更新数据
-                        collection.updateOne({[`${moudleConfig.tableName}_id`]: id}, {$set: record}, null, (error, result) => {
-                            if (error) {
-                                defer.reject(error);
+                        collection.updateOne({[`${moudleConfig.tableName}_id`]: id}, {$set: record}, null, (err, result) => {
+                            if (err) {
+                                defer.reject(err);
                                 db.close();
                                 return;
                             }
@@ -159,9 +159,9 @@ module.exports = {
                     });
                 } else {
                     // 更新数据
-                    collection.updateOne({[`${moudleConfig.tableName}_id`]: id}, {$set: record}, null, (error, result) => {
-                        if (error) {
-                            defer.reject(error);
+                    collection.updateOne({[`${moudleConfig.tableName}_id`]: id}, {$set: record}, null, (err, result) => {
+                        if (err) {
+                            defer.reject(err);
                             db.close();
                             return;
                         }
@@ -192,9 +192,9 @@ module.exports = {
             let findCond = generateSql(query);
             let cursor = collection.find(findCond).collation({locale: "zh"});
             let totalElements = 0;
-            cursor.count((error, result) => {
-                if (error) {
-                    defer.reject(error);
+            cursor.count((err, result) => {
+                if (err) {
+                    defer.reject(err);
                     db.close();
                     return;
                 }
@@ -205,8 +205,8 @@ module.exports = {
                     .toArray().then(list => {
                     defer.resolve({
                         page, pageSize, totalElements, list
-                    }, error => {
-                        defer.reject(error);
+                    }, err => {
+                        defer.reject(err);
                         db.close();
                     });  
                     db.close();       
@@ -223,9 +223,9 @@ module.exports = {
         let defer = Q.defer();
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            collection.findOne({[`${moudleConfig.tableName}_id`]: id}, {}, (error, doc) => {
-                if (error) {
-                    defer.reject(error);
+            collection.findOne({[`${moudleConfig.tableName}_id`]: id}, {}, (err, doc) => {
+                if (err) {
+                    defer.reject(err);
                     db.close();
                     return;
                 }
@@ -246,9 +246,9 @@ module.exports = {
         let defer = Q.defer();
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            collection.findOne({[`${moudleConfig.tableName}_id`]: pid}, {}, (error, doc) => {
-                if (error) {
-                    defer.reject(error);
+            collection.findOne({[`${moudleConfig.tableName}_id`]: pid}, {}, (err, doc) => {
+                if (err) {
+                    defer.reject(err);
                     db.close();
                     return;
                 }
@@ -282,9 +282,9 @@ module.exports = {
                 let uniqueNamesStr = uniqueNameArr.join('或');
                 if (orQuery.$or.length > 0) {
                     // 查询唯一字段是否重复
-                    collection.count(orQuery, {}, (error, result) => {
-                        if (error) {
-                            defer.reject(error);
+                    collection.count(orQuery, {}, (err, result) => {
+                        if (err) {
+                            defer.reject(err);
                             db.close();
                             return;
                         }
@@ -296,9 +296,9 @@ module.exports = {
                         }
 
                         // 插入一条数据
-                        collection.insertOne(record, null, (error, result) => {
-                            if (error) {
-                                defer.reject(error);
+                        collection.insertOne(record, null, (err, result) => {
+                            if (err) {
+                                defer.reject(err);
                                 db.close();
                                 return;
                             }
@@ -308,9 +308,9 @@ module.exports = {
                     });
                 } else {
                     // 插入一条数据
-                    collection.insertOne(record, null, (error, result) => {
-                        if (error) {
-                            defer.reject(error);
+                    collection.insertOne(record, null, (err, result) => {
+                        if (err) {
+                            defer.reject(err);
                             db.close();
                             return;
                         }
@@ -330,9 +330,9 @@ module.exports = {
         let defer = Q.defer();
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            collection.findOne({[`${moudleConfig.tableName}_id`]: id}, {}, (error, doc) => {
-                if (error) {
-                    defer.reject(error);
+            collection.findOne({[`${moudleConfig.tableName}_id`]: id}, {}, (err, doc) => {
+                if (err) {
+                    defer.reject(err);
                     db.close();
                     return;
                 }
@@ -343,9 +343,9 @@ module.exports = {
                     return;
                 }
 
-                collection.find({[`${moudleConfig.tableName}_pid`]: id}).count((error, result) => {
-                    if (error) {
-                        defer.reject(error);
+                collection.find({[`${moudleConfig.tableName}_pid`]: id}).count((err, result) => {
+                    if (err) {
+                        defer.reject(err);
                         db.close();
                         return;
                     }
@@ -356,9 +356,9 @@ module.exports = {
                         return;
                     } 
     
-                    collection.deleteMany({[`${moudleConfig.tableName}_id`]: id}, null, (error, result) => {
-                        if (error) {
-                            defer.reject(error);
+                    collection.deleteMany({[`${moudleConfig.tableName}_id`]: id}, null, (err, result) => {
+                        if (err) {
+                            defer.reject(err);
                             db.close();
                             return;
                         }
@@ -378,8 +378,33 @@ module.exports = {
     getTree: (moudleConfig) => {
         let defer = Q.defer();
         connect(db => {
-            const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            collection.find({}).toArray().then()
+            let tableName = moudleConfig.tableName;
+            const collection = db.db("oo").collection(`${tableName}`);
+            collection.find({}).toArray((err, docs) => {
+                if (err) {
+                    defer.reject(err);
+                    db.close();
+                    return;
+                }
+                let rootNodes = docs.filter(doc => doc[`${tableName}_pid`] === null);
+                let createTree = (docs, node) => {
+                    if (node === null || node === undefined) {
+                        return;
+                    }
+                    node.children = docs.filter(doc => doc[`${tableName}_pid`] === node[`${tableName}_id`]);
+                    if (node.children.length === 0) {
+                        delete node.children;
+                    }
+                    if (node.children === undefined) {
+                        return;
+                    }
+                    for (let childNode of node.children) {
+                        createTree(docs, childNode);
+                    }
+                }
+                defer.resolve(rootNodes.map(rootNode => createTree(docs, rootNode)));
+                db.close();
+            })
         });
     }
 };
