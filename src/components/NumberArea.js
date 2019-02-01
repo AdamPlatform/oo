@@ -43,7 +43,7 @@ export default class NumberArea extends Component {
     propsValue2State(value) {
         let leftValue;
         let rightValue;
-        if (value && value.length === 2) {
+        if (value instanceof Array && value && value.length === 2) {
             leftValue = value[0];
             rightValue = value[1]
         } else {

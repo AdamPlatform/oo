@@ -6,6 +6,87 @@
  *   moreFeilds {Array<Object>} 更多查询条件
  * }
  */
+
+ /**
+ * js 数据判断严格相等
+ */
+global.equals = (a, b) => {
+    if ((a instanceof Object) && (b instanceof Object)) {
+        return Object.keys(a).reduce((ret, key) => {
+            if (ret === false) {
+                return false;
+            }
+            return global.equals(a[key], b[key]);
+        }, true);
+    } else {
+        return a === b;
+    }
+}
+
+/**
+ * js 深拷贝
+ */
+global.copy = (a) => {
+    if (a instanceof Array) {
+        return a.map(item => global.copy(item));
+    } else if (a instanceof Object) {
+        return Object.keys(a).reduce((obj, key) => {
+            obj[key] = global.copy(a[key])
+            return obj;
+        }, {});
+    } else {
+        return a;
+    }
+}
+
+/**
+ * 搜索树
+ * treeData []
+ */
+global.searchTree = (text, treeData, key) => {
+    let res = [];
+    for (let item of treeData) {
+        let { children, ...restProps } = item;
+        if (children && children.length > 0) {
+            restProps.children = global.searchTree(text, children, key);
+        }
+        if (item[key].indexOf(text) !== -1 || (restProps.children && restProps.children.length > 0)) {
+            res.push(restProps);
+        }
+    }
+    return res
+}
+
+/**
+ * 判断字符串是否全为ASCII码
+ */
+global.isASCII = (str) => {
+    let regexpObj = new RegExp(/a-zA-Z0-9_].+/g)
+    return regexpObj.test(str);
+}
+
+/**
+ * JSON字符串转对象
+ */
+global.parse = (str) => {
+    try {
+        return JSON.parse(str) || {};
+    } catch (error) {
+        console.error(error);
+        return {};
+    }
+};
+/**
+ * JSON字符串转数组
+ */
+global.parseArray = (str) => {
+    try {
+      return JSON.parse(str) || [];
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+};
 module.exports = {
     generateSql: (options) => {
         options = options || {};
@@ -50,13 +131,15 @@ module.exports = {
                 let start = value[0];
                 let end = value[1];
                 let obj = {}
-                if (start !== null || start !== undefined || start !== '') {
-                    obj['$gte'] = start;
+                if (start !== null && start !== undefined && start !== '') {
+                    obj['$gte'] = parseFloat(start);
                 }
-                if (end !== null || end !== undefined || end !== '') {
-                    obj['$lte'] = end;
+                if (end !== null && end !== undefined && end !== '') {
+                    obj['$lte'] = parseFloat(end);
                 }
-                query[key] = obj;
+                if (!global.equals(obj, {})) {
+                    query[key] = obj;
+                }
             } else if (dataType === 'DATE') {
                 if (value.length !== 2) {
                     continue;

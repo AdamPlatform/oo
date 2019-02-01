@@ -239,10 +239,8 @@ export function configToItemProps(field, index, initialValue, specialItemProps, 
         formField.param.props.placeholder = '请选择' + (field.showName || field.name);
     } else if (dataType === 'NUMBER') {
         formField.param.props.min = 0;
-        initialValue = (initialValue && global.toFixedEx(initialValue)) || 0;
     } else if (dataType === 'MONEY') {
         formField.param.props.min = 0;
-        initialValue = (initialValue && global.toFixed(initialValue)) || 0;
     } else if (dataType === 'SELECT') {
         let params = (field.params || '').split('/');
         let children = params.map((prop, index) => {
