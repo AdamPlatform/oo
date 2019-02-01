@@ -195,7 +195,7 @@ class List extends Component {
         mainSearchFeilds = [];
         moreSearchFeilds = [];
         searchFormFields.forEach(field => {
-            if (['moduleName'].indexOf(field.id) !== -1) {
+            if ([`${this.tableName}_name`, `${this.tableName}_code`].indexOf(field.id) !== -1) {
                 mainSearchFeilds.push(field);
             } else {
                 moreSearchFeilds.push(field);
@@ -217,7 +217,7 @@ class List extends Component {
                 handleMore={this.handleMore.bind(this)}
                 onSearch={this.onSearch.bind(this)}
                 resetSearch={this.resetSearch.bind(this)}
-                placeholder='请输入模块名称'
+                placeholder='请输入名称或编码'
                 searchFields={searchFields}
                 showMore={showMore}
                 btnName='搜索'
