@@ -6,7 +6,7 @@ import Icon from 'antd/lib/icon'
 
 import MoudleConfig from './modules/moudle_config/List'
 import {getList} from './modules/moudle_config/Action'
-import List from './modules/module/List'
+import List from './modules/list_module/List'
 
 class App extends Component {
 	constructor() {
