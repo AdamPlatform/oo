@@ -30,7 +30,6 @@ class ListModule extends Component {
             pageSize: global[this.tableName].pageSize || 10,
             list: global[this.tableName].list || [],
             totalElements: global[this.tableName].totalElements || 0,
-            tableConfig: global[this.tableName].tableConfig || [],
             sorter: global[this.tableName].sorter || {},
             loading: global[this.tableName].loading || false,
             query: global[this.tableName].query || {},

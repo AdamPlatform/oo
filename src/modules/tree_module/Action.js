@@ -4,14 +4,10 @@
 import api from '../../utils/api';
 /**
  * 查询
- * @param {*} searchFields 
- * @param {*} mainSearchFeilds 
- * @param {*} moreSearchFeilds 
  */
-export function getList(tableName, page, pageSize, query, sorter, cb) {
-    let data = { page, pageSize, query, sorter }
-    api.put(`/${tableName}/list`, { data }).then(payload => {
-        cb && cb(payload.body || {});
+export function getTree(tableName, cb) {
+    api.put(`/${tableName}/tree`).then(payload => {
+        cb && cb(payload.body || []);
     }, () => {
         cb && cb({});
     })
@@ -34,8 +30,9 @@ export function del(tableName, id, cb) {
 /**
  * 新增
  */
-export function add(tableName, record, cb) {
+export function add(tableName, pid, record, cb) {
     api.post(`/${tableName}`, {
+        params: {pid},
         data: record
     }).then(payload => {
         cb && cb();

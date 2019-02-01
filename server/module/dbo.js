@@ -259,6 +259,7 @@ module.exports = {
                 let newId = ObjectId().toString();
                 record[`${moudleConfig.tableName}_levels`] = doc[`${moudleConfig.tableName}_levels`] + ',' + newId;
                 record[`${moudleConfig.tableName}_id`] = newId;
+                record[`${moudleConfig.tableName}_pid`] = pid;
                 record[`${moudleConfig.tableName}_createdAt`] = new Date();
                 record[`${moudleConfig.tableName}_modifiedAt`] = new Date();
                 let fields_config = moudleConfig.fields_config || [];
@@ -391,6 +392,8 @@ module.exports = {
                     if (node === null || node === undefined) {
                         return;
                     }
+                    node.key = node[`${tableName}_id`];
+                    node.label = node[`${tableName}_name`];
                     node.children = docs.filter(doc => doc[`${tableName}_pid`] === node[`${tableName}_id`]);
                     if (node.children.length === 0) {
                         delete node.children;
@@ -402,9 +405,11 @@ module.exports = {
                         createTree(docs, childNode);
                     }
                 }
-                defer.resolve(rootNodes.map(rootNode => createTree(docs, rootNode)));
+                rootNodes.forEach(rootNode => createTree(docs, rootNode));
+                defer.resolve(rootNodes);
                 db.close();
             })
         });
+        return defer.promise;
     }
 };

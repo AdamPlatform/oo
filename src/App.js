@@ -23,7 +23,7 @@ class App extends Component {
 
 	getModuleConfigs() {
 		getList(1, 9999, {}, {}, (body => {
-			let moduleConfigs = body.list;
+			let moduleConfigs = body.list || [];
 			this.setState({moduleConfigs: moduleConfigs.filter(item => item.isMenu === '是')});
 		}))
 	}
