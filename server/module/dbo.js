@@ -39,7 +39,7 @@ module.exports = {
             if (orQuery.$or.length > 0) {
                 // 查询唯一字段是否重复
                 collection.count(orQuery, {}, (error, result) => {
-                    if (error && error.message) {
+                    if (error) {
                         defer.reject(error);
                         db.close();
                         return;
@@ -53,7 +53,7 @@ module.exports = {
 
                     // 插入一条数据
                     collection.insertOne(record, null, (error, result) => {
-                        if (error && error.message) {
+                        if (error) {
                             defer.reject(error);
                             db.close();
                             return;
@@ -65,7 +65,7 @@ module.exports = {
             } else {
                 // 插入一条数据
                 collection.insertOne(record, null, (error, result) => {
-                    if (error && error.message) {
+                    if (error) {
                         defer.reject(error);
                         db.close();
                         return;
@@ -86,7 +86,7 @@ module.exports = {
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
             collection.deleteMany({[`${moudleConfig.tableName}_id`]: id}, null, (error, result) => {
-                if (error && error.message) {
+                if (error) {
                     defer.reject(error);
                     db.close();
                     return;
@@ -107,7 +107,7 @@ module.exports = {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
             record[`${moudleConfig.tableName}_modifiedAt`] = new Date();
             collection.findOne({[`${moudleConfig.tableName}_id`]: id}, {}, (error, doc) => {
-                if (error && error.message) {
+                if (error) {
                     defer.reject(error);
                     db.close();
                     return;
@@ -134,7 +134,7 @@ module.exports = {
                 if (orQuery.$or.length > 0) {
                     // 查询唯一字段是否重复
                     collection.count(orQuery, {}, (error, result) => {
-                        if (error && error.message) {
+                        if (error) {
                             defer.reject(error);
                             db.close();
                             return;
@@ -148,7 +148,7 @@ module.exports = {
 
                         // 更新数据
                         collection.updateOne({[`${moudleConfig.tableName}_id`]: id}, {$set: record}, null, (error, result) => {
-                            if (error && error.message) {
+                            if (error) {
                                 defer.reject(error);
                                 db.close();
                                 return;
@@ -160,7 +160,7 @@ module.exports = {
                 } else {
                     // 更新数据
                     collection.updateOne({[`${moudleConfig.tableName}_id`]: id}, {$set: record}, null, (error, result) => {
-                        if (error && error.message) {
+                        if (error) {
                             defer.reject(error);
                             db.close();
                             return;
@@ -193,7 +193,7 @@ module.exports = {
             let cursor = collection.find(findCond).collation({locale: "zh"});
             let totalElements = 0;
             cursor.count((error, result) => {
-                if (error && error.message) {
+                if (error) {
                     defer.reject(error);
                     db.close();
                     return;
@@ -205,6 +205,9 @@ module.exports = {
                     .toArray().then(list => {
                     defer.resolve({
                         page, pageSize, totalElements, list
+                    }, error => {
+                        defer.reject(error);
+                        db.close();
                     });  
                     db.close();       
                 });
@@ -221,7 +224,7 @@ module.exports = {
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
             collection.findOne({[`${moudleConfig.tableName}_id`]: id}, {}, (error, doc) => {
-                if (error && error.message) {
+                if (error) {
                     defer.reject(error);
                     db.close();
                     return;
@@ -244,7 +247,7 @@ module.exports = {
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
             collection.findOne({[`${moudleConfig.tableName}_id`]: pid}, {}, (error, doc) => {
-                if (error && error.message) {
+                if (error) {
                     defer.reject(error);
                     db.close();
                     return;
@@ -280,7 +283,7 @@ module.exports = {
                 if (orQuery.$or.length > 0) {
                     // 查询唯一字段是否重复
                     collection.count(orQuery, {}, (error, result) => {
-                        if (error && error.message) {
+                        if (error) {
                             defer.reject(error);
                             db.close();
                             return;
@@ -294,7 +297,7 @@ module.exports = {
 
                         // 插入一条数据
                         collection.insertOne(record, null, (error, result) => {
-                            if (error && error.message) {
+                            if (error) {
                                 defer.reject(error);
                                 db.close();
                                 return;
@@ -306,7 +309,7 @@ module.exports = {
                 } else {
                     // 插入一条数据
                     collection.insertOne(record, null, (error, result) => {
-                        if (error && error.message) {
+                        if (error) {
                             defer.reject(error);
                             db.close();
                             return;
@@ -328,7 +331,7 @@ module.exports = {
         connect(db => {
             const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
             collection.findOne({[`${moudleConfig.tableName}_id`]: id}, {}, (error, doc) => {
-                if (error && error.message) {
+                if (error) {
                     defer.reject(error);
                     db.close();
                     return;
@@ -341,7 +344,7 @@ module.exports = {
                 }
 
                 collection.find({[`${moudleConfig.tableName}_pid`]: id}).count((error, result) => {
-                    if (error && error.message) {
+                    if (error) {
                         defer.reject(error);
                         db.close();
                         return;
@@ -354,7 +357,7 @@ module.exports = {
                     } 
     
                     collection.deleteMany({[`${moudleConfig.tableName}_id`]: id}, null, (error, result) => {
-                        if (error && error.message) {
+                        if (error) {
                             defer.reject(error);
                             db.close();
                             return;
@@ -373,6 +376,10 @@ module.exports = {
      * 查询树
      */
     getTree: (moudleConfig) => {
-
+        let defer = Q.defer();
+        connect(db => {
+            const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
+            collection.find({}).toArray().then()
+        });
     }
 };

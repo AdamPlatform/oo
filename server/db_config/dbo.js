@@ -39,7 +39,7 @@ module.exports = {
                 return;
             }
             collection.count({moduleName: moduleName}, {}, (error, result) => {
-                if (error && error.message) {
+                if (error) {
                     defer.reject(error);
                     db.close();
                     return;
@@ -52,7 +52,7 @@ module.exports = {
                 }
 
                 collection.insertOne(record, null, (error, result) => {
-                    if (error && error.message) {
+                    if (error) {
                         defer.reject(error);
                         db.close();
                         return;
@@ -71,7 +71,7 @@ module.exports = {
                             [`${record.tableName}_modifiedAt`]: new Date(),
                         }
                         table.insertOne(rootNode, null, (error, result) => {
-                            if (error && error.message) {
+                            if (error) {
                                 defer.reject(error);
                                 db.close();
                                 return;
@@ -99,7 +99,7 @@ module.exports = {
             let collection = oo.collection("tables_config");
 
             collection.findOne({id: id}, {}, (error, doc) => {
-                if (error && error.message) {
+                if (error) {
                     defer.reject(error);
                     db.close();
                     return;
@@ -112,7 +112,7 @@ module.exports = {
 
                 let table = oo.collection(doc.tableName);
                 table.find({}).count((error, result) => {
-                    if (error && error.message) {
+                    if (error) {
                         defer.reject(error);
                         db.close();
                         return;
@@ -127,7 +127,7 @@ module.exports = {
                     } 
 
                     collection.deleteMany({id: id}, null, (error, result) => {
-                        if (error && error.message) {
+                        if (error) {
                             defer.reject(error);
                             db.close();
                             return;
@@ -150,7 +150,7 @@ module.exports = {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
             collection.findOne({id: id}, {}, (error, doc) => {
-                if (error && error.message) {
+                if (error) {
                     defer.reject(error);
                     db.close();
                     return;
@@ -168,7 +168,7 @@ module.exports = {
                      * 如果原来列表模型数据为空，则修改模型，否则不允许修改模型
                      */
                     table.find({}).count((error, result) => {
-                        if (error && error.message) {
+                        if (error) {
                             defer.reject(error);
                             db.close();
                             return;
@@ -181,7 +181,7 @@ module.exports = {
                         }
 
                         collection.updateOne({id: id}, {$set: record}, null, (error, result) => {
-                            if (error && error.message) {
+                            if (error) {
                                 defer.reject(error);
                                 db.close();
                                 return;
@@ -198,7 +198,7 @@ module.exports = {
                                 [`${doc.tableName}_modifiedAt`]: new Date(),
                             }
                             table.insertOne(rootNode, null, (error, result) => {
-                                if (error && error.message) {
+                                if (error) {
                                     defer.reject(error);
                                     db.close();
                                     return;
@@ -213,7 +213,7 @@ module.exports = {
                      * 如果原来树形模型只有根节点，则修改模型，否则不允许修改模型
                      */
                     table.find({}).count((error, result) => {
-                        if (error && error.message) {
+                        if (error) {
                             defer.reject(error);
                             db.close();
                             return;
@@ -226,14 +226,14 @@ module.exports = {
                         }
 
                         collection.updateOne({id: id}, {$set: record}, null, (error, result) => {
-                            if (error && error.message) {
+                            if (error) {
                                 defer.reject(error);
                                 db.close();
                                 return;
                             }
 
                             table.deleteMany({}, null, (error, result) => {
-                                if (error && error.message) {
+                                if (error) {
                                     defer.reject(error);
                                     db.close();
                                     return;
@@ -245,7 +245,7 @@ module.exports = {
                     });
                 } else {
                     collection.updateOne({id: id}, {$set: record}, null, (error, result) => {
-                        if (error && error.message) {
+                        if (error) {
                             defer.reject(error);
                             db.close();
                             return;
@@ -279,7 +279,7 @@ module.exports = {
             let cursor = collection.find(findCond).collation({locale: "zh"});
             let totalElements = 0;
             cursor.count((error, result) => {
-                if (error && error.message) {
+                if (error) {
                     defer.reject(error);
                     db.close();
                     return;
@@ -308,7 +308,7 @@ module.exports = {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
             collection.findOne({id: id}, {}, (error, doc) => {
-                if (error && error.message) {
+                if (error) {
                     defer.reject(error);
                     db.close();
                     return;
@@ -328,7 +328,7 @@ module.exports = {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
             collection.findOne({id: id}, {}, (error, doc) => {
-                if (error && error.message) {
+                if (error) {
                     defer.reject(error);
                     db.close();
                     return;
@@ -351,7 +351,7 @@ module.exports = {
                 fields_config.splice(fields_config.length - BOTTOM_FIELDS_NUM, 0, ...fields);
 
                 collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
-                    if (error && error.message) {
+                    if (error) {
                         defer.reject(error);
                         db.close();
                         return;
@@ -373,7 +373,7 @@ module.exports = {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
             collection.findOne({id: id}, {}, (error, doc) => {
-                if (error && error.message) {
+                if (error) {
                     defer.reject(error);
                     db.close();
                     return;
@@ -386,7 +386,7 @@ module.exports = {
                 }
                 fields_config = fields_config.filter(item => item.dataIndex !== dataIndex);
                 collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
-                    if (error && error.message) {
+                    if (error) {
                         defer.reject(error);
                         db.close();
                         return;
@@ -408,7 +408,7 @@ module.exports = {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
             collection.findOne({id: id}, {}, (error, doc) => {
-                if (error && error.message) {
+                if (error) {
                     defer.reject(error);
                     db.close();
                     return;
@@ -424,7 +424,7 @@ module.exports = {
                     fields_config[index] = Object.assign({}, fields_config[index], record);
                 }
                 collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
-                    if (error && error.message) {
+                    if (error) {
                         defer.reject(error);
                         db.close();
                         return;
@@ -446,7 +446,7 @@ module.exports = {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
             collection.findOne({id: id}, {}, (error, doc) => {
-                if (error && error.message) {
+                if (error) {
                     defer.reject(error);
                     db.close();
                     return;
@@ -462,7 +462,7 @@ module.exports = {
                     [fields_config[index], fields_config[index - 1]] = [fields_config[index - 1], fields_config[index]]
                 }
                 collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
-                    if (error && error.message) {
+                    if (error) {
                         defer.reject(error);
                         db.close();
                         return;
@@ -484,7 +484,7 @@ module.exports = {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
             collection.findOne({id: id}, {}, (error, doc) => {
-                if (error && error.message) {
+                if (error) {
                     defer.reject(error);
                     db.close();
                     return;
@@ -500,7 +500,7 @@ module.exports = {
                     [fields_config[index], fields_config[index + 1]] = [fields_config[index + 1], fields_config[index]]
                 }
                 collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
-                    if (error && error.message) {
+                    if (error) {
                         defer.reject(error);
                         db.close();
                         return;
@@ -522,7 +522,7 @@ module.exports = {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
             collection.findOne({id: id}, {}, (error, doc) => {
-                if (error && error.message) {
+                if (error) {
                     defer.reject(error);
                     db.close();
                     return;
@@ -540,7 +540,7 @@ module.exports = {
                     fields_config.splice(TOP_FIELDS_NUM, 0, item);
                 }
                 collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
-                    if (error && error.message) {
+                    if (error) {
                         defer.reject(error);
                         db.close();
                         return;
@@ -562,7 +562,7 @@ module.exports = {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
             collection.findOne({id: id}, {}, (error, doc) => {
-                if (error && error.message) {
+                if (error) {
                     defer.reject(error);
                     db.close();
                     return;
@@ -580,7 +580,7 @@ module.exports = {
                     fields_config.splice(fields_config.length - BOTTOM_FIELDS_NUM, 0, item);
                 }
                 collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
-                    if (error && error.message) {
+                    if (error) {
                         defer.reject(error);
                         db.close();
                         return;
