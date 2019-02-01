@@ -9,14 +9,14 @@ module.exports = {
     connect: (dbOper) => {  
         MongoClient.connect(uri, (err, db) => {
             if (err) {
-                console.log(err, 'mongo error!');
+                console.log(err, 'mongo err!');
                 return;
             }
             if (db) {
                 try {
                     dbOper && dbOper(db);
-                } catch (error) {
-                    console.log(error, 'server error-------------');
+                } catch (err) {
+                    console.log(err, 'server err-------------');
                     db.close();
 
                 }

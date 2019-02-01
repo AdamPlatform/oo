@@ -38,9 +38,9 @@ module.exports = {
                 db.close();
                 return;
             }
-            collection.count({moduleName: moduleName}, {}, (error, result) => {
-                if (error) {
-                    defer.reject(error);
+            collection.count({moduleName: moduleName}, {}, (err, result) => {
+                if (err) {
+                    defer.reject(err);
                     db.close();
                     return;
                 }
@@ -51,9 +51,9 @@ module.exports = {
                     return;
                 }
 
-                collection.insertOne(record, null, (error, result) => {
-                    if (error) {
-                        defer.reject(error);
+                collection.insertOne(record, null, (err, result) => {
+                    if (err) {
+                        defer.reject(err);
                         db.close();
                         return;
                     }
@@ -70,9 +70,9 @@ module.exports = {
                             [`${record.tableName}_createdAt`]: new Date(),
                             [`${record.tableName}_modifiedAt`]: new Date(),
                         }
-                        table.insertOne(rootNode, null, (error, result) => {
-                            if (error) {
-                                defer.reject(error);
+                        table.insertOne(rootNode, null, (err, result) => {
+                            if (err) {
+                                defer.reject(err);
                                 db.close();
                                 return;
                             }
@@ -98,9 +98,9 @@ module.exports = {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
 
-            collection.findOne({id: id}, {}, (error, doc) => {
-                if (error) {
-                    defer.reject(error);
+            collection.findOne({id: id}, {}, (err, doc) => {
+                if (err) {
+                    defer.reject(err);
                     db.close();
                     return;
                 }
@@ -111,9 +111,9 @@ module.exports = {
                 }
 
                 let table = oo.collection(doc.tableName);
-                table.find({}).count((error, result) => {
-                    if (error) {
-                        defer.reject(error);
+                table.find({}).count((err, result) => {
+                    if (err) {
+                        defer.reject(err);
                         db.close();
                         return;
                     }
@@ -126,9 +126,9 @@ module.exports = {
                         return;
                     } 
 
-                    collection.deleteMany({id: id}, null, (error, result) => {
-                        if (error) {
-                            defer.reject(error);
+                    collection.deleteMany({id: id}, null, (err, result) => {
+                        if (err) {
+                            defer.reject(err);
                             db.close();
                             return;
                         }
@@ -149,9 +149,9 @@ module.exports = {
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.findOne({id: id}, {}, (error, doc) => {
-                if (error) {
-                    defer.reject(error);
+            collection.findOne({id: id}, {}, (err, doc) => {
+                if (err) {
+                    defer.reject(err);
                     db.close();
                     return;
                 }
@@ -167,9 +167,9 @@ module.exports = {
                     /**
                      * 如果原来列表模型数据为空，则修改模型，否则不允许修改模型
                      */
-                    table.find({}).count((error, result) => {
-                        if (error) {
-                            defer.reject(error);
+                    table.find({}).count((err, result) => {
+                        if (err) {
+                            defer.reject(err);
                             db.close();
                             return;
                         }
@@ -180,9 +180,9 @@ module.exports = {
                             return;
                         }
 
-                        collection.updateOne({id: id}, {$set: record}, null, (error, result) => {
-                            if (error) {
-                                defer.reject(error);
+                        collection.updateOne({id: id}, {$set: record}, null, (err, result) => {
+                            if (err) {
+                                defer.reject(err);
                                 db.close();
                                 return;
                             }
@@ -197,9 +197,9 @@ module.exports = {
                                 [`${doc.tableName}_createdAt`]: new Date(),
                                 [`${doc.tableName}_modifiedAt`]: new Date(),
                             }
-                            table.insertOne(rootNode, null, (error, result) => {
-                                if (error) {
-                                    defer.reject(error);
+                            table.insertOne(rootNode, null, (err, result) => {
+                                if (err) {
+                                    defer.reject(err);
                                     db.close();
                                     return;
                                 }
@@ -212,9 +212,9 @@ module.exports = {
                     /**
                      * 如果原来树形模型只有根节点，则修改模型，否则不允许修改模型
                      */
-                    table.find({}).count((error, result) => {
-                        if (error) {
-                            defer.reject(error);
+                    table.find({}).count((err, result) => {
+                        if (err) {
+                            defer.reject(err);
                             db.close();
                             return;
                         }
@@ -225,16 +225,16 @@ module.exports = {
                             return;
                         }
 
-                        collection.updateOne({id: id}, {$set: record}, null, (error, result) => {
-                            if (error) {
-                                defer.reject(error);
+                        collection.updateOne({id: id}, {$set: record}, null, (err, result) => {
+                            if (err) {
+                                defer.reject(err);
                                 db.close();
                                 return;
                             }
 
-                            table.deleteMany({}, null, (error, result) => {
-                                if (error) {
-                                    defer.reject(error);
+                            table.deleteMany({}, null, (err, result) => {
+                                if (err) {
+                                    defer.reject(err);
                                     db.close();
                                     return;
                                 }
@@ -244,9 +244,9 @@ module.exports = {
                         });        
                     });
                 } else {
-                    collection.updateOne({id: id}, {$set: record}, null, (error, result) => {
-                        if (error) {
-                            defer.reject(error);
+                    collection.updateOne({id: id}, {$set: record}, null, (err, result) => {
+                        if (err) {
+                            defer.reject(err);
                             db.close();
                             return;
                         }
@@ -278,9 +278,9 @@ module.exports = {
             let findCond = generateSql(query);
             let cursor = collection.find(findCond).collation({locale: "zh"});
             let totalElements = 0;
-            cursor.count((error, result) => {
-                if (error) {
-                    defer.reject(error);
+            cursor.count((err, result) => {
+                if (err) {
+                    defer.reject(err);
                     db.close();
                     return;
                 }
@@ -307,9 +307,9 @@ module.exports = {
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.findOne({id: id}, {}, (error, doc) => {
-                if (error) {
-                    defer.reject(error);
+            collection.findOne({id: id}, {}, (err, doc) => {
+                if (err) {
+                    defer.reject(err);
                     db.close();
                     return;
                 }
@@ -327,9 +327,9 @@ module.exports = {
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.findOne({id: id}, {}, (error, doc) => {
-                if (error) {
-                    defer.reject(error);
+            collection.findOne({id: id}, {}, (err, doc) => {
+                if (err) {
+                    defer.reject(err);
                     db.close();
                     return;
                 }
@@ -350,9 +350,9 @@ module.exports = {
                 }
                 fields_config.splice(fields_config.length - BOTTOM_FIELDS_NUM, 0, ...fields);
 
-                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
-                    if (error) {
-                        defer.reject(error);
+                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (err, result) => {
+                    if (err) {
+                        defer.reject(err);
                         db.close();
                         return;
                     }
@@ -372,9 +372,9 @@ module.exports = {
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.findOne({id: id}, {}, (error, doc) => {
-                if (error) {
-                    defer.reject(error);
+            collection.findOne({id: id}, {}, (err, doc) => {
+                if (err) {
+                    defer.reject(err);
                     db.close();
                     return;
                 }
@@ -385,9 +385,9 @@ module.exports = {
                     return;
                 }
                 fields_config = fields_config.filter(item => item.dataIndex !== dataIndex);
-                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
-                    if (error) {
-                        defer.reject(error);
+                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (err, result) => {
+                    if (err) {
+                        defer.reject(err);
                         db.close();
                         return;
                     }
@@ -407,9 +407,9 @@ module.exports = {
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.findOne({id: id}, {}, (error, doc) => {
-                if (error) {
-                    defer.reject(error);
+            collection.findOne({id: id}, {}, (err, doc) => {
+                if (err) {
+                    defer.reject(err);
                     db.close();
                     return;
                 }
@@ -423,9 +423,9 @@ module.exports = {
                 if (index !== -1) {
                     fields_config[index] = Object.assign({}, fields_config[index], record);
                 }
-                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
-                    if (error) {
-                        defer.reject(error);
+                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (err, result) => {
+                    if (err) {
+                        defer.reject(err);
                         db.close();
                         return;
                     }
@@ -445,9 +445,9 @@ module.exports = {
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.findOne({id: id}, {}, (error, doc) => {
-                if (error) {
-                    defer.reject(error);
+            collection.findOne({id: id}, {}, (err, doc) => {
+                if (err) {
+                    defer.reject(err);
                     db.close();
                     return;
                 }
@@ -461,9 +461,9 @@ module.exports = {
                 if (index > TOP_FIELDS_NUM && index < fields_config.length - BOTTOM_FIELDS_NUM) {
                     [fields_config[index], fields_config[index - 1]] = [fields_config[index - 1], fields_config[index]]
                 }
-                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
-                    if (error) {
-                        defer.reject(error);
+                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (err, result) => {
+                    if (err) {
+                        defer.reject(err);
                         db.close();
                         return;
                     }
@@ -483,9 +483,9 @@ module.exports = {
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.findOne({id: id}, {}, (error, doc) => {
-                if (error) {
-                    defer.reject(error);
+            collection.findOne({id: id}, {}, (err, doc) => {
+                if (err) {
+                    defer.reject(err);
                     db.close();
                     return;
                 }
@@ -499,9 +499,9 @@ module.exports = {
                 if (index > TOP_FIELDS_NUM - 1 && index < fields_config.length - BOTTOM_FIELDS_NUM - 1) {
                     [fields_config[index], fields_config[index + 1]] = [fields_config[index + 1], fields_config[index]]
                 }
-                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
-                    if (error) {
-                        defer.reject(error);
+                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (err, result) => {
+                    if (err) {
+                        defer.reject(err);
                         db.close();
                         return;
                     }
@@ -521,9 +521,9 @@ module.exports = {
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.findOne({id: id}, {}, (error, doc) => {
-                if (error) {
-                    defer.reject(error);
+            collection.findOne({id: id}, {}, (err, doc) => {
+                if (err) {
+                    defer.reject(err);
                     db.close();
                     return;
                 }
@@ -539,9 +539,9 @@ module.exports = {
                     fields_config.splice(index, 1);
                     fields_config.splice(TOP_FIELDS_NUM, 0, item);
                 }
-                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
-                    if (error) {
-                        defer.reject(error);
+                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (err, result) => {
+                    if (err) {
+                        defer.reject(err);
                         db.close();
                         return;
                     }
@@ -561,9 +561,9 @@ module.exports = {
         connect(db => {
             let oo = db.db('oo');
             let collection = oo.collection("tables_config");
-            collection.findOne({id: id}, {}, (error, doc) => {
-                if (error) {
-                    defer.reject(error);
+            collection.findOne({id: id}, {}, (err, doc) => {
+                if (err) {
+                    defer.reject(err);
                     db.close();
                     return;
                 }
@@ -579,9 +579,9 @@ module.exports = {
                     fields_config.splice(index, 1);
                     fields_config.splice(fields_config.length - BOTTOM_FIELDS_NUM, 0, item);
                 }
-                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (error, result) => {
-                    if (error) {
-                        defer.reject(error);
+                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (err, result) => {
+                    if (err) {
+                        defer.reject(err);
                         db.close();
                         return;
                     }
