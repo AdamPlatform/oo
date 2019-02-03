@@ -5,7 +5,7 @@ import React, { Component } from 'react'
 import Button from 'antd/lib/button'
 import Modal from 'antd/lib/modal'
 import Fields from './Fields'
-import Spin from 'antd/lib/spin'
+import Spin from '../../components/Spin'
 import * as Action from './Action'
 
 class New extends Component {

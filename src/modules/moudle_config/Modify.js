@@ -2,7 +2,7 @@
  * 修改页面
  */
 import React, { Component } from 'react'
-import Spin from 'antd/lib/spin'
+import Spin from '../../components/Spin'
 import Modal from 'antd/lib/modal'
 import Fields from './Fields'
 import * as Action from './Action'

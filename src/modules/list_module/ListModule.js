@@ -4,7 +4,7 @@
  */
 import React, { Component } from 'react'
 import Popconfirm from 'antd/lib/popconfirm'
-import Spin from 'antd/lib/spin'
+import Spin from '../../components/Spin'
 import TableEx from '../../components/TableEx'
 import Search from '../../components/Search'
 import Detail from './Detail'

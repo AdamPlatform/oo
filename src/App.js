@@ -19,6 +19,7 @@ class App extends Component {
 			moduleConfigs: [],
 		};
 		global.cols = this.getCols();
+		
 	}
 
 	getModuleConfigs() {
