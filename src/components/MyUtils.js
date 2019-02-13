@@ -25,7 +25,7 @@ export default class MyUtils {
             console.error("operation必须为函数");
             return;
         }
-        treeData.map(node => {
+        treeData.forEach(node => {
             operation(node, parent);
             node && node.children && node.children.length > 0 && MyUtils.traverseTree(node.children, operation, node);
         })
@@ -42,7 +42,7 @@ export default class MyUtils {
         if (parentNode) {
             let siblingNum = 0;
             let siblingAllSelectedNum = 0;
-            parentNode.children.map(item => {
+            parentNode.children.forEach(item => {
                 if (selected[item.key] === true) { 
                     siblingNum++;
                     siblingAllSelectedNum++;

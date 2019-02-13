@@ -54,11 +54,11 @@ class Tree extends Component {
         }
 
         // 受控或默认展开和选择的节点
-        if (expandedKeys && expandedKeys.length > 0 || defaultExpandedKeys && defaultExpandedKeys.length > 0) {
+        if ((expandedKeys && expandedKeys.length > 0) || (defaultExpandedKeys && defaultExpandedKeys.length > 0)) {
             expanded = MyUtils.arrayToObj(expandedKeys || defaultExpandedKeys);
         }
 
-        if (selectedKeys && selectedKeys.length > 0 || defaultSelectedKeys && defaultSelectedKeys.length > 0) {
+        if ((selectedKeys && selectedKeys.length > 0) || (defaultSelectedKeys && defaultSelectedKeys.length > 0)) {
             selected = MyUtils.arrayToObj(selectedKeys || defaultSelectedKeys);
         }
         let selectedNodes = [];
@@ -169,7 +169,7 @@ class Tree extends Component {
                 }
                 return item.key;
             });
-            children.map(item => {
+            children.forEach(item => {
                 selected[item.key] = isSelect;
 
                 // 如果子节点有子节点并处于展开状态，则递归选中
@@ -186,12 +186,12 @@ class Tree extends Component {
                 selectedNodes = selectedNodes.concat(children);
             } else {  // 当部分选中时
 
-                childrenKeys.map(item => {
+                childrenKeys.forEach(item => {
                     if (selectedKeys.indexOf(item) === -1) {
                         selectedKeys.push(item);
                     }
                 });
-                children.map(item => {
+                children.forEach(item => {
                     if (selectedKeys.indexOf(item) === -1) {
                         selectedNodes.push(item);
                     }
@@ -286,7 +286,7 @@ class Tree extends Component {
         if (selected[key] === true && checkable && !checkStrictly) {
             // 过滤掉禁用节点
             let children = node.children.filter(item => !!!item.disabled);
-            children.map(item => {
+            children.forEach(item => {
                 if (isExpanded) {
                     selected[item.key] = false;
                     selectedKeys = selectedKeys.filter(selectedKey => selectedKey !== item.key);
@@ -388,8 +388,8 @@ class Tree extends Component {
                     checkable && React.createElement('div', {
                         onClick: disabled ? ()=>{} : this.onSelect.bind(this, node),
                         style: checkStyle,
-                        children: selected[key] === true && React.createElement('div', { style: checkedStyle})
-                        || selected[key] === null && React.createElement('div', {style: checkedStyle})
+                        children: (selected[key] === true && React.createElement('div', { style: checkedStyle}))
+                        || (selected[key] === null && React.createElement('div', {style: checkedStyle}))
                     }),
                     icon && React.createElement(Icon, {
                         style: Object.assign({}, styles.icon, {fontSize: iconSize}),

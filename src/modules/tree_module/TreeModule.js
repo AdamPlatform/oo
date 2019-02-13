@@ -10,13 +10,10 @@ import Col from 'antd/lib/col'
 import Button from 'antd/lib/button'
 
 import Tree from '../../components/Tree'
-import Detail from './Detail'
 import Fields from './Fields'
 import New from './New'
 import * as Action from './Action'
-import {configToItemProps} from '../../components/PageCreator'
 import { Modal } from 'antd';
-import { Record } from 'immutable';
 
 class TreeModule extends Component {
     /**
