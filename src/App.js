@@ -13,13 +13,11 @@ class App extends Component {
 	constructor() {
 		super();
 		this.state = {
-			update: false,
 			folded: false,
 			page: null,
 			moduleConfigs: [],
+			cols: 4,
 		};
-		global.cols = this.getCols();
-		
 	}
 
 	getModuleConfigs() {
@@ -32,6 +30,7 @@ class App extends Component {
 	componentWillMount() {
 		window.addEventListener('resize', this.onWindowResize.bind(this));
 		this.getModuleConfigs();
+		this.setState({ cols: this.getCols() });
 	}
 	
 	componentWillUnmount() {
@@ -40,7 +39,9 @@ class App extends Component {
 
 	getCols() {
 		let cols = 1;
-		let cw = global.clientWidth;
+		let menuWidth = this.state.folded ? global.menuWidth : 0;
+		global.clientWidth = document.documentElement.clientWidth || document.body.clientWidth;
+		let cw = global.clientWidth - menuWidth;
 		if (cw >= 1280) {
 			cols = 4
 		} else if (cw >= 960 && cw < 1280) {
@@ -54,23 +55,18 @@ class App extends Component {
 	}
 
 	onWindowResize() {
-		global.clientWidth = document.documentElement.clientWidth || document.body.clientWidth;
-		global.cols = this.getCols();
-		this.setState({ update: !this.state.update });
+		this.setState({ cols: this.getCols() });
 	}
 
 	render() {
-		const foldedstyle = {
-			width: '72px',
-		};
 		const toggermenustyle = this.state.folded ? 'menu-unfold' : 'menu-fold';
 		const mode = this.state.folded ? 'vertical' : 'inline';
 		let moduleMenus = this.state.moduleConfigs.map(config => {
 			let page = null
 			if (config.dataMoudle === '树') {
-				page = <TreeModule config={config}/>
+				page = <TreeModule cols={this.state.cols} config={config}/>
 			} else {
-				page = <ListModule config={config}/>
+				page = <ListModule cols={this.state.cols} config={config}/>
 			}
 			return <Menu.Item key={config.tableName}>
 				<a onClick={() => {this.setState({page})}}>{config.moduleName}</a>
@@ -78,25 +74,24 @@ class App extends Component {
 		})
 		return (
 			<div>
-				<aside className="ant-layout-sider" style={this.state.folded ? foldedstyle : {}}>
+				{!this.state.folded && <aside className="ant-layout-sider">
 					<Menu mode={mode} selectedKeys={[]}>
 						<Menu.Item key="sysconfig">
-							<a onClick={() => {this.setState({page: <MoudleConfig refresh={this.getModuleConfigs.bind(this)}/>})}}>系统设置</a>
+							<a onClick={() => {this.setState({page: <MoudleConfig cols={this.state.cols} refresh={this.getModuleConfigs.bind(this)}/>})}}>系统设置</a>
 						</Menu.Item>
 						{moduleMenus}
 					</Menu>
-				</aside>
-				<div className="ant-layout-main" style={this.state.folded ? { marginLeft: '72px' } : {}}>
+				</aside>}
+				<div className="ant-layout-main" style={this.state.folded ? { marginLeft: 0 } : {}}>
 					<Row className='ant-layout-header'>
 						<Col span={2} style={{paddingTop: 16, paddingLeft: 8, width: '64px', height: '64px' }}>
 							<a onClick={() => {this.setState({folded: !this.state.folded})}}>
 								<Icon type={toggermenustyle} style={{ fontSize: '20px' }} />
 							</a>
 						</Col>
-						<Col></Col>
 					</Row>
 					<div className="ant-layout-container">
-						{this.state.page || <MoudleConfig refresh={this.getModuleConfigs.bind(this)}/>}
+						{this.state.page || <MoudleConfig cols={this.state.cols} refresh={this.getModuleConfigs.bind(this)}/>}
 					</div>
 				</div>
 			</div>

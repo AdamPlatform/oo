@@ -176,14 +176,14 @@ class ListModule extends Component {
                 let del = <Popconfirm title="确定要删除这条数据吗？" onConfirm={this.del.bind(this, text)}>
                     <a>删除</a>
                 </Popconfirm>
-                let detail = <Detail tableName={this.tableName} data={record} tableConfig={tableConfig}/>;
-                let edit = <Modify tableName={this.tableName} data={record} tableConfig={tableConfig} refresh={this.refresh.bind(this)}/>;
+                let detail = <Detail cols={this.props.cols} tableName={this.tableName} data={record} tableConfig={tableConfig}/>;
+                let edit = <Modify cols={this.props.cols} tableName={this.tableName} data={record} tableConfig={tableConfig} refresh={this.refresh.bind(this)}/>;
                 return <span>{detail}{split}{edit}{split}{del}</span>;
             }
         });
 
         // 如果表格宽度小于正文宽度，去掉固定列设置
-        if (scrollx + 224 < global.clientWidth) {
+        if (scrollx + global.menuWidth < global.clientWidth) {
             columns.forEach(col => {
                 if (col.fixed) {
                     delete col.fixed;
@@ -211,7 +211,7 @@ class ListModule extends Component {
         return <Spin style={{margin: 8}} spinning={this.state.loading}>
             <Search
                 mainSearchFeilds={mainSearchFeilds}
-                cols={global.cols}
+                cols={this.props.cols}
                 moreSearchFeilds={moreSearchFeilds}
                 handleMore={this.handleMore.bind(this)}
                 onSearch={this.onSearch.bind(this)}
@@ -223,7 +223,7 @@ class ListModule extends Component {
                 simpleText='精简搜素条件'
                 moreText='更多搜索条件'
             />
-            <New tableName={this.tableName} tableConfig={tableConfig} refresh={this.refresh.bind(this)}/>
+            <New cols={this.props.cols} tableName={this.tableName} tableConfig={tableConfig} refresh={this.refresh.bind(this)}/>
             <TableEx
                 scroll={{ x: scrollx }}
                 columns={columns}

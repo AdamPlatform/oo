@@ -135,6 +135,17 @@ class FieldsConfig extends Component {
 	}
 
 	/**
+	 * 在前面插入一个字段
+	 * @param {*} record 
+	 */
+	insertField(record) {
+		this.setState({loading: true});
+		Action.insertField(this.props.data.id, record.dataIndex, () => {
+			this.refresh();
+		})
+	}
+
+	/**
 	 * 直接修改
 	 */
     modifyDirect() {
@@ -374,29 +385,36 @@ class FieldsConfig extends Component {
 				render: (text, record)=>{
 					let index = record.index;
 					let moreOptions = [];
-					if (index > TOP_FIELDS_NUM + 1 && index <= config.length - BOTTOM_FIELDS_NUM) {
+					let canMoveUp = index > TOP_FIELDS_NUM + 1 && index <= config.length - BOTTOM_FIELDS_NUM;
+					let canMoveDown = index > TOP_FIELDS_NUM && index < config.length - BOTTOM_FIELDS_NUM;
+
+					if (canMoveUp) {
 						let up = <Menu.Item key={moreOptions.length + 1} >
 							<a style={aStyle} onClick={this.up.bind(this, record)}>上移</a>
 						</Menu.Item>
 						moreOptions.push(up);
+						let upToTop = <Menu.Item key={moreOptions.length + 1} >
+							<a style={aStyle} onClick={this.upToTop.bind(this, record)}>上移至顶部</a>
+						</Menu.Item>
+						moreOptions.push(upToTop);
 					}
-					if (index > TOP_FIELDS_NUM && index < config.length - BOTTOM_FIELDS_NUM) {
+
+					if (canMoveDown) {
 						let down = <Menu.Item key={moreOptions.length + 1} >
 							<a style={aStyle} onClick={this.down.bind(this, record)}>下移</a>
 						</Menu.Item>
 						moreOptions.push(down);
-					}
-					if (index > TOP_FIELDS_NUM + 1 && index <= config.length - BOTTOM_FIELDS_NUM) {
-						let up = <Menu.Item key={moreOptions.length + 1} >
-							<a style={aStyle} onClick={this.upToTop.bind(this, record)}>上移至顶部</a>
-						</Menu.Item>
-						moreOptions.push(up);
-					}
-					if (index > TOP_FIELDS_NUM && index < config.length - BOTTOM_FIELDS_NUM) {
-						let down = <Menu.Item key={moreOptions.length + 1} >
+						let downToBottom = <Menu.Item key={moreOptions.length + 1} >
 							<a style={aStyle} onClick={this.downToBottom.bind(this, record)}>下移至底部</a>
 						</Menu.Item>
-						moreOptions.push(down);
+						moreOptions.push(downToBottom);
+					}
+
+					if (canMoveUp || canMoveDown) {
+						let insert = <Menu.Item key={moreOptions.length + 1} >
+							<a style={aStyle} onClick={this.insertField.bind(this, record)}>插入</a>
+						</Menu.Item>
+						moreOptions.push(insert);
 					}
 					
 					let isShowOper = index > TOP_FIELDS_NUM && index <= config.length - BOTTOM_FIELDS_NUM;
@@ -418,7 +436,7 @@ class FieldsConfig extends Component {
 			scrollx += parseInt(col.width, 10);
 		})
 		// 如果表格宽度小于正文宽度，去掉固定列设置
-        if (scrollx + 224 < global.clientWidth) {
+        if (scrollx + global.menuWidth < global.clientWidth) {
             columns.forEach(col => {
                 if (col.fixed) {
                     delete col.fixed;

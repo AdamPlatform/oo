@@ -23,7 +23,7 @@ class Fields extends Component {
             }
         });
 
-        let formItems = createItems(getFieldDecorator, global.cols, 8, formFields, this.props.action === 'detail');
+        let formItems = createItems(getFieldDecorator, this.props.cols, 8, formFields, this.props.action === 'detail');
         
         return <div>
             <h2 style={{marginTop: 16}}>基本信息</h2>

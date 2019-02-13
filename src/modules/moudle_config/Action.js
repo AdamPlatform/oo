@@ -164,3 +164,15 @@ export function fieldDownToBottom(id, dataIndex, cb) {
     })
 }
 
+/**
+ * 插入一个字段
+ */
+export function insertField(id, dataIndex, cb) {
+    api.put('/table_field/insert', {
+        params: { id, dataIndex },
+    }).then(payload => {
+        cb && cb();
+    }, () => {
+        cb && cb();
+    })
+}

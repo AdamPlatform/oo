@@ -3,11 +3,12 @@
  */
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
-import {createItems} from './PageCreator';
+import {createItems} from './PageCreator'
 import Icon from 'antd/lib/icon'
 import Button from 'antd/lib/button'
 import Input from 'antd/lib/input'
 import Form from 'antd/lib/form'
+const ButtonGroup = Button.Group;
 class Search extends Component {
     /**
      * 搜索按钮回调函数
@@ -74,79 +75,31 @@ class Search extends Component {
         moreSearchFeilds = moreSearchFeilds || [];
         moreSearchFeilds.map(field => field.param.props.onKeyDown = this.keyPress.bind(this));
         let searchItems = createItems(getFieldDecorator, cols, gutter || 8, moreSearchFeilds, false, true);
-        const colLayout = {
-            xs: { span: 2 },
-            sm: { span: 4 },
-            md: { span: 6 },
-            lg: { span: 8 }
-        }
-       
-        let simpleText = this.props.simpleText || "精简筛选条件";
-        let moreText = this.props.moreText || "更多筛选条件";
-        let text = moreText;
-        let arrow = React.createElement(Icon, {type: "caret-down", style: { marginTop: 5 }});
+        let arrow = <Icon type="caret-down"/>;
         if (this.props.showMore) {
-            text = simpleText;
-            arrow = React.createElement(Icon, {type: "caret-up", style: { marginTop: 5 }});
+            arrow = <Icon type="caret-up"/>;
         }
         const searchFields = this.props.searchFields || {}
         
-        return React.createElement('div', {
-            children: [
-                React.createElement('nobr', {
-                    key: 'row1',
-                    type: 'flex',
-                    justify: 'start',
-                    style: { marginBottom: 8 },
-                    children: [
-                        React.createElement('span', Object.assign({key: 'col1'}, colLayout,{
-                            children: getFieldDecorator('mainKey', {initialValue: searchFields.mainKey})(
-                                React.createElement(Input, {
-                                    style: {width: 300},
-                                    placeholder: this.props.placeholder || "请输入",
-                                    onKeyDown: this.keyPress.bind(this)
-                                })
-                            )
-                        })),
-                        React.createElement('span', Object.assign({key: 'col2'}, colLayout,{
-                            children: [
-                                React.createElement(Button, {
-                                    key: 'btn1',
-                                    style: {marginLeft: 8},
-                                    type: "primary",
-                                    onClick: this.onSearch.bind(this),
-                                    children: [
-                                        React.createElement(Icon, {type: "search"}),
-                                        this.props.btnName || '搜索'
-                                    ]
-                                }),
-                                React.createElement(Button, {
-                                    key: 'btn2',
-                                    style: {marginLeft: 8},
-                                    type: "ghost",
-                                    onClick: this.resetSearch.bind(this),
-                                    children: [
-                                        React.createElement(Icon, {type: "reload"}),
-                                        '重置'
-                                    ]
-                                }),
-                                !this.props.simple && React.createElement(Button, {
-                                    key: 'btn3',
-                                    style: {marginLeft: 8},
-                                    type: "ghost",
-                                    onClick: this.handleMore.bind(this),
-                                    children: [
-                                        text,
-                                        arrow
-                                    ]
-                                }),
-                            ]
-                        }))
-                    ]
-                }),
-                this.props.showMore && searchItems
-            ]
-        })
+        return <div style={{ marginBottom: 8 }}>
+            <nobr>
+                <span>
+                {getFieldDecorator('mainKey', {initialValue: searchFields.mainKey})(
+                    <Input style={{width: 300}} placeholder={this.props.placeholder || "请输入"} onKeyDown={this.keyPress.bind(this)}/>
+                )}
+                </span>
+                <span>
+                    <ButtonGroup>
+                        <Button type="primary" style={{marginLeft: 8}} onClick={this.onSearch.bind(this)}>
+                            <Icon type="search"/>{this.props.btnName || '搜索'}
+                        </Button>
+                        <Button type="primary" onClick={this.handleMore.bind(this)}>{arrow}</Button>
+                    </ButtonGroup>
+                    <Button type="ghost" style={{marginLeft: 8}} onClick={this.resetSearch.bind(this)}><Icon type="reload"/>重置</Button>
+                </span>
+            </nobr>
+            {this.props.showMore && searchItems}
+        </div>
     }
 }
 

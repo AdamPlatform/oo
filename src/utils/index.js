@@ -9,6 +9,11 @@ import moment from 'moment'
 global.clientWidth = document.documentElement.clientWidth || document.body.clientWidth;
 
 /**
+ * 菜单宽度
+ */
+global.menuWidth = 224;
+
+/**
  * 保留几位小数，默认6位，小数位数不够不补0
  */
 global.toFixedEx = function (source, precision = 6) {

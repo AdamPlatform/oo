@@ -155,6 +155,7 @@ export function createItem(getFieldDecorator, dataType, id, param, disabled, gut
  * @return {Array} children antd component FormItem Array
  */
 export function createItems(getFieldDecorator, cols, gutter, formItems, disabled, isForSearch) {
+    
     let children = [];
     let colSpan = parseInt(24 / cols, 10);
     let len = formItems.length;
@@ -177,31 +178,6 @@ export function createItems(getFieldDecorator, cols, gutter, formItems, disabled
     }
     return children;
 }
-/**
- * 使用元素参数数组创建n列不同宽度排版的表单 colSpans为formCols 相同索引的列span值
- * @param  {} getFieldDecorator
- * @param  {Array<Number>} colSpans 列span值数据
- * @param  {Number} gutter 行间距
- * @param  {Array< Array<param> >} formCols 创建表单的元素参数数组 param {props: props(FormItem中组件的参数), formProps: formProps(FormItem参数)}
- * @param  {Bool} disabled 值为true时直接显示文本， 值为false时使用组件
- * @return {Array} children antd component FormItem Array
- * @param  {Bool} isForSearch 是否用于搜索
- */
-export function createItemsByOneRow(getFieldDecorator, colSpans, gutter, formCols, disabled, isForSearch) {
-    let childs = [];
-    for (let i = 0; i < formCols.length; i++) {
-        let formItems = formCols[i];
-        let colSpan = colSpans[i];
-        let items = []
-        for (let j = 0; j < formItems.length; ++j) {
-            let params = formItems[j] || {};
-            let component = createItem(getFieldDecorator, params.dataType, params.id, params.param, disabled, gutter, isForSearch);
-            items.push(component);
-        }
-        childs.push(React.createElement(Col, Object.assign({}, { children: items }, { span: colSpan }, { key: 'col' + i })));
-    }
-    return React.createElement(Row, { type: "flex", justify: "space-between", children: childs, gutter: gutter });
-}
 
 /**
  * 字段配置转换成FormItem props
@@ -218,11 +194,13 @@ export function configToItemProps(field, index, initialValue, specialItemProps, 
     formField.param.formProps = {
         label: field.showName || field.name,
         labelCol: {
-            span: 10
+            xs: { span: 24 },
+            sm: { span: 8 },
         },
         wrapperCol: {
-            span: 14
-        }
+            xs: { span: 24 },
+            sm: { span: 16 },
+        },
     };
     formField.param.props = {};
     formField.param.props.rules = [];
@@ -258,9 +236,7 @@ export function configToItemProps(field, index, initialValue, specialItemProps, 
         delete formField.param.props.placeholder;
     }
     formField.param.props.initialValue = initialValue;
-    formField.param.props.style = {
-        width: '100%'
-    };
+    formField.param.props.style = { width: '100%' };
     formField.dataType = field.dataType;
     let disabled = false;
     if ((field.disabled === '1' || field.disabled === true || field.isDisabled === '0') && !isForSearch) {

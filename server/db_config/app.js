@@ -122,4 +122,13 @@ module.exports = (app) => {
             res.status(400).send(error);
         });
     });
+
+    // 上移一个配置字段至底部
+    app.put('/table_field/insert', (req, res) => {
+        dbo.insertField(req.query.id, req.query.dataIndex).then(() => {
+            res.send(null);
+        }, error => {
+            res.status(400).send(error);
+        });
+    });
 };

@@ -346,7 +346,7 @@ module.exports = {
                 let total = parseInt(num);
                 for (let i = 0; i < total; ++i) {
                     let dataIndex = ObjectId().toString();
-                    fields.push({"dataIndex":`${dataIndex}`,"name":`字段${startIndex + i}`,"isShow":"1","isRequire":"0","isUnique":"0","disabled":"0","isQuery":"1","isSort":"1","width":120,"dataType":"STRING"})
+                    fields.push({"dataIndex":`${dataIndex}`,"name":`字段${startIndex + i}`,"isShow":"1","isRequire":"0","isUnique":"0","disabled":"0","isQuery":"1","isSort":"1","width":120,"dataType":"STRING"});
                 }
                 fields_config.splice(fields_config.length - BOTTOM_FIELDS_NUM, 0, ...fields);
 
@@ -578,6 +578,46 @@ module.exports = {
                     let item = Object.assign({}, fields_config[index]);
                     fields_config.splice(index, 1);
                     fields_config.splice(fields_config.length - BOTTOM_FIELDS_NUM, 0, item);
+                }
+                collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (err, result) => {
+                    if (err) {
+                        defer.reject(err);
+                        db.close();
+                        return;
+                    }
+                    defer.resolve({});
+                    db.close();
+                });        
+            });        
+        });
+        return defer.promise;
+    },
+
+    /**
+     * 插入一个字段
+     */
+    insertField: (id, dataIndex) => {
+        let defer = Q.defer();
+        connect(db => {
+            let oo = db.db('oo');
+            let collection = oo.collection("tables_config");
+            collection.findOne({id: id}, {}, (err, doc) => {
+                if (err) {
+                    defer.reject(err);
+                    db.close();
+                    return;
+                }
+                let fields_config = doc.fields_config || [];
+                if (fields_config.length < RESERVED_FIELDS_NUM) {
+                    defer.reject({message: "配置文件损坏，请联系管理员！"});
+                    db.close();
+                    return;
+                }
+                let index = fields_config.findIndex(item => item.dataIndex === dataIndex);
+                if (index > TOP_FIELDS_NUM - 1 && index < fields_config.length - BOTTOM_FIELDS_NUM) {
+                    let newId = ObjectId().toString();
+                    let item = {"dataIndex":`${newId}`,"name":`字段${index + 1}`,"isShow":"1","isRequire":"0","isUnique":"0","disabled":"0","isQuery":"1","isSort":"1","width":120,"dataType":"STRING"};
+                    fields_config.splice(index, 0, item);
                 }
                 collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (err, result) => {
                     if (err) {

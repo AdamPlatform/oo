@@ -146,6 +146,7 @@ class TreeModule extends Component {
                 <Col span={20}>
                     <div style={{margin: 8}}>
                         {!editing && <New 
+                            cols={this.props.cols}
                             pid={node.key} 
                             tableName={this.tableName} 
                             tableConfig={tableConfig} 
@@ -159,6 +160,7 @@ class TreeModule extends Component {
                         {editing && <Button onClick={() => this.setState({editing: false})} style={{marginLeft: 16}}>取消</Button>}
                     </div>
                     <Fields
+                        cols={this.props.cols}
                         tableConfig={tableConfig}
                         tableName={this.tableName}
                         data={node}
