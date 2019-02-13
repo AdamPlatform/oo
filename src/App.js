@@ -17,6 +17,7 @@ class App extends Component {
 			page: null,
 			moduleConfigs: [],
 			cols: 4,
+			selectedKeys: ['sysconfig']
 		};
 	}
 
@@ -69,15 +70,18 @@ class App extends Component {
 				page = <ListModule cols={this.state.cols} config={config}/>
 			}
 			return <Menu.Item key={config.tableName}>
-				<a onClick={() => {this.setState({page})}}>{config.moduleName}</a>
+				<a onClick={() => {this.setState({page, selectedKeys: [config.tableName]})}}>{config.moduleName}</a>
 			</Menu.Item>
 		})
 		return (
 			<div>
 				{!this.state.folded && <aside className="ant-layout-sider">
-					<Menu mode={mode} selectedKeys={[]}>
+					<Menu mode={mode} selectedKeys={this.state.selectedKeys}>
 						<Menu.Item key="sysconfig">
-							<a onClick={() => {this.setState({page: <MoudleConfig cols={this.state.cols} refresh={this.getModuleConfigs.bind(this)}/>})}}>系统设置</a>
+							<a onClick={() => {this.setState({
+								page: <MoudleConfig cols={this.state.cols} refresh={this.getModuleConfigs.bind(this)}/>,
+								selectedKeys: ['sysconfig']
+							})}}>系统设置</a>
 						</Menu.Item>
 						{moduleMenus}
 					</Menu>
