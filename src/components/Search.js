@@ -85,7 +85,7 @@ class Search extends Component {
             <nobr>
                 <span>
                 {getFieldDecorator('mainKey', {initialValue: searchFields.mainKey})(
-                    <Input style={{width: 300}} placeholder={this.props.placeholder || "请输入"} onKeyDown={this.keyPress.bind(this)}/>
+                    <Input style={{width: 200}} placeholder={this.props.placeholder || "请输入"} onKeyDown={this.keyPress.bind(this)}/>
                 )}
                 </span>
                 <span>

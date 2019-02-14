@@ -1,4 +1,7 @@
 import React, { Component } from 'react'
+
+import { BrowserRouter, Route, Link, withRouter } from 'react-router-dom'
+
 import Menu from 'antd/lib/menu'
 import Row from 'antd/lib/row'
 import Col from 'antd/lib/col'
@@ -9,7 +12,11 @@ import {getList} from './modules/moudle_config/Action'
 import ListModule from './modules/list_module/ListModule'
 import TreeModule from './modules/tree_module/TreeModule'
 
+@withRouter
 class App extends Component {
+	/**
+	 * 构造函数
+	 */
 	constructor() {
 		super();
 		this.state = {
@@ -17,10 +24,13 @@ class App extends Component {
 			page: null,
 			moduleConfigs: [],
 			cols: 4,
-			selectedKeys: ['sysconfig']
+			selectedKeys: [],
 		};
 	}
 
+	/**
+	 * 获取系统配置
+	 */
 	getModuleConfigs() {
 		getList(1, 9999, {}, {}, (body => {
 			let moduleConfigs = body.list || [];
@@ -28,16 +38,33 @@ class App extends Component {
 		}))
 	}
 
+	/**
+	 * 组件加载时
+	 */
 	componentWillMount() {
+		let cols = this.getCols();
 		window.addEventListener('resize', this.onWindowResize.bind(this));
 		this.getModuleConfigs();
-		this.setState({ cols: this.getCols() });
+		let pathname = window.location.pathname;
+		pathname = pathname.substring(1, pathname.length);
+		let menukey = 'sysconfig'
+		if (pathname !== '') {
+			let pathArr = pathname.split('/');
+			menukey = pathArr[0];
+		}
+		this.setState({ cols: cols, selectedKeys: [menukey]});
 	}
 	
+	/**
+	 * 将要离开组件时
+	 */
 	componentWillUnmount() {
 		window.removeEventListener('resize', this.onWindowResize.bind(this));
 	}
 
+	/**
+	 * 计算表单自适应的列数
+	 */
 	getCols() {
 		let cols = 1;
 		let menuWidth = this.state.folded ? global.menuWidth : 0;
@@ -55,33 +82,62 @@ class App extends Component {
 		return cols;
 	}
 
+	/**
+	 * 窗口大小变化回调函数
+	 */
 	onWindowResize() {
 		this.setState({ cols: this.getCols() });
 	}
 
+	/**
+	 * 点击菜单回调
+	 * @param {*} info 
+	 */
+	onMenuItemClick(info) {
+		const { key } = info;
+		//console.log(item, key, keyPath, 'item, key, keyPath');
+		this.setState({selectedKeys: [key]});
+	}
+
+	/**
+	 * 渲染函数
+	 */
 	render() {
 		const toggermenustyle = this.state.folded ? 'menu-unfold' : 'menu-fold';
 		const mode = this.state.folded ? 'vertical' : 'inline';
+		let routes = [];
+		let sysRoute = <Route key='sysconfig' path='/' exact render={props => <MoudleConfig 
+			cols={this.state.cols} 
+			refresh={this.getModuleConfigs.bind(this)} 
+			{...props}
+		/>}/>;
+		routes.push(sysRoute);
 		let moduleMenus = this.state.moduleConfigs.map(config => {
-			let page = null
+			let route = null
 			if (config.dataMoudle === '树') {
-				page = <TreeModule cols={this.state.cols} config={config}/>
+				route = <Route key={config.tableName} path={`/${config.tableName}`} render={props => <TreeModule 
+					cols={this.state.cols} 
+					config={config} 
+					{...props}
+				/>}/>
 			} else {
-				page = <ListModule cols={this.state.cols} config={config}/>
+				route = <Route key={config.tableName} path={`/${config.tableName}`} render={props => <ListModule 
+					cols={this.state.cols} 
+					config={config} 
+					{...props}
+				/>}/>
 			}
+			routes.push(route);
 			return <Menu.Item key={config.tableName}>
-				<a onClick={() => {this.setState({page, selectedKeys: [config.tableName]})}}>{config.moduleName}</a>
+				<Link to={`/${config.tableName}`}>{config.moduleName}</Link>
 			</Menu.Item>
 		})
-		return (
+		return <BrowserRouter>
 			<div>
 				{!this.state.folded && <aside className="ant-layout-sider">
-					<Menu mode={mode} selectedKeys={this.state.selectedKeys}>
+					<Menu mode={mode} onClick={this.onMenuItemClick.bind(this)} selectedKeys={this.state.selectedKeys}>
 						<Menu.Item key="sysconfig">
-							<a onClick={() => {this.setState({
-								page: <MoudleConfig cols={this.state.cols} refresh={this.getModuleConfigs.bind(this)}/>,
-								selectedKeys: ['sysconfig']
-							})}}>系统设置</a>
+							<Link to='/'>系统设置</Link>
 						</Menu.Item>
 						{moduleMenus}
 					</Menu>
@@ -95,11 +151,12 @@ class App extends Component {
 						</Col>
 					</Row>
 					<div className="ant-layout-container">
-						{this.state.page || <MoudleConfig cols={this.state.cols} refresh={this.getModuleConfigs.bind(this)}/>}
+						
+						{routes}
 					</div>
 				</div>
 			</div>
-		);
+		</BrowserRouter>
 	}
 }
 

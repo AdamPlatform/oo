@@ -367,10 +367,12 @@ class Tree extends Component {
         }
         return (
             React.createElement('div', {
+                key: `${node.key}`,
                 style: styles.item,
                 className: 'tree-node',
                 children: [
                     hasChildren ? React.createElement(Icon, {
+                        key: `expandIcon_${node.key}`,
                         onClick: this.onExpand.bind(this, node),
                         style: Object.assign({}, styles.icon, {
                             color: expandIconColor, 
@@ -381,21 +383,25 @@ class Tree extends Component {
                         }),
                         type: expandIcon
                     }) : React.createElement('div', {
+                        key: `expandIcon_${node.key}`,
                         style: Object.assign({}, styles.icon, {
                             display: 'inline-block'
                         })
                     }),
                     checkable && React.createElement('div', {
+                        key: `checkIcon_${node.key}`,
                         onClick: disabled ? ()=>{} : this.onSelect.bind(this, node),
                         style: checkStyle,
                         children: (selected[key] === true && React.createElement('div', { style: checkedStyle}))
                         || (selected[key] === null && React.createElement('div', {style: checkedStyle}))
                     }),
                     icon && React.createElement(Icon, {
+                        key: `Icon_${node.key}`,
                         style: Object.assign({}, styles.icon, {fontSize: iconSize}),
                         type: icon
                     }),
                     React.createElement('li', {
+                        key: `li_${node.key}`,
                         style: Object.assign({},styles.nodeSpan, textStyle),
                         onClick: disabled ? ()=>{} : this.onSelect.bind(this, node),
                         children: textNode
@@ -428,6 +434,7 @@ class Tree extends Component {
                 children: [
                     this.renderItem(node),
                     hasChildren && React.createElement('div', {
+                        key: `dir_${node.key}`,
                         style: childrenStyle,
                         children: expanded[node.key] && this.renderTree(node.children, node)
                     })
@@ -457,36 +464,24 @@ class Tree extends Component {
         } 
     }
     render() {
-        return React.createElement('div', {
-            style: this.props.treeStyle || styles.tree,
-            children: [
-                React.createElement('nobr', {
-                    children: [
-                        React.createElement(Input, {
-                            placeholder: this.props.placeholder,
-                            size: 'small',
-                            style: {width: '80%'},
-                            value: this.state.text,
-                            onChange: (e) => {
-                                this.onSearch(e.target.value);
-                            }
-                        }),
-                        React.createElement(Button, {
-                            size: 'small',
-                            children: React.createElement(Icon, {type: 'search'})
-                        }),
-                        React.createElement(Button, {
-                            size: 'small',
-                            onClick: () => {
-                                this.setState({text: '', treeData: this.props.treeData});
-                            },
-                            children: React.createElement(Icon, {type: 'reload'})
-                        })
-                    ]
-                }),
-                this.renderTree(this.state.treeData, null)
-            ]
-        })
+        return <div style={this.props.treeStyle || styles.tree}>
+            <nobr>
+                <Input
+                    placeholder={this.props.placeholder}
+                    size='small'
+                    style={{width: '80%'}}
+                    value={this.state.text}
+                    onChange={(e) => {this.onSearch(e.target.value)}}
+                />
+                <Button 
+                    size='small' 
+                    onClick={() => {this.setState({text: '', treeData: this.props.treeData})}}
+                >
+                    <Icon type='reload'/>
+                </Button>
+            </nobr>
+            {this.renderTree(this.state.treeData, null)}
+        </div>
     }
 }
 const iconWidth = 18;
@@ -494,6 +489,7 @@ const lineMarginLeft = 4;
 const styles = {
     tree: {
         padding: 10,
+        background: '#f5f5f5',
     },
     node: {
         paddingTop: 10

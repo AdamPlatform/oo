@@ -27,6 +27,7 @@ class TreeModule extends Component {
             loading: false,
             editing: false,
             node: global[this.tableName].node || {},
+            treeData: global[this.tableName].treeData || [],
         };
     }
 
@@ -141,7 +142,7 @@ class TreeModule extends Component {
         return <Spin spinning={this.state.loading}>
             <Row>
                 <Col span={4}>
-                    <Tree treeData={treeData} onSelect={this.onSelect.bind(this)} selectedKeys={[node.key]}/>
+                    <Tree defaultExpandRoot treeData={treeData} onSelect={this.onSelect.bind(this)} selectedKeys={[node.key]}/>
                 </Col>
                 <Col span={20}>
                     <div style={{margin: 8}}>
