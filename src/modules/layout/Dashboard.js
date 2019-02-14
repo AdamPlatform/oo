@@ -10,7 +10,6 @@ import MoudleConfig from '../moudle_config/List'
 import {getList} from '../moudle_config/Action'
 import ListModule from '../list_module/ListModule'
 import New from '../list_module/New'
-import Modify from '../list_module/Modify'
 import Detail from '../list_module/Detail'
 import TreeModule from '../tree_module/TreeModule'
 import Home from './Home'
@@ -162,12 +161,6 @@ class Dashboard extends Component {
 					tableName={config.tableName} 
 					{...props}
 				/>}/>
-				let modifyRoute = <Route key={config.tableName + 'modify'} path={`/${config.tableName}/modify/:id`} render={props => <Modify 
-					cols={this.state.cols} 
-					tableConfig={config.fields_config}
-					tableName={config.tableName} 
-					{...props}
-				/>}/>
 				let detailRoute = <Route key={config.tableName + 'detail'} path={`/${config.tableName}/detail/:id`} render={props => <Detail 
 					cols={this.state.cols} 
 					tableConfig={config.fields_config}
@@ -176,7 +169,6 @@ class Dashboard extends Component {
 				/>}/>
 				routes.push(route);
 				routes.push(newRoute);
-				routes.push(modifyRoute);
 				routes.push(detailRoute);
             }
             if (this.state.selectedKeys[0] === config.tableName) {

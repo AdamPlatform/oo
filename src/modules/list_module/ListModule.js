@@ -168,7 +168,7 @@ class ListModule extends Component {
             title: '操作',
             dataIndex: `${this.pageKey}_id`,
             key: 'operation',
-            width: 200,
+            width: 120,
             fixed: 'right',
             render: (text, record) => {
                 let split = <span className="ant-divider"/>
@@ -176,8 +176,7 @@ class ListModule extends Component {
                     <a>删除</a>
                 </Popconfirm>
                 let detail = <Link to={`${this.props.location.pathname}/detail/${text}`}>详情</Link>;
-                let edit = <Link to={`${this.props.location.pathname}/modify/${text}`}>修改</Link>;;
-                return <span>{detail}{split}{edit}{split}{del}</span>;
+                return <span>{detail}{split}{del}</span>;
             }
         });
 

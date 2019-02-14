@@ -8,11 +8,11 @@ import Spin from '../../components/Spin'
 import Row from 'antd/lib/row'
 import Col from 'antd/lib/col'
 import Button from 'antd/lib/button'
+import Modal from 'antd/lib/modal'
 
 import Tree from '../../components/Tree'
 import Fields from './Fields'
 import * as Action from './Action'
-import { Modal } from 'antd';
 
 class TreeModule extends Component {
     /**
