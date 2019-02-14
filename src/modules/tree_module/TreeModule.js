@@ -11,7 +11,6 @@ import Button from 'antd/lib/button'
 
 import Tree from '../../components/Tree'
 import Fields from './Fields'
-import New from './New'
 import * as Action from './Action'
 import { Modal } from 'antd';
 
@@ -26,8 +25,10 @@ class TreeModule extends Component {
         this.state = {
             loading: false,
             editing: false,
+            adding: false,
             node: global[this.tableName].node || {},
             treeData: global[this.tableName].treeData || [],
+            expandedKeys: global[this.tableName].expandedKeys || [],
         };
     }
 
@@ -63,8 +64,15 @@ class TreeModule extends Component {
                 treeData, loading: false
             });
             if (global.equals(this.state.node, {})) {
+                // 默认展开根节点
+                let expandedKeys = this.state.expandedKeys;
+                
+                if (expandedKeys.length === 0) {
+                    expandedKeys = [treeData[0].key];
+                }
                 global.storeData(this, this.tableName, {
-                    node: treeData[0]
+                    node: treeData[0],
+                    expandedKeys: expandedKeys,
                 });
             }
         });
@@ -86,8 +94,14 @@ class TreeModule extends Component {
         });
     }
 
+    onExpand(expandedKeys) {
+        global.storeData(this, this.tableName, {
+            expandedKeys: expandedKeys
+        });
+    }
+
     /**
-     * 点击保存时
+     * 修改保存时
      */
     onSave() {
         this.setState({editing: false});
@@ -117,6 +131,29 @@ class TreeModule extends Component {
     }
 
     /**
+     * 新增保存时
+     */
+    onAddSave() {
+        let hasError = false;
+        // 校验数据
+		this.formRef.props.form.validateFields((errors, values) => {
+			if (!!errors) {
+                hasError = true;
+				return;
+			}
+        });
+        if (hasError) {
+            return;
+        }
+        let record = this.formRef.props.form.getFieldsValue();
+        this.setState({loading: true});
+        Action.add(this.tableName, this.state.node[`${this.tableName}_id`], record, () => {
+            this.setState({adding: false, loading: false});
+            this.refresh();
+        });
+    }
+
+    /**
      * 删除节点
      */
     onDel() {
@@ -138,35 +175,48 @@ class TreeModule extends Component {
      */
     render () {
         let tableConfig = this.props.config.fields_config || [];
-        const {treeData, editing, node} = this.state;
+        const {treeData, editing, adding, node, expandedKeys} = this.state;
+        let action = 'detail';
+        if (editing) {
+            action = 'modify';
+        } else if (adding) {
+            action = 'new';
+        }
+        let data = {};
+        tableConfig.forEach(config => {
+            data[config.dataIndex] = config.defaultValue;
+        })
         return <Spin spinning={this.state.loading}>
             <Row>
                 <Col span={3}>
-                    <Tree defaultExpandRoot treeData={treeData} onSelect={this.onSelect.bind(this)} selectedKeys={[node.key]}/>
+                    <Tree 
+                        defaultExpandRoot 
+                        treeData={treeData} 
+                        onSelect={this.onSelect.bind(this)} 
+                        selectedKeys={[node.key]}
+                        expandedKeys={expandedKeys}
+                        onExpand={this.onExpand.bind(this)}
+                    />
                 </Col>
                 <Col span={21}>
                     <div style={{margin: 8}}>
-                        {!editing && <New 
-                            cols={this.props.cols}
-                            pid={node.key} 
-                            tableName={this.tableName} 
-                            tableConfig={tableConfig} 
-                            refresh={this.refresh.bind(this)}
-                        />}
-                        {!editing && <Button onClick={() => this.setState({editing: true})} style={{marginLeft: 16}}>修改</Button>}
-                        {!editing && <Popconfirm title="确定要删除这条数据吗？" onConfirm={this.onDel.bind(this)}>
+                        {!(editing || adding) && <Button type='primary' onClick={() => { this.setState({adding: true})}}>新增</Button>}
+                        {!(editing || adding) && <Button onClick={() => this.setState({editing: true})} style={{marginLeft: 16}}>修改</Button>}
+                        {!(editing || adding) && <Popconfirm title="确定要删除这条数据吗？" onConfirm={this.onDel.bind(this)}>
                             <Button style={{marginLeft: 16}}>删除</Button>
                         </Popconfirm>}
                         {editing && <Button type='primary' onClick={this.onSave.bind(this)} style={{marginLeft: 16}}>保存</Button>}
                         {editing && <Button onClick={() => this.setState({editing: false})} style={{marginLeft: 16}}>取消</Button>}
+                        {adding && <Button type='primary' onClick={this.onAddSave.bind(this)} style={{marginLeft: 16}}>保存</Button>}
+                        {adding && <Button onClick={() => this.setState({adding: false})} style={{marginLeft: 16}}>取消</Button>}
                     </div>
                     <Fields
                         cols={this.props.cols}
                         tableConfig={tableConfig}
                         tableName={this.tableName}
-                        data={node}
+                        data={action === 'new' ? data : node}
                         wrappedComponentRef={(inst) => this.formRef = inst} 
-                        action={ editing ? 'modify' : 'detail' }
+                        action={action}
                     />
                 </Col>
             </Row>
