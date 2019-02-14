@@ -20,6 +20,7 @@ class Dashboard extends Component {
 	constructor() {
 		super();
 		this.pageKey = 'Dashboard';
+		global[this.pageKey] = global[this.pageKey] || {};
 		this.state = {
 			folded: global[this.pageKey].folded || false,
 			moduleConfigs: global[this.pageKey].moduleConfigs || [],
