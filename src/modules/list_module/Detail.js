@@ -2,51 +2,48 @@
  * 详情页面
  */
 import React, { Component } from 'react'
-import Modal from 'antd/lib/modal'
+import Spin from '../../components/Spin'
 import Button from 'antd/lib/button'
 import Fields from './Fields'
+import * as Action from './Action'
 
 export default class Detial extends Component {
     /**
-     * 构造函数 初始化
+     * 使用全局变量保存页面状态
      */
-    constructor() {
+    constructor(props) {
         super();
+        this.pageKey = props.tableName + props.match.params.id;
+        global[this.pageKey] = global[this.pageKey] || {};
         this.state = {
-            visible: false,
-        }
+            data: global[this.pageKey].data || {},
+            loading: global[this.pageKey].loading || false,
+        };
     }
-
+    
     /**
-     * 取消
+     * 组件加载时
      */
-    onCancel() {
-        this.setState({visible: false});
+    componentWillMount() {
+        global.storeData(this, this.pageKey, {loading: true})
+        Action.getOne(this.props.tableName, this.props.match.params.id, (data) => {
+            global.storeData(this, this.pageKey, {
+                data, loading: false
+            });
+        })
     }
-
     /**
      * 渲染函数
      */
     render() {
-        return <span>
-            <a onClick={() => { this.setState({visible: true});}}>详情</a>
-            {this.state.visible && <Modal
-                title='详情'
-                visible={this.state.visible}
-                onCancel={this.onCancel.bind(this)}
-                onClose={this.onCancel.bind(this)}
-                maskClosable={false}
-                width={global.clientWidth - 100}
-                onOk={this.onCancel.bind(this)}
-                footer={[<Button key='1' type='primary' onClick={this.onCancel.bind(this)} children='关闭'/>]}
-            >
-                <Fields 
-                    {...this.props}
-                    wrappedComponentRef={(inst) => this.formRef = inst} 
-                    action='detail'
-                />
-            </Modal>
-            }
-        </span>
+        return <Spin spinning={this.state.loading}>
+            <Button type='primary' onClick={this.props.history.goBack}>返回</Button>
+            <Fields 
+                {...this.props}
+                wrappedComponentRef={(inst) => this.formRef = inst} 
+                action='detail'
+                data={this.state.data}
+            />
+        </Spin>
     }
 }

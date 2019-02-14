@@ -225,8 +225,6 @@ class List extends Component {
                 searchFields={searchFields}
                 showMore={showMore}
                 btnName='搜索'
-                simpleText='精简搜素条件'
-                moreText='更多搜索条件'
             />
             <New tableConfig={tableConfig} cols={this.props.cols} refresh={this.refresh.bind(this)}/>
             <TableEx

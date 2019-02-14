@@ -3,28 +3,34 @@
  */
 import React, { Component } from 'react'
 import Spin from '../../components/Spin'
-import Modal from 'antd/lib/modal'
+import Button from 'antd/lib/button'
 import Fields from './Fields'
 import * as Action from './Action'
 
 class Modify extends Component {
     /**
-     * 构造函数 初始化
+     * 使用全局变量保存页面状态
      */
-    constructor() {
+    constructor(props) {
         super();
+        this.pageKey = props.tableName + props.match.params.id;
+        global[this.pageKey] = global[this.pageKey] || {};
         this.state = {
-            visible: false,
-            classConfig: [],
-            loading: false,
-        }
+            data: global[this.pageKey].data || {},
+            loading: global[this.pageKey].loading || false,
+        };
     }
-
+    
     /**
-     * 取消
+     * 组件加载时
      */
-    onCancel() {
-        this.setState({visible: false});
+    componentWillMount() {
+        global.storeData(this, this.pageKey, {loading: true})
+        Action.getOne(this.props.tableName, this.props.match.params.id, (data) => {
+            global.storeData(this, this.pageKey, {
+                data, loading: false
+            });
+        })
     }
 
     /**
@@ -43,10 +49,10 @@ class Modify extends Component {
             return;
         }
         let record = this.formRef.props.form.getFieldsValue();
-        this.setState({loading: true});
-        Action.modify(this.props.tableName, this.props.data[`${this.props.tableName}_id`], record, () => {
-            this.props.refresh && this.props.refresh();
-            this.setState({visible: false, loading: false,});
+        global.storeData(this, this.pageKey, {loading: true})
+        Action.modify(this.props.tableName, this.props.match.params.id, record, () => {
+            global.storeData(this, this.pageKey, {loading: false});
+            this.props.history.goBack();
         });
     }
     
@@ -54,27 +60,16 @@ class Modify extends Component {
      * 渲染函数
      */
     render() {
-        return <span>
-            <a onClick={() => { this.setState({visible: true}); }}>修改</a>
-            {this.state.visible && <Modal
-                title='修改'
-                visible={this.state.visible}
-                onCancel={this.onCancel.bind(this)}
-                onClose={this.onCancel.bind(this)}
-                maskClosable={false}
-                width={global.clientWidth - 100}
-                onOk={this.onOk.bind(this)}
-            >
-                <Spin spinning={this.state.loading}>
-                    <Fields
-                        {...this.props}
-                        wrappedComponentRef={(inst) => this.formRef = inst} 
-                        action='modify'
-                    />
-                </Spin>
-            </Modal>
-            }
-        </span>
+        return <Spin spinning={this.state.loading}>
+            <Button type='primary' onClick={this.onOk.bind(this)}>保存</Button>
+            <Button style={{marginLeft: 16}} onClick={this.props.history.goBack}>取消</Button>
+            <Fields
+                {...this.props}
+                wrappedComponentRef={(inst) => this.formRef = inst} 
+                action='modify'
+                data={this.state.data}
+            />
+        </Spin>
     }
 }
 export default Modify;

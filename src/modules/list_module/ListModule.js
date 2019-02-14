@@ -3,13 +3,12 @@
  * 创建、修改、删除、查询模块配置，根据模块配置生成模块
  */
 import React, { Component } from 'react'
+import Button from 'antd/lib/button'
 import Popconfirm from 'antd/lib/popconfirm'
 import Spin from '../../components/Spin'
 import TableEx from '../../components/TableEx'
 import Search from '../../components/Search'
-import Detail from './Detail'
-import Modify from './Modify'
-import New from './New'
+import { Link } from 'react-router-dom'
 import * as Action from './Action'
 import {configToColumn, configToItemProps} from '../../components/PageCreator'
 let mainSearchFeilds = [];
@@ -21,18 +20,18 @@ class ListModule extends Component {
      */
     constructor(props) {
         super();
-        this.tableName = props.config.tableName;
-        global[this.tableName] = global[this.tableName] || {};
+        this.pageKey = props.config.tableName;
+        global[this.pageKey] = global[this.pageKey] || {};
         this.state = {
-            searchFields: global[this.tableName].searchFields || {},
-            showMore: global[this.tableName].showMore || false,
-            page: global[this.tableName].page || 1,
-            pageSize: global[this.tableName].pageSize || 10,
-            list: global[this.tableName].list || [],
-            totalElements: global[this.tableName].totalElements || 0,
-            sorter: global[this.tableName].sorter || {},
-            loading: global[this.tableName].loading || false,
-            query: global[this.tableName].query || {},
+            searchFields: global[this.pageKey].searchFields || {},
+            showMore: global[this.pageKey].showMore || false,
+            page: global[this.pageKey].page || 1,
+            pageSize: global[this.pageKey].pageSize || 10,
+            list: global[this.pageKey].list || [],
+            totalElements: global[this.pageKey].totalElements || 0,
+            sorter: global[this.pageKey].sorter || {},
+            loading: global[this.pageKey].loading || false,
+            query: global[this.pageKey].query || {},
         };
     }
 
@@ -49,7 +48,7 @@ class ListModule extends Component {
      */
     componentWillReceiveProps(nextProps) {
         if (nextProps.config !== this.props.config) {
-            this.tableName = nextProps.config.tableName;
+            this.pageKey = nextProps.config.tableName;
             this.refresh();
         }
     }
@@ -62,13 +61,13 @@ class ListModule extends Component {
      * @param {*} sorter        排序条件
      */
     getList(page, pageSize, query, sorter) {
-        global.storeData(this, this.tableName, {loading: true})
-        Action.getList(this.tableName, page, pageSize, query, sorter, (body) => {
+        global.storeData(this, this.pageKey, {loading: true})
+        Action.getList(this.pageKey, page, pageSize, query, sorter, (body) => {
             if (body === {}) {
                 return;
             }
             const {list, totalElements} = body;
-            global.storeData(this, this.tableName, {
+            global.storeData(this, this.pageKey, {
                 page, pageSize, query, sorter, list, totalElements, loading: false
             });
         });
@@ -78,14 +77,14 @@ class ListModule extends Component {
      * 清空搜索条件
      */
     resetSearch() {
-        global.storeData(this, this.tableName, { searchFields: {}, query: {}});
+        global.storeData(this, this.pageKey, { searchFields: {}, query: {}});
     }
 
     /**
      * 显示更多搜索条件
      */
     handleMore() {
-        global.storeData(this, this.tableName, {showMore: !this.state.showMore});
+        global.storeData(this, this.pageKey, {showMore: !this.state.showMore});
     }
 
     /**
@@ -94,7 +93,7 @@ class ListModule extends Component {
      * @param {*} searchFields 
      */
     onSearch(query, searchFields) {
-        global.storeData(this, this.tableName, {searchFields: searchFields });
+        global.storeData(this, this.pageKey, {searchFields: searchFields });
         const {pageSize, sorter} = this.state;
         this.getList(1, pageSize, query, sorter);
     }
@@ -122,8 +121,8 @@ class ListModule extends Component {
      * 删除操作
      */
     del(id) {
-        global.storeData(this, this.tableName, {loading: true});
-        Action.del(this.tableName, id, () => {
+        global.storeData(this, this.pageKey, {loading: true});
+        Action.del(this.pageKey, id, () => {
             this.refresh();
         });
     }
@@ -167,7 +166,7 @@ class ListModule extends Component {
         });
         columns.push({
             title: '操作',
-            dataIndex: `${this.tableName}_id`,
+            dataIndex: `${this.pageKey}_id`,
             key: 'operation',
             width: 200,
             fixed: 'right',
@@ -176,8 +175,8 @@ class ListModule extends Component {
                 let del = <Popconfirm title="确定要删除这条数据吗？" onConfirm={this.del.bind(this, text)}>
                     <a>删除</a>
                 </Popconfirm>
-                let detail = <Detail cols={this.props.cols} tableName={this.tableName} data={record} tableConfig={tableConfig}/>;
-                let edit = <Modify cols={this.props.cols} tableName={this.tableName} data={record} tableConfig={tableConfig} refresh={this.refresh.bind(this)}/>;
+                let detail = <Link to={`${this.props.location.pathname}/detail/${text}`}>详情</Link>;
+                let edit = <Link to={`${this.props.location.pathname}/modify/${text}`}>修改</Link>;;
                 return <span>{detail}{split}{edit}{split}{del}</span>;
             }
         });
@@ -194,7 +193,7 @@ class ListModule extends Component {
         mainSearchFeilds = [];
         moreSearchFeilds = [];
         searchFormFields.forEach(field => {
-            if ([`${this.tableName}_name`, `${this.tableName}_code`].indexOf(field.id) !== -1) {
+            if ([`${this.pageKey}_name`, `${this.pageKey}_code`].indexOf(field.id) !== -1) {
                 mainSearchFeilds.push(field);
             } else {
                 moreSearchFeilds.push(field);
@@ -220,16 +219,14 @@ class ListModule extends Component {
                 searchFields={searchFields}
                 showMore={showMore}
                 btnName='搜索'
-                simpleText='精简搜素条件'
-                moreText='更多搜索条件'
             />
-            <New cols={this.props.cols} tableName={this.tableName} tableConfig={tableConfig} refresh={this.refresh.bind(this)}/>
+            <Button type='primary' onClick={() => {this.props.history.push(`${this.props.location.pathname}/new`)}}>新增</Button>
             <TableEx
                 scroll={{ x: scrollx }}
                 columns={columns}
                 dataSource={list}
                 onChange={this.handleTableChange.bind(this)}
-                rowKey={record => record[`${this.tableName}_id`]}
+                rowKey={record => record[`${this.pageKey}_id`]}
                 pagination={pagination}
             />
         </Spin>

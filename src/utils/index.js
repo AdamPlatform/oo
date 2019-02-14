@@ -11,7 +11,7 @@ global.clientWidth = document.documentElement.clientWidth || document.body.clien
 /**
  * 菜单宽度
  */
-global.menuWidth = 224;
+global.menuWidth = 220;
 
 /**
  * 保留几位小数，默认6位，小数位数不够不补0

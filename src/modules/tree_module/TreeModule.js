@@ -20,15 +20,15 @@ class TreeModule extends Component {
      */
     constructor(props) {
         super();
-        this.tableName = props.config.tableName;
-        global[this.tableName] = global[this.tableName] || {};
+        this.pageKey = props.config.tableName;
+        global[this.pageKey] = global[this.pageKey] || {};
         this.state = {
             loading: false,
             editing: false,
             adding: false,
-            node: global[this.tableName].node || {},
-            treeData: global[this.tableName].treeData || [],
-            expandedKeys: global[this.tableName].expandedKeys || [],
+            node: global[this.pageKey].node || {},
+            treeData: global[this.pageKey].treeData || [],
+            expandedKeys: global[this.pageKey].expandedKeys || [],
         };
     }
 
@@ -44,7 +44,7 @@ class TreeModule extends Component {
      */
     componentWillReceiveProps(nextProps) {
         if (nextProps.config !== this.props.config) {
-            this.tableName = nextProps.config.tableName;
+            this.pageKey = nextProps.config.tableName;
             this.refresh();
         }
     }
@@ -57,10 +57,10 @@ class TreeModule extends Component {
      * @param {*} sorter        排序条件
      */
     getTree() {
-        global.storeData(this, this.tableName, {loading: true})
-        Action.getTree(this.tableName, treeData => {
+        global.storeData(this, this.pageKey, {loading: true})
+        Action.getTree(this.pageKey, treeData => {
             treeData = treeData || [];
-            global.storeData(this, this.tableName, {
+            global.storeData(this, this.pageKey, {
                 treeData, loading: false
             });
             if (global.equals(this.state.node, {})) {
@@ -70,7 +70,7 @@ class TreeModule extends Component {
                 if (expandedKeys.length === 0) {
                     expandedKeys = [treeData[0].key];
                 }
-                global.storeData(this, this.tableName, {
+                global.storeData(this, this.pageKey, {
                     node: treeData[0],
                     expandedKeys: expandedKeys,
                 });
@@ -89,13 +89,13 @@ class TreeModule extends Component {
      * 点击树节点
      */
     onSelect(selectedKeys, info) {
-        global.storeData(this, this.tableName, {
+        global.storeData(this, this.pageKey, {
             node: info.node
         });
     }
 
     onExpand(expandedKeys) {
-        global.storeData(this, this.tableName, {
+        global.storeData(this, this.pageKey, {
             expandedKeys: expandedKeys
         });
     }
@@ -118,11 +118,11 @@ class TreeModule extends Component {
         }
         let record = this.formRef.props.form.getFieldsValue();
         this.setState({loading: true});
-        Action.modify(this.tableName, this.state.node[`${this.tableName}_id`], record, (data) => {
+        Action.modify(this.pageKey, this.state.node[`${this.pageKey}_id`], record, (data) => {
             if (data) {
-                data.key = data[`${this.tableName}_id`];
-                data.label = data[`${this.tableName}_name`];
-                global.storeData(this, this.tableName, {
+                data.key = data[`${this.pageKey}_id`];
+                data.label = data[`${this.pageKey}_name`];
+                global.storeData(this, this.pageKey, {
                     node: data
                 });
             }
@@ -147,7 +147,7 @@ class TreeModule extends Component {
         }
         let record = this.formRef.props.form.getFieldsValue();
         this.setState({loading: true});
-        Action.add(this.tableName, this.state.node[`${this.tableName}_id`], record, () => {
+        Action.add(this.pageKey, this.state.node[`${this.pageKey}_id`], record, () => {
             this.setState({adding: false, loading: false});
             this.refresh();
         });
@@ -157,13 +157,13 @@ class TreeModule extends Component {
      * 删除节点
      */
     onDel() {
-        if (this.state.node[`${this.tableName}_pid`] === null) {
+        if (this.state.node[`${this.pageKey}_pid`] === null) {
             Modal.warning({title: '根节点不能删除'});
             return;
         }
         this.setState({loading: true});
-        Action.del(this.tableName, this.state.node[`${this.tableName}_id`], () => {
-            global.storeData(this, this.tableName, {
+        Action.del(this.pageKey, this.state.node[`${this.pageKey}_id`], () => {
+            global.storeData(this, this.pageKey, {
                 node: this.state.treeData[0]
             });
             this.refresh();
@@ -213,7 +213,7 @@ class TreeModule extends Component {
                     <Fields
                         cols={this.props.cols}
                         tableConfig={tableConfig}
-                        tableName={this.tableName}
+                        tableName={this.pageKey}
                         data={action === 'new' ? data : node}
                         wrappedComponentRef={(inst) => this.formRef = inst} 
                         action={action}

@@ -9,6 +9,9 @@ import Icon from 'antd/lib/icon'
 import MoudleConfig from '../moudle_config/List'
 import {getList} from '../moudle_config/Action'
 import ListModule from '../list_module/ListModule'
+import New from '../list_module/New'
+import Modify from '../list_module/Modify'
+import Detail from '../list_module/Detail'
 import TreeModule from '../tree_module/TreeModule'
 import Home from './Home'
 class Dashboard extends Component {
@@ -140,24 +143,46 @@ class Dashboard extends Component {
             moduleName = '系统设置';
         }
 		let moduleMenus = this.state.moduleConfigs.map(config => {
-			let route = null
 			if (config.dataMoudle === '树') {
-				route = <Route key={config.tableName} path={`/${config.tableName}`} render={props => <TreeModule 
+				let route = <Route key={config.tableName} path={`/${config.tableName}`} render={props => <TreeModule 
 					cols={this.state.cols} 
 					config={config} 
 					{...props}
 				/>}/>
+				routes.push(route);
 			} else {
-				route = <Route key={config.tableName} path={`/${config.tableName}`} render={props => <ListModule 
+				let route = <Route key={config.tableName} exact path={`/${config.tableName}`} render={props => <ListModule 
 					cols={this.state.cols} 
 					config={config} 
 					{...props}
 				/>}/>
+				let newRoute = <Route key={config.tableName + 'new'} path={`/${config.tableName}/new`} render={props => <New 
+					cols={this.state.cols} 
+					tableConfig={config.fields_config}
+					tableName={config.tableName} 
+					{...props}
+				/>}/>
+				let modifyRoute = <Route key={config.tableName + 'modify'} path={`/${config.tableName}/modify/:id`} render={props => <Modify 
+					cols={this.state.cols} 
+					tableConfig={config.fields_config}
+					tableName={config.tableName} 
+					{...props}
+				/>}/>
+				let detailRoute = <Route key={config.tableName + 'detail'} path={`/${config.tableName}/detail/:id`} render={props => <Detail 
+					cols={this.state.cols} 
+					tableConfig={config.fields_config}
+					tableName={config.tableName} 
+					{...props}
+				/>}/>
+				routes.push(route);
+				routes.push(newRoute);
+				routes.push(modifyRoute);
+				routes.push(detailRoute);
             }
             if (this.state.selectedKeys[0] === config.tableName) {
                 moduleName = config.moduleName;
             }
-			routes.push(route);
+			
 			return <Menu.Item key={config.tableName}>
 				<Link to={`/${config.tableName}`}>{config.moduleName}</Link>
 			</Menu.Item>

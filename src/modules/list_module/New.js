@@ -3,28 +3,21 @@
  */
 import React, { Component } from 'react'
 import Button from 'antd/lib/button'
-import Modal from 'antd/lib/modal'
 import Fields from './Fields'
 import Spin from '../../components/Spin'
 import * as Action from './Action'
 
 class New extends Component {
     /**
-     * 构造函数 初始化
+     * 使用全局变量保存页面状态
      */
-    constructor() {
+    constructor(props) {
         super();
+        this.pageKey = props.tableName + 'new';
+        global[this.pageKey] = global[this.pageKey] || {};
         this.state = {
-            visible: false,
-            loading: false,
-        }
-    }
-
-    /**
-     * 取消
-     */
-    onCancel() {
-        this.setState({visible: false});
+            loading: global[this.pageKey].loading || false,
+        };
     }
 
     /**
@@ -43,10 +36,10 @@ class New extends Component {
             return;
         }
         let record = this.formRef.props.form.getFieldsValue();
-        this.setState({loading: true});
+        global.storeData(this, this.pageKey, {loading: true})
         Action.add(this.props.tableName, record, () => {
-            this.props.refresh && this.props.refresh({page: 1});
-            this.setState({visible: false, loading: false});
+            global.storeData(this, this.pageKey, {loading: false})
+            this.props.history.goBack();
         });
     }
     
@@ -58,28 +51,16 @@ class New extends Component {
         this.props.tableConfig.forEach(config => {
             data[config.dataIndex] = config.defaultValue;
         })
-        return <span>
-            <Button type='primary' onClick={() => { this.setState({visible: true})}}>新增</Button>
-            {this.state.visible && <Modal
-                title='新增'
-                visible={this.state.visible}
-                onCancel={this.onCancel.bind(this)}
-                onClose={this.onCancel.bind(this)}
-                maskClosable={false}
-                width={global.clientWidth - 100}
-                onOk={this.onOk.bind(this)}
-            >
-                <Spin spinning={this.state.loading}>
-                    <Fields 
-                        {...this.props}
-                        data={data}
-                        wrappedComponentRef={(inst) => this.formRef = inst} 
-                        action='new'
-                    />
-                </Spin>
-            </Modal>
-            }
-        </span>
+        return <Spin spinning={this.state.loading}>
+            <Button type='primary' onClick={this.onOk.bind(this)}>保存</Button>
+            <Button style={{marginLeft: 16}} onClick={this.props.history.goBack}>取消</Button>
+            <Fields 
+                {...this.props}
+                data={data}
+                wrappedComponentRef={(inst) => this.formRef = inst} 
+                action='new'
+            />
+        </Spin>
     }
 }
 export default New;
