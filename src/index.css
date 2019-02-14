@@ -3,7 +3,6 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
-
 .ant-layout-sider {
   margin-top: 64px;
   width: 224px;
@@ -16,15 +15,32 @@ body {
 }
 .ant-layout-main {
   margin-left: 224px;
+  min-width: 1000px;
 }
+
 .ant-layout-container {
-  background: #fff;
+  background: #F2F2F2;
   margin-bottom: 32px;
   padding-bottom: 2px;
-  margin-left: 8px;
-  margin-right: 8px;
+}
+.ant-layout-container .ant-layout-content {
+  background: #fff;
+  border-radius: 8px;
+  padding-top:4px;
+  padding-left:4px;
+  padding-right:4px;
+  margin: 0px 8px;
 }
 .ant-layout-header {
   background: #fff;
   padding: 0;
+}
+.ant-layout-breadcrumb {
+  background: #F2F2F2;
+  height: 30px;
+  padding-left: 8px;
+  text-align: left;
+  font-size: 11px; 
+  font-weight: bold;
+  line-height: 30px;
 }

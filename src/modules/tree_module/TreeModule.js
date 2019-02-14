@@ -141,10 +141,10 @@ class TreeModule extends Component {
         const {treeData, editing, node} = this.state;
         return <Spin spinning={this.state.loading}>
             <Row>
-                <Col span={4}>
+                <Col span={3}>
                     <Tree defaultExpandRoot treeData={treeData} onSelect={this.onSelect.bind(this)} selectedKeys={[node.key]}/>
                 </Col>
-                <Col span={20}>
+                <Col span={21}>
                     <div style={{margin: 8}}>
                         {!editing && <New 
                             cols={this.props.cols}
