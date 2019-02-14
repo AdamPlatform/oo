@@ -23,9 +23,9 @@ class TreeModule extends Component {
         this.pageKey = props.config.tableName;
         global[this.pageKey] = global[this.pageKey] || {};
         this.state = {
-            loading: false,
-            editing: false,
-            adding: false,
+            loading: global[this.pageKey].loading || false,
+            editing: global[this.pageKey].editing || false,
+            adding: global[this.pageKey].adding || false,
             node: global[this.pageKey].node || {},
             treeData: global[this.pageKey].treeData || [],
             expandedKeys: global[this.pageKey].expandedKeys || [],
@@ -104,7 +104,7 @@ class TreeModule extends Component {
      * 修改保存时
      */
     onSave() {
-        this.setState({editing: false});
+        global.storeData(this, this.pageKey, {editing: false});
         let hasError = false;
         // 校验数据
 		this.formRef.props.form.validateFields((errors, values) => {
@@ -117,7 +117,7 @@ class TreeModule extends Component {
             return;
         }
         let record = this.formRef.props.form.getFieldsValue();
-        this.setState({loading: true});
+        global.storeData(this, this.pageKey, {loading: true});
         Action.modify(this.pageKey, this.state.node[`${this.pageKey}_id`], record, (data) => {
             if (data) {
                 data.key = data[`${this.pageKey}_id`];
@@ -146,9 +146,9 @@ class TreeModule extends Component {
             return;
         }
         let record = this.formRef.props.form.getFieldsValue();
-        this.setState({loading: true});
+        global.storeData(this, this.pageKey, {loading: true});
         Action.add(this.pageKey, this.state.node[`${this.pageKey}_id`], record, () => {
-            this.setState({adding: false, loading: false});
+            global.storeData(this, this.pageKey, {adding: false, loading: false});
             this.refresh();
         });
     }
@@ -161,7 +161,7 @@ class TreeModule extends Component {
             Modal.warning({title: '根节点不能删除'});
             return;
         }
-        this.setState({loading: true});
+        global.storeData(this, this.pageKey, {loading: true});
         Action.del(this.pageKey, this.state.node[`${this.pageKey}_id`], () => {
             global.storeData(this, this.pageKey, {
                 node: this.state.treeData[0]
@@ -200,15 +200,15 @@ class TreeModule extends Component {
                 </Col>
                 <Col span={21}>
                     <div style={{margin: 8}}>
-                        {!(editing || adding) && <Button type='primary' onClick={() => { this.setState({adding: true})}}>新增</Button>}
-                        {!(editing || adding) && <Button onClick={() => this.setState({editing: true})} style={{marginLeft: 16}}>修改</Button>}
+                        {!(editing || adding) && <Button type='primary' onClick={() => { global.storeData(this, this.pageKey, {adding: true})}}>新增</Button>}
+                        {!(editing || adding) && <Button onClick={() => global.storeData(this, this.pageKey, {editing: true})} style={{marginLeft: 16}}>修改</Button>}
                         {!(editing || adding) && <Popconfirm title="确定要删除这条数据吗？" onConfirm={this.onDel.bind(this)}>
                             <Button style={{marginLeft: 16}}>删除</Button>
                         </Popconfirm>}
                         {editing && <Button type='primary' onClick={this.onSave.bind(this)} style={{marginLeft: 16}}>保存</Button>}
-                        {editing && <Button onClick={() => this.setState({editing: false})} style={{marginLeft: 16}}>取消</Button>}
+                        {editing && <Button onClick={() => global.storeData(this, this.pageKey, {editing: false})} style={{marginLeft: 16}}>取消</Button>}
                         {adding && <Button type='primary' onClick={this.onAddSave.bind(this)} style={{marginLeft: 16}}>保存</Button>}
-                        {adding && <Button onClick={() => this.setState({adding: false})} style={{marginLeft: 16}}>取消</Button>}
+                        {adding && <Button onClick={() => global.storeData(this, this.pageKey, {adding: false})} style={{marginLeft: 16}}>取消</Button>}
                     </div>
                     <Fields
                         cols={this.props.cols}

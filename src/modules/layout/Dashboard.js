@@ -19,12 +19,12 @@ class Dashboard extends Component {
 	 */
 	constructor() {
 		super();
+		this.pageKey = 'Dashboard';
 		this.state = {
-			folded: false,
-			page: null,
-			moduleConfigs: [],
+			folded: global[this.pageKey].folded || false,
+			moduleConfigs: global[this.pageKey].moduleConfigs || [],
 			cols: 1,
-			selectedKeys: [],
+			selectedKeys: global[this.pageKey].selectedKeys || [],
 		};
 	}
 
@@ -34,7 +34,7 @@ class Dashboard extends Component {
 	getModuleConfigs() {
 		getList(1, 9999, {}, {}, (body => {
 			let moduleConfigs = body.list || [];
-			this.setState({moduleConfigs: moduleConfigs.filter(item => item.isMenu === '是')});
+			global.storeData(this, this.pageKey, {moduleConfigs: moduleConfigs.filter(item => item.isMenu === '是')});
 		}))
 	}
 
@@ -46,7 +46,7 @@ class Dashboard extends Component {
 		window && window.addEventListener('resize', this.onWindowResize.bind(this));
 		this.getModuleConfigs();
 		let selectedKeys = this.getMenuSelectKeysFromPathName(this.props);
-		this.setState({ cols: cols, selectedKeys: selectedKeys});
+		global.storeData(this, this.pageKey, { cols: cols, selectedKeys: selectedKeys});
     }
 
     /**
@@ -61,7 +61,7 @@ class Dashboard extends Component {
      */
     componentWillReceiveProps(nextProps) {
         let selectedKeys = this.getMenuSelectKeysFromPathName(nextProps);
-		this.setState({selectedKeys: selectedKeys});
+		global.storeData(this, this.pageKey, {selectedKeys: selectedKeys});
     }
 
     /**
@@ -104,7 +104,7 @@ class Dashboard extends Component {
 	 * 窗口大小变化回调函数
 	 */
 	onWindowResize() {
-		this.setState({ cols: this.getCols() });
+		global.storeData(this, this.pageKey, { cols: this.getCols() });
 	}
 
 	/**
@@ -115,7 +115,7 @@ class Dashboard extends Component {
         const { key } = info;
         //const { item, keyPath } = info;
 		//console.log(item, key, keyPath, 'item, key, keyPath');
-		this.setState({selectedKeys: [key]});
+		global.storeData(this, this.pageKey, {selectedKeys: [key]});
 	}
 
 	/**
@@ -191,7 +191,7 @@ class Dashboard extends Component {
             <div className="ant-layout-main" style={this.state.folded ? { marginLeft: 0 } : {}}>
                 <Row className='ant-layout-header'>
                     <Col span={2} style={{paddingTop: 16, paddingLeft: 8, width: '64px', height: '64px' }}>
-                        <a onClick={() => {this.setState({folded: !this.state.folded})}}>
+                        <a onClick={() => {global.storeData(this, this.pageKey, {folded: !this.state.folded})}}>
                             <Icon type={toggermenustyle} style={{ fontSize: '20px' }} />
                         </a>
                     </Col>
