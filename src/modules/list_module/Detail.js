@@ -2,13 +2,14 @@
  * 详情页面
  */
 import React, { Component } from 'react'
+import { Prompt } from 'react-router-dom'
 import Spin from '../../components/Spin'
 import Button from 'antd/lib/button'
 import Fields from './Fields'
 import Modal from 'antd/lib/modal'
 import * as Action from './Action'
 
-export default class Detial extends Component {
+class Detial extends Component {
     /**
      * 使用全局变量保存页面状态
      */
@@ -92,6 +93,9 @@ export default class Detial extends Component {
                 action={editing ? 'modify': 'detail'}
                 data={this.state.data}
             />
+            <Prompt message="页面正在编辑中, 您确定要离开吗?" when={editing} />
         </Spin>
     }
 }
+
+export default Detial

@@ -2,6 +2,7 @@
  * 新增页面
  */
 import React, { Component } from 'react'
+import { Prompt } from 'react-router-dom'
 import Button from 'antd/lib/button'
 import Fields from './Fields'
 import Spin from '../../components/Spin'
@@ -60,6 +61,7 @@ class New extends Component {
                 wrappedComponentRef={(inst) => this.formRef = inst} 
                 action='new'
             />
+            <Prompt message="页面正在编辑中, 您确定要离开吗?" when={true} />
         </Spin>
     }
 }

@@ -3,6 +3,7 @@
  * 创建、修改、删除、查询模块配置，根据模块配置生成模块
  */
 import React, { Component } from 'react'
+import { Prompt } from 'react-router-dom'
 import Popconfirm from 'antd/lib/popconfirm'
 import Spin from '../../components/Spin'
 import Row from 'antd/lib/row'
@@ -220,6 +221,7 @@ class TreeModule extends Component {
                     />
                 </Col>
             </Row>
+            <Prompt message="页面正在编辑中, 您确定要离开吗?" when={editing || adding} />
         </Spin>
     }
 }
