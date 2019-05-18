@@ -1,3 +1,4 @@
+
 /**
  * 数据库连接
  */
@@ -7,6 +8,8 @@ let url = "mongodb://adam:123456gqh@cluster0-shard-00-00-qeluk.mongodb.net:27017
 if (process.env.LOCALDB === '1') {
     url = "mongodb://localhost:27017/";
 }
+
+console.log(process.env.LOCALDB, 'process.env.LOCALDB')
 
 module.exports = {
     connect: (dbOper) => {  

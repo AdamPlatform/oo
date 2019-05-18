@@ -199,18 +199,25 @@ module.exports = {
                     return;
                 }
                 totalElements = result;
-                cursor.sort(sortField)
-                    .skip(page > 0 ? ( ( page - 1 ) * pageSize ) : 0)
-                    .limit(pageSize)
-                    .toArray().then(list => {
+                if (0 === result) {
+                    let list = [];
                     defer.resolve({
                         page, pageSize, totalElements, list
+                    }); 
+                } else {
+                    cursor.sort(sortField)
+                        .skip(page > 0 ? ( ( page - 1 ) * pageSize ) : 0)
+                        .limit(pageSize)
+                        .toArray().then(list => {
+                        defer.resolve({
+                            page, pageSize, totalElements, list
+                        });  
+                        db.close();       
                     }, err => {
                         defer.reject(err);
                         db.close();
-                    });  
-                    db.close();       
-                });
+                    });
+                }
             });
         });
         return defer.promise;

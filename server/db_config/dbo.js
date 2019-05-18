@@ -285,15 +285,26 @@ module.exports = {
                     return;
                 }
                 totalElements = result;
-                cursor.sort(sortField)
-                    .skip(page > 0 ? ( ( page - 1 ) * pageSize ) : 0)
-                    .limit(pageSize)
-                    .toArray().then(list => {
+                if (result === 0) {
+                    let list = [];
                     defer.resolve({
                         page, pageSize, totalElements, list
                     });  
-                    db.close();       
-                });
+                    db.close(); 
+                } else {
+                    cursor.sort(sortField)
+                        .skip(page > 0 ? ( ( page - 1 ) * pageSize ) : 0)
+                        .limit(pageSize)
+                        .toArray().then(list => {
+                        defer.resolve({
+                            page, pageSize, totalElements, list
+                        });  
+                        db.close();       
+                    }, err => {
+                        defer.reject(err);
+                        db.close();
+                    });
+                }
             });
         });
         return defer.promise;
