@@ -59,7 +59,7 @@ class New extends Component {
             data[config.dataIndex] = config.defaultValue;
         })
         return <span>
-            <Button type='primary' onClick={() => { this.setState({visible: true})}}>新增</Button>
+            <Button type='primary' style={{marginLeft: 8}} onClick={() => { this.setState({visible: true})}}>新增</Button>
             {this.state.visible && <Modal
                 title='新增'
                 visible={this.state.visible}

@@ -6,11 +6,15 @@ import React, { Component } from 'react'
 import Button from 'antd/lib/button'
 import Popconfirm from 'antd/lib/popconfirm'
 import Spin from '../../components/Spin'
+import Upload from 'antd/lib/upload'
+import Icon from 'antd/lib/icon'
+import Modal from 'antd/lib/modal'
 import TableEx from '../../components/TableEx'
 import Search from '../../components/Search'
 import { Link } from 'react-router-dom'
 import * as Action from './Action'
 import {configToColumn, configToItemProps} from '../../components/PageCreator'
+import api from '../../utils/api';
 let mainSearchFeilds = [];
 let moreSearchFeilds = [];
 
@@ -32,6 +36,7 @@ class ListModule extends Component {
             sorter: global[this.pageKey].sorter || {},
             loading: global[this.pageKey].loading || false,
             query: global[this.pageKey].query || {},
+            importing: false,
         };
     }
 
@@ -137,6 +142,31 @@ class ListModule extends Component {
     }
 
     /**
+     * 导出数据
+     */
+    exportData() {
+        
+    }
+
+    //导入数据
+	handleChange(info) {
+		//处理上传文件失败
+		if (info.file.error) {
+			Modal.error({
+				title: '导入数据失败【' + info.file.name + '】' + (info.file.response && info.file.response.message) + ', 请将Excel另存为xlsx格式再试',
+				okText: "知道了",
+			});
+			this.setState({ importing: false });
+		} else if (info.file.status === "uploading") {
+			this.setState({ importing: true });
+		} else if (info.file.status === "done") {
+			const response = info.file.response;
+			this.setState({ importing: false});
+			this.refresh();
+		}
+	}
+
+    /**
      * 页面渲染
      */
     render () {
@@ -206,7 +236,15 @@ class ListModule extends Component {
         pagination.pageSize = pageSize;
         pagination.pageSizeOptions = ['10', '20', '50', '100', '200', '500', '1000'];
         pagination.total = totalElements;
-        return <Spin style={{margin: 8}} spinning={this.state.loading}>
+        // 导入参数
+        const importProps = {
+			action: `${api.opts.baseURI}/${this.pageKey}/upload`,
+			onChange: this.handleChange.bind(this),
+			showUploadList: false,
+		};
+        return <Spin style={{margin: 8}} spinning={this.state.loading || this.state.importing}>
+            <div style={{height: 8}}/>
+            <Button type='primary' style={{marginRight: 8}} onClick={() => {this.props.history.push(`${this.props.location.pathname}/new`)}}>新增</Button>    
             <Search
                 mainSearchFeilds={mainSearchFeilds}
                 cols={this.props.cols}
@@ -219,7 +257,9 @@ class ListModule extends Component {
                 showMore={showMore}
                 btnName='搜索'
             />
-            <Button type='primary' onClick={() => {this.props.history.push(`${this.props.location.pathname}/new`)}}>新增</Button>
+            <Upload {...importProps}><Button style={{ marginLeft: 8 }}><Icon type="upload" />导入</Button></Upload>
+            <Button style={{marginLeft: 8}} onClick={() => {this.exportData.bind(this)}}><Icon type="cloud-download-o" />导出</Button>    
+            <div style={{height: 16}}/>
             <TableEx
                 scroll={{ x: scrollx }}
                 columns={columns}

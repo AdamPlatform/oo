@@ -81,7 +81,7 @@ class Search extends Component {
         }
         const searchFields = this.props.searchFields || {}
         
-        return <div style={{ marginBottom: 8 }}>
+        return <span>
             <nobr>
                 <span>
                 {getFieldDecorator('mainKey', {initialValue: searchFields.mainKey})(
@@ -99,7 +99,7 @@ class Search extends Component {
                 </span>
             </nobr>
             {this.props.showMore && searchItems}
-        </div>
+        </span>
     }
 }
 

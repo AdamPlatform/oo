@@ -224,7 +224,7 @@ module.exports = {
     },
 
     /**
-     * 获取单个表格配置
+     * 根据id获取一条数据
      */
     getOne: (id, moudleConfig) => {
         let defer = Q.defer();
@@ -239,6 +239,71 @@ module.exports = {
                 defer.resolve(doc);
             });        
         });
+        return defer.promise;
+    },
+
+    /**
+     * 导入数据
+     */
+    upload: (excelData, moudleConfig) => {
+        let head = excelData[0];
+        let defer = Q.defer();
+        let fieldsArray = [];
+        let fieldsConfigArray = [];
+        if (head && head.length > 0) {
+            let fields_config = moudleConfig.fields_config || [];
+            for (let i = 0; i < head.length; ++i) {
+                let config = fields_config.find(config => {
+                    return config.name === head[i];
+                });
+                if (undefined === config) {
+                    defer.reject({message: `excel表头中【${head[i]}】在系统中不存在`}); 
+                    return defer.promise;
+                } else {
+                    fieldsArray.push(config.dataIndex);
+                    fieldsConfigArray.push(config);
+                }
+            }
+        } else {
+            defer.reject({message: `excel表头为空`}); 
+            return defer.promise;
+        }
+
+        let recordArray = [];
+        let now = new Date();
+        const moment = require('moment');
+        for (let i = 1; i < excelData.length; ++i) {
+            let record = {};
+            record[`${moudleConfig.tableName}_id`] = ObjectId().toString();
+            record[`${moudleConfig.tableName}_createdAt`] = now;
+            record[`${moudleConfig.tableName}_modifiedAt`] = now;
+            let rowData = excelData[i] || [];
+            for (let j = 0; j < rowData.length; ++j) {
+                let text = rowData[j] || '';
+                if (fieldsConfigArray[j].dataType === 'DATE') {
+                    record[fieldsArray[j]] = text !== '' ? new Date(moment('1900-01-01 08:00:00').add(text - 2, 'days').valueOf()) : null;
+                } else if (fieldsConfigArray[j].dataType === 'TIME') {
+                    record[fieldsArray[j]] = text !== '' ? new Date(moment(text, 'YYYY/MM/DD HH:mm:ss').valueOf()) : null;
+                } else {
+                    record[fieldsArray[j]] = text;
+                }
+            }
+            recordArray.push(record);
+        }
+        // 批量插入数据
+        connect(db => {
+            const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
+            collection.insertMany(recordArray, null, (err, result) => {
+                if (err) {
+                    defer.reject(err);
+                    db.close();
+                    return;
+                }
+                defer.resolve({});
+                db.close();
+            }); 
+        });
+
         return defer.promise;
     },
 
