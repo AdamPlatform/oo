@@ -15,6 +15,7 @@ import { Link } from 'react-router-dom'
 import * as Action from './Action'
 import {configToColumn, configToItemProps} from '../../components/PageCreator'
 import api from '../../utils/api';
+import moment from 'moment';
 let mainSearchFeilds = [];
 let moreSearchFeilds = [];
 
@@ -24,19 +25,21 @@ class ListModule extends Component {
      */
     constructor(props) {
         super();
-        this.pageKey = props.config.tableName;
-        global[this.pageKey] = global[this.pageKey] || {};
+        this.tableName = props.config.tableName;
+        this.moduleName = props.config.moduleName;
+        global[this.tableName] = global[this.tableName] || {};
         this.state = {
-            searchFields: global[this.pageKey].searchFields || {},
-            showMore: global[this.pageKey].showMore || false,
-            page: global[this.pageKey].page || 1,
-            pageSize: global[this.pageKey].pageSize || 10,
-            list: global[this.pageKey].list || [],
-            totalElements: global[this.pageKey].totalElements || 0,
-            sorter: global[this.pageKey].sorter || {},
-            loading: global[this.pageKey].loading || false,
-            query: global[this.pageKey].query || {},
+            searchFields: global[this.tableName].searchFields || {},
+            showMore: global[this.tableName].showMore || false,
+            page: global[this.tableName].page || 1,
+            pageSize: global[this.tableName].pageSize || 10,
+            list: global[this.tableName].list || [],
+            totalElements: global[this.tableName].totalElements || 0,
+            sorter: global[this.tableName].sorter || {},
+            loading: global[this.tableName].loading || false,
+            query: global[this.tableName].query || {},
             importing: false,
+            exporting: false,
         };
     }
 
@@ -53,7 +56,7 @@ class ListModule extends Component {
      */
     componentWillReceiveProps(nextProps) {
         if (nextProps.config !== this.props.config) {
-            this.pageKey = nextProps.config.tableName;
+            this.tableName = nextProps.config.tableName;
             this.refresh();
         }
     }
@@ -66,15 +69,16 @@ class ListModule extends Component {
      * @param {*} sorter        排序条件
      */
     getList(page, pageSize, query, sorter) {
-        global.storeData(this, this.pageKey, {loading: true})
-        Action.getList(this.pageKey, page, pageSize, query, sorter, (body) => {
+        global.storeData(this, this.tableName, {loading: true})
+        Action.getList(this.tableName, page, pageSize, query, sorter, (body) => {
             if (body === {}) {
                 return;
             }
             const {list, totalElements} = body;
-            global.storeData(this, this.pageKey, {
-                page, pageSize, query, sorter, list, totalElements, loading: false
+            global.storeData(this, this.tableName, {
+                page, pageSize, query, sorter, totalElements, loading: false
             });
+            this.setState({list: list})
         });
     }
 
@@ -82,14 +86,14 @@ class ListModule extends Component {
      * 清空搜索条件
      */
     resetSearch() {
-        global.storeData(this, this.pageKey, { searchFields: {}, query: {}});
+        global.storeData(this, this.tableName, { searchFields: {}, query: {}});
     }
 
     /**
      * 显示更多搜索条件
      */
     handleMore() {
-        global.storeData(this, this.pageKey, {showMore: !this.state.showMore});
+        global.storeData(this, this.tableName, {showMore: !this.state.showMore});
     }
 
     /**
@@ -98,7 +102,7 @@ class ListModule extends Component {
      * @param {*} searchFields 
      */
     onSearch(query, searchFields) {
-        global.storeData(this, this.pageKey, {searchFields: searchFields });
+        global.storeData(this, this.tableName, {searchFields: searchFields });
         const {pageSize, sorter} = this.state;
         this.getList(1, pageSize, query, sorter);
     }
@@ -126,8 +130,8 @@ class ListModule extends Component {
      * 删除操作
      */
     del(id) {
-        global.storeData(this, this.pageKey, {loading: true});
-        Action.del(this.pageKey, id, () => {
+        global.storeData(this, this.tableName, {loading: true});
+        Action.del(this.tableName, id, () => {
             this.refresh();
         });
     }
@@ -145,7 +149,17 @@ class ListModule extends Component {
      * 导出数据
      */
     exportData() {
-        
+        this.setState({exporting: true});
+    }
+
+    componentDidUpdate() {
+        // 数据已经查询完成并且处于导出状态
+        if (this.state.exporting) {
+            let now = moment().format('YYYYMMDDHHmmss');
+            let name = `${this.moduleName}_${now}`;
+            global._div2Excel(`${this.tableName}_list`, name);
+            this.setState({exporting: false});
+        }
     }
 
     //导入数据
@@ -160,7 +174,7 @@ class ListModule extends Component {
 		} else if (info.file.status === "uploading") {
 			this.setState({ importing: true });
 		} else if (info.file.status === "done") {
-			const response = info.file.response;
+			//const response = info.file.response;
 			this.setState({ importing: false});
 			this.refresh();
 		}
@@ -196,7 +210,7 @@ class ListModule extends Component {
         });
         columns.push({
             title: '操作',
-            dataIndex: `${this.pageKey}_id`,
+            dataIndex: `${this.tableName}_id`,
             key: 'operation',
             width: 120,
             fixed: 'right',
@@ -211,7 +225,8 @@ class ListModule extends Component {
         });
 
         // 如果表格宽度小于正文宽度，去掉固定列设置
-        if (scrollx + global.menuWidth < global.clientWidth) {
+        let widthEnough = (scrollx + global.menuWidth < global.clientWidth)
+        if (widthEnough || this.state.exporting) {
             columns.forEach(col => {
                 if (col.fixed) {
                     delete col.fixed;
@@ -222,7 +237,7 @@ class ListModule extends Component {
         mainSearchFeilds = [];
         moreSearchFeilds = [];
         searchFormFields.forEach(field => {
-            if ([`${this.pageKey}_name`, `${this.pageKey}_code`].indexOf(field.id) !== -1) {
+            if ([`${this.tableName}_name`, `${this.tableName}_code`].indexOf(field.id) !== -1) {
                 mainSearchFeilds.push(field);
             } else {
                 moreSearchFeilds.push(field);
@@ -234,11 +249,11 @@ class ListModule extends Component {
         pagination.showTotal = () => `共${totalElements}条`;
         pagination.current = page;
         pagination.pageSize = pageSize;
-        pagination.pageSizeOptions = ['10', '20', '50', '100', '200', '500', '1000'];
+        pagination.pageSizeOptions = ['10', '20', '50', '100', '500', '1000'];
         pagination.total = totalElements;
         // 导入参数
         const importProps = {
-			action: `${api.opts.baseURI}/${this.pageKey}/upload`,
+			action: `${api.opts.baseURI}/${this.tableName}/upload`,
 			onChange: this.handleChange.bind(this),
 			showUploadList: false,
 		};
@@ -258,16 +273,18 @@ class ListModule extends Component {
                 btnName='搜索'
             />
             <Upload {...importProps}><Button style={{ marginLeft: 8 }}><Icon type="upload" />导入</Button></Upload>
-            <Button style={{marginLeft: 8}} onClick={() => {this.exportData.bind(this)}}><Icon type="cloud-download-o" />导出</Button>    
+            <Button style={{marginLeft: 8}} onClick={this.exportData.bind(this)}><Icon type="cloud-download-o" />导出</Button>    
             <div style={{height: 16}}/>
-            <TableEx
-                scroll={{ x: scrollx }}
-                columns={columns}
-                dataSource={list}
-                onChange={this.handleTableChange.bind(this)}
-                rowKey={record => record[`${this.pageKey}_id`]}
-                pagination={pagination}
-            />
+            <div id={`${this.tableName}_list`}>
+                <TableEx
+                    scroll={this.state.exporting ? undefined : { x: scrollx }}
+                    columns={columns}
+                    dataSource={list}
+                    onChange={this.handleTableChange.bind(this)}
+                    rowKey={record => record[`${this.tableName}_id`]}
+                    pagination={this.state.exporting ? false : pagination}
+                />
+            </div>
         </Spin>
     }
 }

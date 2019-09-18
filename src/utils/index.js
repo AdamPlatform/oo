@@ -2,6 +2,7 @@
  * 全局变量和函数
  */
 import moment from 'moment'
+import './common/div2Excel'
 
 /**
  * 网页宽度

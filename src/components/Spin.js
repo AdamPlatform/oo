@@ -5,6 +5,7 @@ import React, { Component } from 'react'
 import Spin from 'antd/lib/spin'
 export default class SpinEx extends Component {
     render () {
-        return <Spin {...this.props} spinning={process.env.LOCALDB !== '1' && this.props.spinning}/>
+        // process.env.LOCALDB !== '1' && 
+        return <Spin {...this.props} spinning={this.props.spinning}/>
     }
 }
