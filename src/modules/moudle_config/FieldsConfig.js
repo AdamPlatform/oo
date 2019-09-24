@@ -442,11 +442,11 @@ class FieldsConfig extends Component {
                 }
             })
         }
-		
+
 		return (<span>
             <a onClick={() => { this.setState({visible: true}); }}>配置字段</a>
             {visible && <Modal
-                title='配置字段'
+                title={this.props.data['模块名称']}
                 visible={visible}
                 onCancel={this.onCancel.bind(this)}
                 onClose={this.onCancel.bind(this)}

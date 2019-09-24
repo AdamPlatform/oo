@@ -11,17 +11,17 @@ global.appIns = cp.fork(path.join(__dirname, '/server/pack.js'));
 watcher.on('ready', () => {
     watcher.on('change', (path) => {
         console.log(path + ' change');
-        global.appIns = reload(global.appIns);
+        global.appIns = global.reload(global.appIns);
     });
 
     watcher.on('add', (path) => {
         console.log(path + ' add');
-        global.appIns = reload(global.appIns);
+        global.appIns = global.reload(global.appIns);
     });
 
     watcher.on('unlink', (path) => {
         console.log(path + ' remove');
-        global.appIns = reload(global.appIns);
+        global.appIns = global.reload(global.appIns);
     });
 });
 
@@ -29,7 +29,7 @@ process.on('SIGINT', () => {
     process.exit(0);
 });
 
-function reload(appIns) {
+global.reload = (appIns) => {
     appIns.kill('SIGINT');
     return cp.fork(path.join(__dirname, '/server/pack.js'));
 }
