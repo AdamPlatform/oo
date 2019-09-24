@@ -62,6 +62,7 @@ module.exports = (app) => {
     app.post('/table_field', (req, res) => {
         dbo.addField(req.query.id, req.query.num).then(() => {
             res.send(null);
+            require('../module/app')(app);
         }, error => {
             res.status(400).send(error);
         });
@@ -91,15 +92,17 @@ module.exports = (app) => {
     app.put('/table_field/up', (req, res) => {
         dbo.fieldUp(req.query.id, req.query.name).then(() => {
             res.send(null);
+            require('../module/app')(app);
         }, error => {
             res.status(400).send(error);
         });
     });
 
-    // 上移一个配置字段
+    // 下移一个配置字段
     app.put('/table_field/down', (req, res) => {
         dbo.fieldDown(req.query.id, req.query.name).then(() => {
             res.send(null);
+            require('../module/app')(app);
         }, error => {
             res.status(400).send(error);
         });
@@ -109,14 +112,16 @@ module.exports = (app) => {
     app.put('/table_field/up_top', (req, res) => {
         dbo.fieldUpToTop(req.query.id, req.query.name).then(() => {
             res.send(null);
+            require('../module/app')(app);
         }, error => {
             res.status(400).send(error);
         });
     });
 
-    // 上移一个配置字段至底部
+    // 下移一个配置字段至底部
     app.put('/table_field/down_bottom', (req, res) => {
         dbo.fieldDownToBottom(req.query.id, req.query.name).then(() => {
+            require('../module/app')(app);
             res.send(null);
         }, error => {
             res.status(400).send(error);
@@ -127,6 +132,7 @@ module.exports = (app) => {
     app.put('/table_field/insert', (req, res) => {
         dbo.insertField(req.query.id, req.query.name).then(() => {
             res.send(null);
+            require('../module/app')(app);
         }, error => {
             res.status(400).send(error);
         });

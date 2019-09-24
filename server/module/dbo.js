@@ -253,10 +253,12 @@ module.exports = {
         if (head && head.length > 0) {
             let fields_config = moudleConfig.fields_config || [];
             for (let i = 0; i < head.length; ++i) {
-                let config = fields_config.find(config => {
+                let config = fields_config.find(item => {
                     let col = head[i] && head[i].trim() || '';
-                    return config.name === col;
+                    return item.name === col;
                 });
+                console.log('===========================')
+                console.log(moudleConfig)
                 if (undefined === config) {
                     defer.reject({message: `excel表头中【${head[i]}】在系统中不存在`}); 
                     return defer.promise;

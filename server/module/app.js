@@ -71,7 +71,7 @@ module.exports = (app) => {
                     if(err){
                         console.log('parse error: ' + err);
                     } else {
-                        console.log('parse files: ' + filesTmp);
+                        // console.log('parse files: ' + filesTmp);
                         let inputFile = files.file[0];
                         let uploadedPath = inputFile.path;
                         const xlsx = require('node-xlsx');
@@ -175,7 +175,6 @@ module.exports = (app) => {
             list.forEach(moudleConfig => {
                 let moduleName = moudleConfig['模块名称'];
                 if (moudleConfig.dataMoudle === '树') {
-
                     treeApi(app, encodeURI(moduleName), moudleConfig)
                 } else {
                     listApi(app, encodeURI(moduleName), moudleConfig)
