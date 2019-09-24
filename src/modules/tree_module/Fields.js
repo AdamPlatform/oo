@@ -7,6 +7,13 @@ import {createItems, configToItemProps} from '../../components/PageCreator'
 
 class Fields extends Component {
     /**
+     * 构造函数
+     */
+    constructor(props) {
+        super();
+        this.moduleName = props.moduleName;
+    }
+    /**
      * 页面渲染
      */
     render() {
@@ -18,8 +25,9 @@ class Fields extends Component {
         let tableConfig = this.props.tableConfig || [];
         let formFields = [];
         tableConfig.forEach(config => {
-            if (config.isShow === '1' && [`${this.props.tableName}_createdAt`, `${this.props.tableName}_modifiedAt`].indexOf(config.dataIndex) === -1) {
-                formFields.push(configToItemProps(config, null, data[config.dataIndex]));
+            if (config.isShow === '1' && [`创建时间`, `修改时间`].indexOf(config.name) === -1) {
+                config.dataIndex = `${this.moduleName}_${config.name}`;
+                formFields.push(configToItemProps(config, null, data[`${this.moduleName}_${config.name}`]));
                 
             }
         });

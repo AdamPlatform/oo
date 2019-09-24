@@ -9,8 +9,6 @@ if (process.env.LOCALDB === '1') {
     url = "mongodb://localhost:27017/";
 }
 
-console.log(process.env.LOCALDB, 'process.env.LOCALDB')
-
 module.exports = {
     connect: (dbOper) => {  
         MongoClient.connect(url, (err, db) => {

@@ -7,7 +7,7 @@ let ObjectId = require('mongodb').ObjectId;
 let {generateSql} = require('../utils');
 
 // 顶部保留字段数量
-const TOP_FIELDS_NUM = 2;
+const TOP_FIELDS_NUM = 1;
 // 底部保留字段数量
 const BOTTOM_FIELDS_NUM = 2;
 // 保留字段数量总数
@@ -20,18 +20,16 @@ module.exports = {
         let defer = Q.defer();
         connect(db => {
             const collection = db.db("oo").collection("tables_config");
-            record.createdAt = new Date();
-            record.modifiedAt = new Date();
+            record['创建时间'] = new Date();
+            record['修改时间'] = new Date();
             let id = ObjectId().toString();
             record.id = id;
-            record.tableName = `t${id}`;
             record.fields_config = [
-                {"dataIndex":`${record.tableName}_code`,"name":"编码","isShow":"1","isRequire":"1","isUnique":"1","disabled":"0","isQuery":"1","isSort":"1","width":160,"dataType":"STRING","isShowDisabled":"1","isRequireDisabled":"1","disabledDisabled":"1","isQueryDisabled":"1","dataTypeDisabled":"1", "isUniqueDisabled":"1"},
-                {"dataIndex":`${record.tableName}_name`,"name":"名称","isShow":"1","isRequire":"0","isUnique":"0","disabled":"0","isQuery":"1","isSort":"1","width":160,"dataType":"STRING","isShowDisabled":"1","isRequireDisabled":"1","disabledDisabled":"1","isQueryDisabled":"1","dataTypeDisabled":"1"},
-                {"dataIndex":`${record.tableName}_createdAt`,"name":"创建时间","isShow":"1","isRequire":"1","isUnique":"1","disabled":"1","isQuery":"1","isSort":"1","width":160,"dataType":"TIME","isRequireDisabled":"1","disabledDisabled":"1","isQueryDisabled":"1","dataTypeDisabled":"1", "isUniqueDisabled":"1"},
-                {"dataIndex":`${record.tableName}_modifiedAt`,"name":"修改时间","isShow":"1","isRequire":"1","isUnique":"1","disabled":"1","isQuery":"1","isSort":"1","width":160,"dataType":"TIME","isRequireDisabled":"1","disabledDisabled":"1","isQueryDisabled":"1","dataTypeDisabled":"1", "isUniqueDisabled":"1"},
+                {"name":"编码","isShow":"1","isRequire":"1","isUnique":"1","disabled":"0","isQuery":"1","isSort":"1","width":160,"dataType":"STRING","isShowDisabled":"1","isRequireDisabled":"1","disabledDisabled":"1","isQueryDisabled":"1","dataTypeDisabled":"1", "isUniqueDisabled":"1"},
+                {"name":"创建时间","isShow":"1","isRequire":"1","isUnique":"1","disabled":"1","isQuery":"1","isSort":"1","width":160,"dataType":"TIME","isRequireDisabled":"1","disabledDisabled":"1","isQueryDisabled":"1","dataTypeDisabled":"1", "isUniqueDisabled":"1"},
+                {"name":"修改时间","isShow":"1","isRequire":"1","isUnique":"1","disabled":"1","isQuery":"1","isSort":"1","width":160,"dataType":"TIME","isRequireDisabled":"1","disabledDisabled":"1","isQueryDisabled":"1","dataTypeDisabled":"1", "isUniqueDisabled":"1"},
             ]
-            let moduleName = record.moduleName || '';
+            let moduleName = record['模块名称'] || '';
             moduleName = moduleName.trim();
             if (moduleName === '') {
                 defer.reject({message: "模块名称不能为空"});
@@ -50,7 +48,7 @@ module.exports = {
                     db.close();
                     return;
                 }
-
+                
                 collection.insertOne(record, null, (err, result) => {
                     if (err) {
                         defer.reject(err);
@@ -59,16 +57,16 @@ module.exports = {
                     }
 
                     if (record.dataMoudle === '树') {
-                        let table = db.db("oo").collection(record.tableName);
+                        let table = db.db("oo").collection(record['模块名称']);
                         let newId = ObjectId().toString();
                         let rootNode = {
-                            [`${record.tableName}_id`]: newId, 
-                            [`${record.tableName}_pid`]: null, 
-                            [`${record.tableName}_code`]: 'root', 
-                            [`${record.tableName}_levels`]: newId,
-                            [`${record.tableName}_name`]: record.moduleName,
-                            [`${record.tableName}_createdAt`]: new Date(),
-                            [`${record.tableName}_modifiedAt`]: new Date(),
+                            [`${record['模块名称']}_id`]: newId, 
+                            [`${record['模块名称']}_pid`]: null, 
+                            [`${record['模块名称']}_编码`]: 'root', 
+                            [`${record['模块名称']}_分类层级`]: newId,
+                            [`${record['模块名称']}_名称`]: record['模块名称'],
+                            [`${record['模块名称']}_创建时间`]: new Date(),
+                            [`${record['模块名称']}_修改时间`]: new Date(),
                         }
                         table.insertOne(rootNode, null, (err, result) => {
                             if (err) {
@@ -110,7 +108,7 @@ module.exports = {
                     db.close();
                 }
 
-                let table = oo.collection(doc.tableName);
+                let table = oo.collection(doc['模块名称']);
                 table.find({}).count((err, result) => {
                     if (err) {
                         defer.reject(err);
@@ -161,8 +159,8 @@ module.exports = {
                     db.close();
                 }
 
-                let table = oo.collection(doc.tableName);
-                record.modifiedAt = new Date();
+                let table = oo.collection(doc['模块名称']);
+                record['修改时间'] = new Date();
                 if (record.dataMoudle !== doc.dataMoudle && record.dataMoudle === '树') {
                     /**
                      * 如果原来列表模型数据为空，则修改模型，否则不允许修改模型
@@ -189,13 +187,13 @@ module.exports = {
 
                             let newId = ObjectId().toString();
                             let rootNode = {
-                                [`${doc.tableName}_id`]: newId,
-                                [`${doc.tableName}_pid`]: null, 
-                                [`${doc.tableName}_code`]: 'root', 
-                                [`${doc.tableName}_levels`]: newId,
-                                [`${doc.tableName}_name`]: record.moduleName,
-                                [`${doc.tableName}_createdAt`]: new Date(),
-                                [`${doc.tableName}_modifiedAt`]: new Date(),
+                                [`${doc['模块名称']}_id`]: newId,
+                                [`${doc['模块名称']}_pid`]: null, 
+                                [`${doc['模块名称']}_编码`]: 'root', 
+                                [`${doc['模块名称']}_分类层级`]: newId,
+                                [`${doc['模块名称']}_名称`]: record['模块名称'],
+                                [`${doc['模块名称']}_创建时间`]: new Date(),
+                                [`${doc['模块名称']}_修改时间`]: new Date(),
                             }
                             table.insertOne(rootNode, null, (err, result) => {
                                 if (err) {
@@ -244,15 +242,42 @@ module.exports = {
                         });        
                     });
                 } else {
-                    collection.updateOne({id: id}, {$set: record}, null, (err, result) => {
-                        if (err) {
-                            defer.reject(err);
+                    // 如果集合中存在数据，不允许更改集合名称
+                    if (record['模块名称'] !== doc['模块名称']) {
+                        table.find({}).count((err, result) => {
+                            if (err) {
+                                defer.reject(err);
+                                db.close();
+                                return;
+                            }
+
+                            if (result > 1) {
+                                defer.reject({message: "模块中已经存在数据，不能修改模块名称！"});
+                                db.close();
+                                return;
+                            }
+
+                            collection.updateOne({id: id}, {$set: record}, null, (err, result) => {
+                                if (err) {
+                                    defer.reject(err);
+                                    db.close();
+                                    return;
+                                }
+                                defer.resolve(record);
+                                db.close();
+                            });
+                        });
+                    } else {
+                        collection.updateOne({id: id}, {$set: record}, null, (err, result) => {
+                            if (err) {
+                                defer.reject(err);
+                                db.close();
+                                return;
+                            }
+                            defer.resolve(record);
                             db.close();
-                            return;
-                        }
-                        defer.resolve(record);
-                        db.close();
-                    });
+                        });
+                    }
                 }
             });
         });
@@ -356,8 +381,7 @@ module.exports = {
                 let fields = [];
                 let total = parseInt(num);
                 for (let i = 0; i < total; ++i) {
-                    let dataIndex = ObjectId().toString();
-                    fields.push({"dataIndex":`${dataIndex}`,"name":`字段${startIndex + i}`,"isShow":"1","isRequire":"0","isUnique":"0","disabled":"0","isQuery":"1","isSort":"1","width":120,"dataType":"STRING"});
+                    fields.push({"name":`字段${startIndex + i}`,"isShow":"1","isRequire":"0","isUnique":"0","disabled":"0","isQuery":"1","isSort":"1","width":120,"dataType":"STRING"});
                 }
                 fields_config.splice(fields_config.length - BOTTOM_FIELDS_NUM, 0, ...fields);
 
@@ -378,7 +402,7 @@ module.exports = {
     /**
      * 删除一个配置字段
      */
-    delOneField: (id, dataIndex) => {
+    delOneField: (id, name) => {
         let defer = Q.defer();
         connect(db => {
             let oo = db.db('oo');
@@ -395,7 +419,7 @@ module.exports = {
                     db.close();
                     return;
                 }
-                fields_config = fields_config.filter(item => item.dataIndex !== dataIndex);
+                fields_config = fields_config.filter(item => item.name !== name);
                 collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (err, result) => {
                     if (err) {
                         defer.reject(err);
@@ -430,7 +454,7 @@ module.exports = {
                     db.close();
                     return;
                 }
-                let index = fields_config.findIndex(item => item.dataIndex === record.dataIndex);
+                let index = fields_config.findIndex(item => item.name === record.name);
                 if (index !== -1) {
                     fields_config[index] = Object.assign({}, fields_config[index], record);
                 }
@@ -451,7 +475,7 @@ module.exports = {
     /**
      * 上移一个配置字段
      */
-    fieldUp: (id, dataIndex) => {
+    fieldUp: (id, name) => {
         let defer = Q.defer();
         connect(db => {
             let oo = db.db('oo');
@@ -468,7 +492,7 @@ module.exports = {
                     db.close();
                     return;
                 }
-                let index = fields_config.findIndex(item => item.dataIndex === dataIndex);
+                let index = fields_config.findIndex(item => item.name === name);
                 if (index > TOP_FIELDS_NUM && index < fields_config.length - BOTTOM_FIELDS_NUM) {
                     [fields_config[index], fields_config[index - 1]] = [fields_config[index - 1], fields_config[index]]
                 }
@@ -489,7 +513,7 @@ module.exports = {
     /**
      * 下移一个配置字段
      */
-    fieldDown: (id, dataIndex) => {
+    fieldDown: (id, name) => {
         let defer = Q.defer();
         connect(db => {
             let oo = db.db('oo');
@@ -506,7 +530,7 @@ module.exports = {
                     db.close();
                     return;
                 }
-                let index = fields_config.findIndex(item => item.dataIndex === dataIndex);
+                let index = fields_config.findIndex(item => item.name === name);
                 if (index > TOP_FIELDS_NUM - 1 && index < fields_config.length - BOTTOM_FIELDS_NUM - 1) {
                     [fields_config[index], fields_config[index + 1]] = [fields_config[index + 1], fields_config[index]]
                 }
@@ -527,7 +551,7 @@ module.exports = {
     /**
      * 上移一个配置字段至顶部
      */
-    fieldUpToTop: (id, dataIndex) => {
+    fieldUpToTop: (id, name) => {
         let defer = Q.defer();
         connect(db => {
             let oo = db.db('oo');
@@ -544,7 +568,7 @@ module.exports = {
                     db.close();
                     return;
                 }
-                let index = fields_config.findIndex(item => item.dataIndex === dataIndex);
+                let index = fields_config.findIndex(item => item.name === name);
                 if (index > TOP_FIELDS_NUM && index < fields_config.length - BOTTOM_FIELDS_NUM) {
                     let item = Object.assign({}, fields_config[index]);
                     fields_config.splice(index, 1);
@@ -567,7 +591,7 @@ module.exports = {
     /**
      * 下移一个配置字段至底部
      */
-    fieldDownToBottom: (id, dataIndex) => {
+    fieldDownToBottom: (id, name) => {
         let defer = Q.defer();
         connect(db => {
             let oo = db.db('oo');
@@ -584,7 +608,7 @@ module.exports = {
                     db.close();
                     return;
                 }
-                let index = fields_config.findIndex(item => item.dataIndex === dataIndex);
+                let index = fields_config.findIndex(item => item.name === name);
                 if (index > TOP_FIELDS_NUM - 1 && index < fields_config.length - BOTTOM_FIELDS_NUM - 1) {
                     let item = Object.assign({}, fields_config[index]);
                     fields_config.splice(index, 1);
@@ -607,7 +631,7 @@ module.exports = {
     /**
      * 插入一个字段
      */
-    insertField: (id, dataIndex) => {
+    insertField: (id, name) => {
         let defer = Q.defer();
         connect(db => {
             let oo = db.db('oo');
@@ -624,10 +648,9 @@ module.exports = {
                     db.close();
                     return;
                 }
-                let index = fields_config.findIndex(item => item.dataIndex === dataIndex);
+                let index = fields_config.findIndex(item => item.name === name);
                 if (index > TOP_FIELDS_NUM - 1 && index < fields_config.length - BOTTOM_FIELDS_NUM) {
-                    let newId = ObjectId().toString();
-                    let item = {"dataIndex":`${newId}`,"name":`字段${index + 1}`,"isShow":"1","isRequire":"0","isUnique":"0","disabled":"0","isQuery":"1","isSort":"1","width":120,"dataType":"STRING"};
+                    let item = {"name":`字段${index + 1}`,"isShow":"1","isRequire":"0","isUnique":"0","disabled":"0","isQuery":"1","isSort":"1","width":120,"dataType":"STRING"};
                     fields_config.splice(index, 0, item);
                 }
                 collection.updateOne({id: id}, {$set: {fields_config: fields_config, modifiedAt: new Date()}}, null, (err, result) => {

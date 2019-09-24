@@ -56,7 +56,7 @@ class New extends Component {
     render() {
         let data = {};
         this.props.tableConfig.forEach(config => {
-            data[config.dataIndex] = config.defaultValue;
+            data[config.name] = config.defaultValue;
         })
         return <span>
             <Button type='primary' style={{marginLeft: 8}} onClick={() => { this.setState({visible: true})}}>新增</Button>

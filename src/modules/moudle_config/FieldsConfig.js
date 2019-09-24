@@ -21,7 +21,7 @@ const aStyle = {
 }
 
 // 顶部保留字段数量
-const TOP_FIELDS_NUM = 2;
+const TOP_FIELDS_NUM = 1;
 // 底部保留字段数量
 const BOTTOM_FIELDS_NUM = 2;
 // 保留字段数量总数
@@ -97,7 +97,7 @@ class FieldsConfig extends Component {
 	 */
 	up(record) {
 		this.setState({loading: true});
-		Action.fieldUp(this.props.data.id, record.dataIndex, () => {
+		Action.fieldUp(this.props.data.id, record.name, () => {
 			this.refresh();
 		})
     }
@@ -109,7 +109,7 @@ class FieldsConfig extends Component {
 	 */
 	down(record) {
 		this.setState({loading: true});
-		Action.fieldDown(this.props.data.id, record.dataIndex, () => {
+		Action.fieldDown(this.props.data.id, record.name, () => {
 			this.refresh();
 		})
 	}
@@ -119,7 +119,7 @@ class FieldsConfig extends Component {
 	 */
 	upToTop(record) {
 		this.setState({loading: true});
-		Action.fieldUpToTop(this.props.data.id, record.dataIndex, () => {
+		Action.fieldUpToTop(this.props.data.id, record.name, () => {
 			this.refresh();
 		})
 	}
@@ -129,7 +129,7 @@ class FieldsConfig extends Component {
 	 */
 	downToBottom(record) {
 		this.setState({loading: true});
-		Action.fieldDownToBottom(this.props.data.id, record.dataIndex, () => {
+		Action.fieldDownToBottom(this.props.data.id, record.name, () => {
 			this.refresh();
 		})
 	}
@@ -140,7 +140,7 @@ class FieldsConfig extends Component {
 	 */
 	insertField(record) {
 		this.setState({loading: true});
-		Action.insertField(this.props.data.id, record.dataIndex, () => {
+		Action.insertField(this.props.data.id, record.name, () => {
 			this.refresh();
 		})
 	}
@@ -212,11 +212,11 @@ class FieldsConfig extends Component {
 
 	/**
 	 * 删除一个字段
-	 * @param {*} dataIndex 
+	 * @param {*} name 
 	 */
-	delOneField(dataIndex) {
+	delOneField(name) {
 		this.setState({loading: true})
-		Action.delOneField(this.props.data.id, dataIndex, () => {
+		Action.delOneField(this.props.data.id, name, () => {
 			this.refresh();
 		})
 	}
@@ -225,7 +225,7 @@ class FieldsConfig extends Component {
 	 * 渲染函数
 	 */
 	render(){
-		let mainSearchFeilds = [configToItemProps({"dataIndex":`${this.props.data.tableName}_name`,"name":"名称","isShow":"1", "disabled":"1","isQuery":"1","width":160,"dataType":"STRING"})];
+		let mainSearchFeilds = [configToItemProps({"name":"名称","isShow":"1", "disabled":"1","isQuery":"1","width":160,"dataType":"STRING"})];
 		const {config, page, pageSize, visible, addNum, loading, configJSON, searchFields} = this.state;
         const pagination = {//分页
 			total: config.length,
@@ -266,7 +266,6 @@ class FieldsConfig extends Component {
 		}
 		let columns = [
 			{title: '序号', dataIndex: 'index', key: 'index', width: 60, fixed: 'left'},
-			{title: '字段名', dataIndex: 'dataIndex', key: 'dataIndex', width: 160, fixed: 'left'},
 			{title: '列名', dataIndex: 'name', key: 'name', width: 120, fixed: 'left',
 				component: {
 					name: Input,
@@ -488,8 +487,10 @@ class FieldsConfig extends Component {
 						pagination={pagination}
 						scroll={{ x: scrollx }}
 					/>
-					<div><Button style={{marginBottom: 8}} onClick={this.modifyDirect.bind(this)}>直接修改</Button>&nbsp;&nbsp;&nbsp;&nbsp;</div>
-					<Input.TextArea style={{width: '100%', height: 300}} value={configJSON} onChange={e => {this.setState({configJSON: e.target.value})}}/>
+					{process.env.SYSTEMADMIN === '1' && <div>
+						<div><Button style={{marginBottom: 8}} onClick={this.modifyDirect.bind(this)}>直接修改</Button></div>
+						<Input.TextArea style={{width: '100%', height: 300}} value={configJSON} onChange={e => {this.setState({configJSON: e.target.value})}}/>
+					</div>}
 				</Spin>
 			</Modal>}
 		</span>);

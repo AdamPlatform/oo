@@ -189,7 +189,7 @@ export function createItems(getFieldDecorator, cols, gutter, formItems, disabled
  */
 export function configToItemProps(field, index, initialValue, specialItemProps, isForSearch) {
     let formField = {};
-    formField.id = field.dataIndex;
+    formField.id = field.dataIndex || field.name;
     formField.param = {};
     formField.param.formProps = {
         label: field.showName || field.name,
@@ -248,7 +248,6 @@ export function configToItemProps(field, index, initialValue, specialItemProps, 
         if (['STRING', 'TEXT'].indexOf(dataType) !== -1) {
             formField.param.props.rules.push({
                 required: true,
-                whitespace: true,
                 message: field.name + '必须输入!'
             });
         } else {
@@ -273,14 +272,14 @@ export function configToItemProps(field, index, initialValue, specialItemProps, 
 export function configToColumn(config, specialColumn) {
     let item = Object.assign({}, config);
     item.width = parseInt(config.width, 10);
-    item.title = config.showName || config.name;
+    item.title = config.name;
     if (config.isSort === '1') {
         item.sorter = true;
     } else {
         item.sorter = false;
     }
-    item.key = config.dataIndex;
-    item.dataIndex = config.dataIndex;
+    item.key = config.name;
+    item.dataIndex = config.dataIndex || config.name;
     let dataType = config.dataType;
     if (dataType === 'TIME') {
         item.render = text => text && moment(text).format('YYYY-MM-DD HH:mm:ss')

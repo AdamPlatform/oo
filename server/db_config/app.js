@@ -69,7 +69,7 @@ module.exports = (app) => {
 
     // 删除一个配置字段
     app.delete('/table_field', (req, res) => {
-        dbo.delOneField(req.query.id, req.query.dataIndex).then(() => {
+        dbo.delOneField(req.query.id, req.query.name).then(() => {
             res.send(null);
             require('../module/app')(app);
         }, error => {
@@ -89,7 +89,7 @@ module.exports = (app) => {
 
     // 上移一个配置字段
     app.put('/table_field/up', (req, res) => {
-        dbo.fieldUp(req.query.id, req.query.dataIndex).then(() => {
+        dbo.fieldUp(req.query.id, req.query.name).then(() => {
             res.send(null);
         }, error => {
             res.status(400).send(error);
@@ -98,7 +98,7 @@ module.exports = (app) => {
 
     // 上移一个配置字段
     app.put('/table_field/down', (req, res) => {
-        dbo.fieldDown(req.query.id, req.query.dataIndex).then(() => {
+        dbo.fieldDown(req.query.id, req.query.name).then(() => {
             res.send(null);
         }, error => {
             res.status(400).send(error);
@@ -107,7 +107,7 @@ module.exports = (app) => {
 
     // 上移一个配置字段至顶部
     app.put('/table_field/up_top', (req, res) => {
-        dbo.fieldUpToTop(req.query.id, req.query.dataIndex).then(() => {
+        dbo.fieldUpToTop(req.query.id, req.query.name).then(() => {
             res.send(null);
         }, error => {
             res.status(400).send(error);
@@ -116,7 +116,7 @@ module.exports = (app) => {
 
     // 上移一个配置字段至底部
     app.put('/table_field/down_bottom', (req, res) => {
-        dbo.fieldDownToBottom(req.query.id, req.query.dataIndex).then(() => {
+        dbo.fieldDownToBottom(req.query.id, req.query.name).then(() => {
             res.send(null);
         }, error => {
             res.status(400).send(error);
@@ -125,7 +125,7 @@ module.exports = (app) => {
 
     // 上移一个配置字段至底部
     app.put('/table_field/insert', (req, res) => {
-        dbo.insertField(req.query.id, req.query.dataIndex).then(() => {
+        dbo.insertField(req.query.id, req.query.name).then(() => {
             res.send(null);
         }, error => {
             res.status(400).send(error);

@@ -19,14 +19,14 @@ let moreSearchFeilds = [];
  */
 const getConfig = () => {
     return [
-        {"name":"模块名称","showName":"模块名称","dataIndex":"moduleName","isRequire": "1","isShow":"1","width":120,"dataType":"STRING","params":"","defaultValue":"","isQuery":"1","isSort":"1"},
-        {"name":"生成菜单","showName":"生成菜单","dataIndex":"isMenu","isShow":"1","width":120,"dataType":"SELECT","params":"否/是","defaultValue":"是","isQuery":"1","isSort":"1"},
-        {"name":"数据模型","showName":"数据模型","dataIndex":"dataMoudle","isRequire": "1","isShow":"1","width":120,"dataType":"SELECT","params":"列表/树","defaultValue":"列表","isQuery":"1","isSort":"1"},
-        {"name":"流程","showName":"流程","dataIndex":"hasProcess","isRequire": "1","isShow":"1","width":120,"dataType":"SELECT","params":"否/是","defaultValue":"否","isQuery":"1","isSort":"1"},
-        {"name":"附件","showName":"附件","dataIndex":"hasFile","isRequire": "0","isShow":"0","width":120,"dataType":"SELECT","params":"否/是","defaultValue":"否","isQuery":"1","isSort":"1"},
-        {"name":"描述","showName":"描述","dataIndex":"descripe","isRequire": "0","isShow":"1","width":200,"dataType":"STRING","params":"","defaultValue":"","isQuery":"1","isSort":"1"},
-        {"name":"创建时间","showName":"创建时间","dataIndex":"createdAt","isRequire": "0","isShow":"1","width":200,"dataType":"TIME","params":"","defaultValue":"","isQuery":"1","isSort":"1"},
-        {"name":"修改时间","showName":"修改时间","dataIndex":"modifiedAt","isRequire": "0","isShow":"1","width":200,"dataType":"TIME","params":"","defaultValue":"","isQuery":"1","isSort":"1"},
+        {"name":"模块名称","isRequire": "1","isShow":"1","width":120,"dataType":"STRING","params":"","defaultValue":"","isQuery":"1","isSort":"1"},
+        {"name":"生成菜单","isShow":"1","width":120,"dataType":"SELECT","params":"否/是","defaultValue":"是","isQuery":"1","isSort":"1"},
+        {"name":"数据模型","isRequire": "1","isShow":"1","width":120,"dataType":"SELECT","params":"列表/树","defaultValue":"列表","isQuery":"1","isSort":"1"},
+        {"name":"流程","isRequire": "1","isShow":"1","width":120,"dataType":"SELECT","params":"否/是","defaultValue":"否","isQuery":"1","isSort":"1"},
+        {"name":"附件","isRequire": "0","isShow":"0","width":120,"dataType":"SELECT","params":"否/是","defaultValue":"否","isQuery":"1","isSort":"1"},
+        {"name":"描述","isRequire": "0","isShow":"1","width":200,"dataType":"STRING","params":"","defaultValue":"","isQuery":"1","isSort":"1"},
+        {"name":"创建时间","isRequire": "0","isShow":"1","width":200,"dataType":"TIME","params":"","defaultValue":"","isQuery":"1","isSort":"1"},
+        {"name":"修改时间","isRequire": "0","isShow":"1","width":200,"dataType":"TIME","params":"","defaultValue":"","isQuery":"1","isSort":"1"},
     ];
 }
 class List extends Component {
@@ -154,7 +154,7 @@ class List extends Component {
         tableConfig.forEach(config => {
             if (config.isShow === '1') {
                 if (config.isQuery === '1') {
-                    searchFormFields.push(configToItemProps(config, null, searchFields[config.dataIndex], null, true));
+                    searchFormFields.push(configToItemProps(config, null, searchFields[config.name], null, true));
                 }
                 scrollx += parseInt(config.width, 10);
                 columns.push(configToColumn(config));
@@ -211,7 +211,7 @@ class List extends Component {
         pagination.showTotal = () => `共${totalElements}条`;
         pagination.current = page;
         pagination.pageSize = pageSize;
-        pagination.pageSizeOptions = ['10', '20', '50', '100', '200', '500', '1000'];
+        pagination.pageSizeOptions = ['10', '20', '50', '100'];
         pagination.total = totalElements;
         return <Spin style={{margin: 8}} spinning={this.state.loading}>
             <Search

@@ -18,8 +18,8 @@ class Fields extends Component {
         let tableConfig = this.props.tableConfig || [];
         let formFields = [];
         tableConfig.forEach(config => {
-            if (config.isShow === '1' && ['createdAt', 'modifiedAt'].indexOf(config.dataIndex) === -1) {
-                formFields.push(configToItemProps(config, null, data[config.dataIndex]));
+            if (config.isShow === '1' && ['创建时间', '修改时间'].indexOf(config.name) === -1) {
+                formFields.push(configToItemProps(config, null, data[config.name]));
             }
         });
 

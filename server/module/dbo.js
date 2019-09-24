@@ -13,15 +13,15 @@ module.exports = {
     add: (record, moudleConfig) => {
         let defer = Q.defer();
         connect(db => {
-            const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            record[`${moudleConfig.tableName}_id`] = ObjectId().toString();
-            record[`${moudleConfig.tableName}_createdAt`] = new Date();
-            record[`${moudleConfig.tableName}_modifiedAt`] = new Date();
+            const collection = db.db("oo").collection(`${moudleConfig['模块名称']}`);
+            record[`${moudleConfig['模块名称']}_id`] = ObjectId().toString();
+            record[`${moudleConfig['模块名称']}_创建时间`] = new Date();
+            record[`${moudleConfig['模块名称']}_修改时间`] = new Date();
             let fields_config = moudleConfig.fields_config || [];
             // 获取配置中的唯一字段
             let uniqueFields = fields_config.filter(
                 item => item.isUnique === '1' && 
-                [`${moudleConfig.tableName}_createdAt`, `${moudleConfig.tableName}_modifiedAt`].indexOf(item.dataIndex
+                [`${moudleConfig['模块名称']}_创建时间`, `${moudleConfig['模块名称']}_修改时间`].indexOf(item.dataIndex
             ) === -1);
             // 唯一字段查询条件
             let orQuery = {$or: []};
@@ -84,8 +84,8 @@ module.exports = {
     delete: (id, moudleConfig) => {
         let defer = Q.defer();
         connect(db => {
-            const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            collection.deleteMany({[`${moudleConfig.tableName}_id`]: id}, null, (err, result) => {
+            const collection = db.db("oo").collection(`${moudleConfig['模块名称']}`);
+            collection.deleteMany({[`${moudleConfig['模块名称']}_id`]: id}, null, (err, result) => {
                 if (err) {
                     defer.reject(err);
                     db.close();
@@ -104,9 +104,9 @@ module.exports = {
     update: (id, record, moudleConfig) => {
         let defer = Q.defer();
         connect(db => {
-            const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            record[`${moudleConfig.tableName}_modifiedAt`] = new Date();
-            collection.findOne({[`${moudleConfig.tableName}_id`]: id}, {}, (err, doc) => {
+            const collection = db.db("oo").collection(`${moudleConfig['模块名称']}`);
+            record[`${moudleConfig['模块名称']}_修改时间`] = new Date();
+            collection.findOne({[`${moudleConfig['模块名称']}_id`]: id}, {}, (err, doc) => {
                 if (err) {
                     defer.reject(err);
                     db.close();
@@ -116,7 +116,7 @@ module.exports = {
                 // 获取配置中的唯一字段
                 let uniqueFields = fields_config.filter(
                     item => item.isUnique === '1' && 
-                    [`${moudleConfig.tableName}_createdAt`, `${moudleConfig.tableName}_modifiedAt`].indexOf(item.dataIndex
+                    [`${moudleConfig['模块名称']}_创建时间`, `${moudleConfig['模块名称']}_修改时间`].indexOf(item.dataIndex
                 ) === -1);
                 // 唯一字段查询条件
                 let orQuery = {$or: []};
@@ -147,7 +147,7 @@ module.exports = {
                         } 
 
                         // 更新数据
-                        collection.updateOne({[`${moudleConfig.tableName}_id`]: id}, {$set: record}, null, (err, result) => {
+                        collection.updateOne({[`${moudleConfig['模块名称']}_id`]: id}, {$set: record}, null, (err, result) => {
                             if (err) {
                                 defer.reject(err);
                                 db.close();
@@ -159,7 +159,7 @@ module.exports = {
                     });
                 } else {
                     // 更新数据
-                    collection.updateOne({[`${moudleConfig.tableName}_id`]: id}, {$set: record}, null, (err, result) => {
+                    collection.updateOne({[`${moudleConfig['模块名称']}_id`]: id}, {$set: record}, null, (err, result) => {
                         if (err) {
                             defer.reject(err);
                             db.close();
@@ -179,7 +179,7 @@ module.exports = {
      */
     getList: (data, moudleConfig) => {
         let {page, pageSize, query, sorter} = data;
-        let sortField = {[`${moudleConfig.tableName}_createdAt`]: -1};
+        let sortField = {[`${moudleConfig['模块名称']}_创建时间`]: -1};
         if (sorter.field) {
             let order = sorter.order === 'ascend' ? 1 : -1
             sortField = {
@@ -188,7 +188,7 @@ module.exports = {
         }
         let defer = Q.defer();
         connect(db => {
-            const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
+            const collection = db.db("oo").collection(`${moudleConfig['模块名称']}`);
             let findCond = generateSql(query);
             let cursor = collection.find(findCond).collation({locale: "zh"});
             let totalElements = 0;
@@ -229,8 +229,8 @@ module.exports = {
     getOne: (id, moudleConfig) => {
         let defer = Q.defer();
         connect(db => {
-            const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            collection.findOne({[`${moudleConfig.tableName}_id`]: id}, {}, (err, doc) => {
+            const collection = db.db("oo").collection(`${moudleConfig['模块名称']}`);
+            collection.findOne({[`${moudleConfig['模块名称']}_id`]: id}, {}, (err, doc) => {
                 if (err) {
                     defer.reject(err);
                     db.close();
@@ -254,13 +254,14 @@ module.exports = {
             let fields_config = moudleConfig.fields_config || [];
             for (let i = 0; i < head.length; ++i) {
                 let config = fields_config.find(config => {
-                    return config.name === head[i];
+                    let col = head[i] && head[i].trim() || '';
+                    return config.name === col;
                 });
                 if (undefined === config) {
                     defer.reject({message: `excel表头中【${head[i]}】在系统中不存在`}); 
                     return defer.promise;
                 } else {
-                    fieldsArray.push(config.dataIndex);
+                    fieldsArray.push(`${moudleConfig['模块名称']}_${head[i]}`);
                     fieldsConfigArray.push(config);
                 }
             }
@@ -274,9 +275,9 @@ module.exports = {
         const moment = require('moment');
         for (let i = 1; i < excelData.length; ++i) {
             let record = {};
-            record[`${moudleConfig.tableName}_id`] = ObjectId().toString();
-            record[`${moudleConfig.tableName}_createdAt`] = now;
-            record[`${moudleConfig.tableName}_modifiedAt`] = now;
+            record[`${moudleConfig['模块名称']}_id`] = ObjectId().toString();
+            record[`${moudleConfig['模块名称']}_创建时间`] = now;
+            record[`${moudleConfig['模块名称']}_修改时间`] = now;
             let rowData = excelData[i] || [];
             for (let j = 0; j < rowData.length; ++j) {
                 let text = rowData[j] || '';
@@ -292,7 +293,8 @@ module.exports = {
         }
         // 批量插入数据
         connect(db => {
-            const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
+            let moduleName = decodeURI(moudleConfig['模块名称']);
+            const collection = db.db("oo").collection(`${moduleName}`);
             collection.insertMany(recordArray, null, (err, result) => {
                 if (err) {
                     defer.reject(err);
@@ -317,8 +319,8 @@ module.exports = {
     addTreeNode: (pid, record, moudleConfig) => {
         let defer = Q.defer();
         connect(db => {
-            const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            collection.findOne({[`${moudleConfig.tableName}_id`]: pid}, {}, (err, doc) => {
+            const collection = db.db("oo").collection(`${moudleConfig['模块名称']}`);
+            collection.findOne({[`${moudleConfig['模块名称']}_id`]: pid}, {}, (err, doc) => {
                 if (err) {
                     defer.reject(err);
                     db.close();
@@ -329,16 +331,16 @@ module.exports = {
                     db.close();
                 }
                 let newId = ObjectId().toString();
-                record[`${moudleConfig.tableName}_levels`] = doc[`${moudleConfig.tableName}_levels`] + ',' + newId;
-                record[`${moudleConfig.tableName}_id`] = newId;
-                record[`${moudleConfig.tableName}_pid`] = pid;
-                record[`${moudleConfig.tableName}_createdAt`] = new Date();
-                record[`${moudleConfig.tableName}_modifiedAt`] = new Date();
+                record[`${moudleConfig['模块名称']}_分类层级`] = doc[`${moudleConfig['模块名称']}_分类层级`] + ',' + newId;
+                record[`${moudleConfig['模块名称']}_id`] = newId;
+                record[`${moudleConfig['模块名称']}_pid`] = pid;
+                record[`${moudleConfig['模块名称']}_创建时间`] = new Date();
+                record[`${moudleConfig['模块名称']}_修改时间`] = new Date();
                 let fields_config = moudleConfig.fields_config || [];
                 // 获取配置中的唯一字段
                 let uniqueFields = fields_config.filter(
                     item => item.isUnique === '1' && 
-                    [`${moudleConfig.tableName}_createdAt`, `${moudleConfig.tableName}_modifiedAt`].indexOf(item.dataIndex
+                    [`${moudleConfig['模块名称']}_创建时间`, `${moudleConfig['模块名称']}_修改时间`].indexOf(item.dataIndex
                 ) === -1);
                 // 唯一字段查询条件
                 let orQuery = {$or: []};
@@ -402,21 +404,21 @@ module.exports = {
     deleteTreeNode: (id, moudleConfig) => {
         let defer = Q.defer();
         connect(db => {
-            const collection = db.db("oo").collection(`${moudleConfig.tableName}`);
-            collection.findOne({[`${moudleConfig.tableName}_id`]: id}, {}, (err, doc) => {
+            const collection = db.db("oo").collection(`${moudleConfig['模块名称']}`);
+            collection.findOne({[`${moudleConfig['模块名称']}_id`]: id}, {}, (err, doc) => {
                 if (err) {
                     defer.reject(err);
                     db.close();
                     return;
                 }
 
-                if (doc[`${moudleConfig.tableName}_pid`] === null) {
+                if (doc[`${moudleConfig['模块名称']}_pid`] === null) {
                     defer.reject({message: "根节点不能删除"});
                     db.close();
                     return;
                 }
 
-                collection.find({[`${moudleConfig.tableName}_pid`]: id}).count((err, result) => {
+                collection.find({[`${moudleConfig['模块名称']}_pid`]: id}).count((err, result) => {
                     if (err) {
                         defer.reject(err);
                         db.close();
@@ -429,7 +431,7 @@ module.exports = {
                         return;
                     } 
     
-                    collection.deleteMany({[`${moudleConfig.tableName}_id`]: id}, null, (err, result) => {
+                    collection.deleteMany({[`${moudleConfig['模块名称']}_id`]: id}, null, (err, result) => {
                         if (err) {
                             defer.reject(err);
                             db.close();
@@ -451,22 +453,22 @@ module.exports = {
     getTree: (moudleConfig) => {
         let defer = Q.defer();
         connect(db => {
-            let tableName = moudleConfig.tableName;
-            const collection = db.db("oo").collection(`${tableName}`);
+            let moduleName = moudleConfig['模块名称'];
+            const collection = db.db("oo").collection(`${moduleName}`);
             collection.find({}).toArray((err, docs) => {
                 if (err) {
                     defer.reject(err);
                     db.close();
                     return;
                 }
-                let rootNodes = docs.filter(doc => doc[`${tableName}_pid`] === null);
+                let rootNodes = docs.filter(doc => doc[`${moduleName}_pid`] === null);
                 let createTree = (docs, node) => {
                     if (node === null || node === undefined) {
                         return;
                     }
-                    node.key = node[`${tableName}_id`];
-                    node.label = node[`${tableName}_name`];
-                    node.children = docs.filter(doc => doc[`${tableName}_pid`] === node[`${tableName}_id`]);
+                    node.key = node[`${moduleName}_id`];
+                    node.label = node[`${moduleName}_名称`];
+                    node.children = docs.filter(doc => doc[`${moduleName}_pid`] === node[`${moduleName}_id`]);
                     if (node.children.length === 0) {
                         delete node.children;
                     }

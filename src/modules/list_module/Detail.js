@@ -15,7 +15,7 @@ class Detial extends Component {
      */
     constructor(props) {
         super();
-        this.pageKey = props.tableName + props.match.params.id;
+        this.pageKey = props.moduleName + props.match.params.id;
         global[this.pageKey] = global[this.pageKey] || {};
         this.state = {
             data: global[this.pageKey].data || {},
@@ -36,7 +36,7 @@ class Detial extends Component {
      */
     getData() {
         global.storeData(this, this.pageKey, {loading: true})
-        Action.getOne(this.props.tableName, this.props.match.params.id, (data) => {
+        Action.getOne(this.props.moduleName, this.props.match.params.id, (data) => {
             global.storeData(this, this.pageKey, {
                 data, loading: false
             });
@@ -60,7 +60,7 @@ class Detial extends Component {
         }
         let record = this.formRef.props.form.getFieldsValue();
         global.storeData(this, this.pageKey, {loading: true})
-        Action.modify(this.props.tableName, this.props.match.params.id, record, () => {
+        Action.modify(this.props.moduleName, this.props.match.params.id, record, () => {
             global.storeData(this, this.pageKey, {editing: false});
             this.getData();
         });

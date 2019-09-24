@@ -25,19 +25,18 @@ class ListModule extends Component {
      */
     constructor(props) {
         super();
-        this.tableName = props.config.tableName;
-        this.moduleName = props.config.moduleName;
-        global[this.tableName] = global[this.tableName] || {};
+        this.moduleName = props.config['模块名称'];
+        global[this.moduleName] = global[this.moduleName] || {};
         this.state = {
-            searchFields: global[this.tableName].searchFields || {},
-            showMore: global[this.tableName].showMore || false,
-            page: global[this.tableName].page || 1,
-            pageSize: global[this.tableName].pageSize || 10,
-            list: global[this.tableName].list || [],
-            totalElements: global[this.tableName].totalElements || 0,
-            sorter: global[this.tableName].sorter || {},
-            loading: global[this.tableName].loading || false,
-            query: global[this.tableName].query || {},
+            searchFields: global[this.moduleName].searchFields || {},
+            showMore: global[this.moduleName].showMore || false,
+            page: global[this.moduleName].page || 1,
+            pageSize: global[this.moduleName].pageSize || 10,
+            list: global[this.moduleName].list || [],
+            totalElements: global[this.moduleName].totalElements || 0,
+            sorter: global[this.moduleName].sorter || {},
+            loading: global[this.moduleName].loading || false,
+            query: global[this.moduleName].query || {},
             importing: false,
             exporting: false,
         };
@@ -56,7 +55,7 @@ class ListModule extends Component {
      */
     componentWillReceiveProps(nextProps) {
         if (nextProps.config !== this.props.config) {
-            this.tableName = nextProps.config.tableName;
+            this.moduleName = nextProps.config['模块名称'];
             this.refresh();
         }
     }
@@ -69,13 +68,13 @@ class ListModule extends Component {
      * @param {*} sorter        排序条件
      */
     getList(page, pageSize, query, sorter) {
-        global.storeData(this, this.tableName, {loading: true})
-        Action.getList(this.tableName, page, pageSize, query, sorter, (body) => {
+        global.storeData(this, this.moduleName, {loading: true})
+        Action.getList(this.moduleName, page, pageSize, query, sorter, (body) => {
             if (body === {}) {
                 return;
             }
             const {list, totalElements} = body;
-            global.storeData(this, this.tableName, {
+            global.storeData(this, this.moduleName, {
                 page, pageSize, query, sorter, totalElements, loading: false
             });
             this.setState({list: list})
@@ -86,14 +85,14 @@ class ListModule extends Component {
      * 清空搜索条件
      */
     resetSearch() {
-        global.storeData(this, this.tableName, { searchFields: {}, query: {}});
+        global.storeData(this, this.moduleName, { searchFields: {}, query: {}});
     }
 
     /**
      * 显示更多搜索条件
      */
     handleMore() {
-        global.storeData(this, this.tableName, {showMore: !this.state.showMore});
+        global.storeData(this, this.moduleName, {showMore: !this.state.showMore});
     }
 
     /**
@@ -102,7 +101,7 @@ class ListModule extends Component {
      * @param {*} searchFields 
      */
     onSearch(query, searchFields) {
-        global.storeData(this, this.tableName, {searchFields: searchFields });
+        global.storeData(this, this.moduleName, {searchFields: searchFields });
         const {pageSize, sorter} = this.state;
         this.getList(1, pageSize, query, sorter);
     }
@@ -130,8 +129,8 @@ class ListModule extends Component {
      * 删除操作
      */
     del(id) {
-        global.storeData(this, this.tableName, {loading: true});
-        Action.del(this.tableName, id, () => {
+        global.storeData(this, this.moduleName, {loading: true});
+        Action.del(this.moduleName, id, () => {
             this.refresh();
         });
     }
@@ -157,7 +156,7 @@ class ListModule extends Component {
         if (this.state.exporting) {
             let now = moment().format('YYYYMMDDHHmmss');
             let name = `${this.moduleName}_${now}`;
-            global._div2Excel(`${this.tableName}_list`, name);
+            global._div2Excel(`${this.moduleName}_list`, name);
             this.setState({exporting: false});
         }
     }
@@ -192,9 +191,10 @@ class ListModule extends Component {
         tableConfig.forEach(config => {
             if (config.isShow === '1') {
                 if (config.isQuery === '1') {
-                    searchFormFields.push(configToItemProps(config, null, searchFields[config.dataIndex], null, true));
+                    searchFormFields.push(configToItemProps(config, null, searchFields[config.name], null, true));
                 }
                 scrollx += parseInt(config.width, 10);
+                config.dataIndex = `${this.moduleName}_${config.name}`
                 columns.push(configToColumn(config));
             }
         });
@@ -210,7 +210,7 @@ class ListModule extends Component {
         });
         columns.push({
             title: '操作',
-            dataIndex: `${this.tableName}_id`,
+            dataIndex: `${this.moduleName}_id`,
             key: 'operation',
             width: 120,
             fixed: 'right',
@@ -237,7 +237,7 @@ class ListModule extends Component {
         mainSearchFeilds = [];
         moreSearchFeilds = [];
         searchFormFields.forEach(field => {
-            if ([`${this.tableName}_name`, `${this.tableName}_code`].indexOf(field.id) !== -1) {
+            if ([`${this.moduleName}_编码`].indexOf(field.id) !== -1) {
                 mainSearchFeilds.push(field);
             } else {
                 moreSearchFeilds.push(field);
@@ -253,7 +253,7 @@ class ListModule extends Component {
         pagination.total = totalElements;
         // 导入参数
         const importProps = {
-			action: `${api.opts.baseURI}/${this.tableName}/upload`,
+			action: `${api.opts.baseURI}/${this.moduleName}/upload`,
 			onChange: this.handleChange.bind(this),
 			showUploadList: false,
 		};
@@ -267,7 +267,7 @@ class ListModule extends Component {
                 handleMore={this.handleMore.bind(this)}
                 onSearch={this.onSearch.bind(this)}
                 resetSearch={this.resetSearch.bind(this)}
-                placeholder='请输入名称或编码'
+                placeholder='请输入编码'
                 searchFields={searchFields}
                 showMore={showMore}
                 btnName='搜索'
@@ -275,13 +275,13 @@ class ListModule extends Component {
             <Upload {...importProps}><Button style={{ marginLeft: 8 }}><Icon type="upload" />导入</Button></Upload>
             <Button style={{marginLeft: 8}} onClick={this.exportData.bind(this)}><Icon type="cloud-download-o" />导出</Button>    
             <div style={{height: 16}}/>
-            <div id={`${this.tableName}_list`}>
+            <div id={`${this.moduleName}_list`}>
                 <TableEx
                     scroll={this.state.exporting ? undefined : { x: scrollx }}
                     columns={columns}
                     dataSource={list}
                     onChange={this.handleTableChange.bind(this)}
-                    rowKey={record => record[`${this.tableName}_id`]}
+                    rowKey={record => record[`${this.moduleName}_id`]}
                     pagination={this.state.exporting ? false : pagination}
                 />
             </div>

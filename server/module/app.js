@@ -4,9 +4,9 @@
 module.exports = (app) => {
     let dbo = require('./dbo.js');
     let {connect} = require('../database');
-    let listApi = (app, tableName, moudleConfig) => {
+    let listApi = (app, moduleName, moudleConfig) => {
         // 新增
-        app.post(`/${tableName}`, (req, res) => {
+        app.post(`/${moduleName}`, (req, res) => {
             dbo.add(req.body, moudleConfig).then(data => {
                 res.send(data);
             }, error => {
@@ -15,7 +15,7 @@ module.exports = (app) => {
         });
 
         // 删除
-        app.delete(`/${tableName}`, (req, res) => {
+        app.delete(`/${moduleName}`, (req, res) => {
             if (req.query == null || req.query.id == null) {
                 res.status(400).send({message: 'id不能为空'});
                 return;
@@ -28,7 +28,7 @@ module.exports = (app) => {
         });
 
         // 更新
-        app.put(`/${tableName}`, (req, res) => {
+        app.put(`/${moduleName}`, (req, res) => {
             if (req.query == null || req.query.id == null) {
                 res.status(400).send({message: 'id不能为空'});
                 return;
@@ -41,7 +41,7 @@ module.exports = (app) => {
         });
 
         // 查询列表
-        app.put(`/${tableName}/list`, (req, res) => {
+        app.put(`/${moduleName}/list`, (req, res) => {
             dbo.getList(req.body, moudleConfig).then(data => {
                 res.send(data);
             }, error => {
@@ -50,7 +50,7 @@ module.exports = (app) => {
         });
 
         // 查询单个
-        app.get(`/${tableName}`, (req, res) => {
+        app.get(`/${moduleName}`, (req, res) => {
             dbo.getOne(req.query.id, moudleConfig).then(data => {
                 res.send(data);
             }, error => {
@@ -59,10 +59,9 @@ module.exports = (app) => {
         });
 
         // 导入数据
-        app.post(`/${tableName}/upload`, (req, res) => {
+        app.post(`/${moduleName}/upload`, (req, res) => {
             try {
                 let multiparty = require('multiparty');
-                let fs = require('fs');
                 // console.log(req.files.file.name, req.files.file.path, req.files.file.type)
                 let form = new multiparty.Form({uploadDir: './'});
                 //let form = new multiparty.Form();
@@ -79,8 +78,10 @@ module.exports = (app) => {
                         let excelData = [];
                         try {
                             excelData = xlsx.parse(uploadedPath);
+                            const fs = require('fs-extra');
+                            fs.remove(uploadedPath);
                         } catch (e) {
-                            console.log(`/${tableName}/upload` + e);
+                            console.log(`/${moduleName}/upload` + e);
                             res.status(400).send({message: '不是正常的Excel文件'});
                             return;
                         }
@@ -100,15 +101,18 @@ module.exports = (app) => {
                     }
                 });
             } catch (e) {
-                console.log(`/${tableName}/upload` + e);
                 res.status(400).send({message: '接口异常'});
             }
         });
     };
 
-    let treeApi = (app, tableName, moudleConfig) => {
+    /***************************************************************************
+     * 数据模型树操作
+     ***************************************************************************/
+
+    let treeApi = (app, moduleName, moudleConfig) => {
         // 新增
-        app.post(`/${tableName}`, (req, res) => {
+        app.post(`/${moduleName}`, (req, res) => {
             if (req.query == null || req.query.pid == null) {
                 res.status(400).send({message: 'pid不能为空'});
                 return;
@@ -121,7 +125,7 @@ module.exports = (app) => {
         });
 
         // 删除
-        app.delete(`/${tableName}`, (req, res) => {
+        app.delete(`/${moduleName}`, (req, res) => {
             if (req.query == null || req.query.id == null) {
                 res.status(400).send({message: 'id不能为空'});
                 return;
@@ -134,7 +138,7 @@ module.exports = (app) => {
         });
 
         // 更新
-        app.put(`/${tableName}`, (req, res) => {
+        app.put(`/${moduleName}`, (req, res) => {
             if (req.query == null || req.query.id == null) {
                 res.status(400).send({message: 'id不能为空'});
                 return;
@@ -147,7 +151,7 @@ module.exports = (app) => {
         });
 
         // 查询树
-        app.put(`/${tableName}/tree`, (req, res) => {
+        app.put(`/${moduleName}/tree`, (req, res) => {
             dbo.getTree(moudleConfig).then(data => {
                 res.send(data);
             }, error => {
@@ -156,7 +160,7 @@ module.exports = (app) => {
         });
 
         // 查询单个
-        app.get(`/${tableName}`, (req, res) => {
+        app.get(`/${moduleName}`, (req, res) => {
             dbo.getOne(req.query.id, moudleConfig).then(data => {
                 res.send(data);
             }, error => {
@@ -169,11 +173,12 @@ module.exports = (app) => {
         let collection = oo.collection("tables_config");
         collection.find({}).toArray().then(list => {
             list.forEach(moudleConfig => {
-                let tableName = moudleConfig.tableName;
+                let moduleName = moudleConfig['模块名称'];
                 if (moudleConfig.dataMoudle === '树') {
-                    treeApi(app, tableName, moudleConfig)
+
+                    treeApi(app, encodeURI(moduleName), moudleConfig)
                 } else {
-                    listApi(app, tableName, moudleConfig)
+                    listApi(app, encodeURI(moduleName), moudleConfig)
                 }
             })
         }); 

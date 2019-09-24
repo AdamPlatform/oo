@@ -86,6 +86,7 @@ function getClientEnvironment(publicUrl) {
         // images into the `src` and `import` them in code to get their paths.
         PUBLIC_URL: publicUrl,
         LOCALDB: process.env.LOCALDB || '0',
+        SYSTEMADMIN: process.env.SYSTEMADMIN || '0',
       }
     );
   // Stringify all values so we can feed into Webpack DefinePlugin

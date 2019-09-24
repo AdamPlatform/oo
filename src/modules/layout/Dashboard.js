@@ -35,7 +35,7 @@ class Dashboard extends Component {
 	getModuleConfigs() {
 		getList(1, 9999, {}, {}, (body => {
 			let moduleConfigs = body.list || [];
-			global.storeData(this, this.pageKey, {moduleConfigs: moduleConfigs.filter(item => item.isMenu === '是')});
+			global.storeData(this, this.pageKey, {moduleConfigs: moduleConfigs.filter(item => item['生成菜单'] === '是')});
 		}))
 	}
 
@@ -141,43 +141,43 @@ class Dashboard extends Component {
         let moduleName = null;
         if (this.state.selectedKeys[0] === 'sysconfig') {
             moduleName = '系统设置';
-        }
+		}
 		let moduleMenus = this.state.moduleConfigs.map(config => {
 			if (config.dataMoudle === '树') {
-				let route = <Route key={config.tableName} path={`/${config.tableName}`} render={props => <TreeModule 
+				let route = <Route key={config['模块名称']} path={`/${config['模块名称']}`} render={props => <TreeModule 
 					cols={this.state.cols} 
 					config={config} 
 					{...props}
 				/>}/>
 				routes.push(route);
 			} else {
-				let route = <Route key={config.tableName} exact path={`/${config.tableName}`} render={props => <ListModule 
+				let route = <Route key={config['模块名称']} exact path={`/${config['模块名称']}`} render={props => <ListModule 
 					cols={this.state.cols} 
 					config={config} 
 					{...props}
 				/>}/>
-				let newRoute = <Route key={config.tableName + 'new'} path={`/${config.tableName}/new`} render={props => <New 
+				let newRoute = <Route key={config['模块名称'] + 'new'} path={`/${config['模块名称']}/new`} render={props => <New 
 					cols={this.state.cols} 
 					tableConfig={config.fields_config}
-					tableName={config.tableName} 
+					moduleName={config['模块名称']} 
 					{...props}
 				/>}/>
-				let detailRoute = <Route key={config.tableName + 'detail'} path={`/${config.tableName}/detail/:id`} render={props => <Detail 
+				let detailRoute = <Route key={config['模块名称'] + 'detail'} path={`/${config['模块名称']}/detail/:id`} render={props => <Detail 
 					cols={this.state.cols} 
 					tableConfig={config.fields_config}
-					tableName={config.tableName} 
+					moduleName={config['模块名称']} 
 					{...props}
 				/>}/>
 				routes.push(route);
 				routes.push(newRoute);
 				routes.push(detailRoute);
             }
-            if (this.state.selectedKeys[0] === config.tableName) {
-                moduleName = config.moduleName;
+            if (this.state.selectedKeys[0] === config['模块名称']) {
+                moduleName = config['模块名称'];
             }
 			
-			return <Menu.Item key={config.tableName}>
-				<Link to={`/${config.tableName}`}>{config.moduleName}</Link>
+			return <Menu.Item key={config['模块名称']}>
+				<Link to={`/${config['模块名称']}`}>{config['模块名称']}</Link>
 			</Menu.Item>
 		})
 		return <div>

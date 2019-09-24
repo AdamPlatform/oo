@@ -8,9 +8,9 @@ import api from '../../utils/api';
  * @param {*} mainSearchFeilds 
  * @param {*} moreSearchFeilds 
  */
-export function getList(tableName, page, pageSize, query, sorter, cb) {
+export function getList(moduleName, page, pageSize, query, sorter, cb) {
     let data = { page, pageSize, query, sorter }
-    api.put(`/${tableName}/list`, { data }).then(payload => {
+    api.put(`/${moduleName}/list`, { data }).then(payload => {
         cb && cb(payload.body || {});
     }, () => {
         cb && cb({});
@@ -21,8 +21,8 @@ export function getList(tableName, page, pageSize, query, sorter, cb) {
  * 删除
  * @param {} id 
  */
-export function del(tableName, id, cb) {
-    api.del(`/${tableName}`, {
+export function del(moduleName, id, cb) {
+    api.del(`/${moduleName}`, {
         params: { id }
     }).then(payload => {
         cb && cb();
@@ -34,8 +34,8 @@ export function del(tableName, id, cb) {
 /**
  * 新增
  */
-export function add(tableName, record, cb) {
-    api.post(`/${tableName}`, {
+export function add(moduleName, record, cb) {
+    api.post(`/${moduleName}`, {
         data: record
     }).then(payload => {
         cb && cb();
@@ -49,8 +49,8 @@ export function add(tableName, record, cb) {
  * @param {*} id 
  * @param {*} cb 
  */
-export function getOne(tableName, id, cb) {
-    api.get(`/${tableName}`, {
+export function getOne(moduleName, id, cb) {
+    api.get(`/${moduleName}`, {
         params: { id }
     }).then(payload => {
         cb && cb(payload.body || {});
@@ -62,8 +62,8 @@ export function getOne(tableName, id, cb) {
 /**
  * 修改
  */
-export function modify(tableName, id, record, cb) {
-    api.put(`/${tableName}`, {
+export function modify(moduleName, id, record, cb) {
+    api.put(`/${moduleName}`, {
         params: { id },
         data: record
     }).then(payload => {

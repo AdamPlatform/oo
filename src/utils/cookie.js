@@ -11,14 +11,14 @@ export function getCookie (name) {
   if (parts.length === 2) return parts.pop().split(";").shift();
 }
 
-export function setCookie (c_name,value,expiredays) {
+export function setCookie (c_名称,value,expiredays) {
     var exdate = null;
     if (expiredays) {
         var utc = new Date().getTime() + expiredays * 24 * 60 * 60 * 1000
         exdate = new Date(utc).toUTCString();
-        document.cookie = c_name+ "=" + escape(value) + ";expires=" + exdate + "; path=/";
+        document.cookie = c_名称+ "=" + escape(value) + ";expires=" + exdate + "; path=/";
     } else {
-        document.cookie = c_name+ "=" + escape(value) + "; path=/";
+        document.cookie = c_名称+ "=" + escape(value) + "; path=/";
     }
 }
 

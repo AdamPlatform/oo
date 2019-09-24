@@ -14,10 +14,12 @@ class New extends Component {
      */
     constructor(props) {
         super();
-        this.pageKey = props.tableName + 'new';
+        this.pageKey = props.moduleName + 'new';
+        this.moduleName = props.moduleName;
         global[this.pageKey] = global[this.pageKey] || {};
         this.state = {
             loading: global[this.pageKey].loading || false,
+            saved: false
         };
     }
 
@@ -37,9 +39,9 @@ class New extends Component {
             return;
         }
         let record = this.formRef.props.form.getFieldsValue();
-        global.storeData(this, this.pageKey, {loading: true})
-        Action.add(this.props.tableName, record, () => {
-            global.storeData(this, this.pageKey, {loading: false})
+        global.storeData(this, this.pageKey, {loading: true, saved: true})
+        Action.add(this.props.moduleName, record, () => {
+            global.storeData(this, this.pageKey, {loading: false});
             this.props.history.goBack();
         });
     }
@@ -50,7 +52,7 @@ class New extends Component {
     render() {
         let data = {};
         this.props.tableConfig.forEach(config => {
-            data[config.dataIndex] = config.defaultValue;
+            data[`${this.moduleName}_${config.name}`] = config.defaultValue;
         })
         return <Spin spinning={this.state.loading}>
             <Button type='primary' onClick={this.onOk.bind(this)}>保存</Button>
@@ -61,7 +63,7 @@ class New extends Component {
                 wrappedComponentRef={(inst) => this.formRef = inst} 
                 action='new'
             />
-            <Prompt message="页面正在编辑中, 您确定要离开吗?" when={true} />
+            <Prompt message="页面正在编辑中, 您确定要离开吗?" when={!this.state.saved} />
         </Spin>
     }
 }

@@ -89,9 +89,9 @@ export function addField(id, num, cb) {
 /**
  * 删除一个配置字段
  */
-export function delOneField(id, dataIndex, cb) {
+export function delOneField(id, name, cb) {
     api.del('/table_field', {
-        params: { id, dataIndex },
+        params: { id, name },
     }).then(payload => {
         cb && cb();
     }, () => {
@@ -115,9 +115,9 @@ export function modifyOneField(id, record, cb) {
 /**
  * 上移一个配置字段
  */
-export function fieldUp(id, dataIndex, cb) {
+export function fieldUp(id, name, cb) {
     api.put('/table_field/up', {
-        params: { id, dataIndex },
+        params: { id, name },
     }).then(payload => {
         cb && cb();
     }, () => {
@@ -128,9 +128,9 @@ export function fieldUp(id, dataIndex, cb) {
 /**
  * 下移一个配置字段
  */
-export function fieldDown(id, dataIndex, cb) {
+export function fieldDown(id, name, cb) {
     api.put('/table_field/down', {
-        params: { id, dataIndex },
+        params: { id, name },
     }).then(payload => {
         cb && cb();
     }, () => {
@@ -141,9 +141,9 @@ export function fieldDown(id, dataIndex, cb) {
 /**
  * 上移一个配置字段到顶部
  */
-export function fieldUpToTop(id, dataIndex, cb) {
+export function fieldUpToTop(id, name, cb) {
     api.put('/table_field/up_top', {
-        params: { id, dataIndex },
+        params: { id, name },
     }).then(payload => {
         cb && cb();
     }, () => {
@@ -154,9 +154,9 @@ export function fieldUpToTop(id, dataIndex, cb) {
 /**
  * 下移一个配置字段到底部
  */
-export function fieldDownToBottom(id, dataIndex, cb) {
+export function fieldDownToBottom(id, name, cb) {
     api.put('/table_field/down_bottom', {
-        params: { id, dataIndex },
+        params: { id, name },
     }).then(payload => {
         cb && cb();
     }, () => {
@@ -167,9 +167,9 @@ export function fieldDownToBottom(id, dataIndex, cb) {
 /**
  * 插入一个字段
  */
-export function insertField(id, dataIndex, cb) {
+export function insertField(id, name, cb) {
     api.put('/table_field/insert', {
-        params: { id, dataIndex },
+        params: { id, name },
     }).then(payload => {
         cb && cb();
     }, () => {
