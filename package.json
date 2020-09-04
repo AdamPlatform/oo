@@ -63,7 +63,7 @@
     "jquery": "^3.4.1",
     "log4js": "^4.0.0",
     "moment": "^2.18.1",
-    "mongodb": "2.2.31",
+    "mongodb": "3.6.1",
     "multiparty": "^4.2.1",
     "node-xlsx": "^0.15.0",
     "object-assign": "4.1.1",
